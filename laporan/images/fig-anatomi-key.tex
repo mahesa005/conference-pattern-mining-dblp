@@ -1,0 +1,18 @@
+\begin{tikzpicture}[font=\scriptsize]
+\node[anchor=west,font=\large\ttfamily] (s1) at (1.2,0) {conf};
+\node[anchor=west,font=\large\ttfamily] (sl1) at (2.45,0) {/};
+\node[anchor=west,font=\large\ttfamily,text=bluemain] (s2) at (3.0,0) {kdd};
+\node[anchor=west,font=\large\ttfamily] (sl2) at (4.2,0) {/};
+\node[anchor=west,font=\large\ttfamily] (s3) at (4.75,0) {ChenG16};
+\fill[bluelight,opacity=0.55] (2.95,-0.38) rectangle (4.1,0.38);
+\draw[decorate,decoration={brace,mirror,amplitude=5pt}] (1.2,-0.45) -- (2.35,-0.45);
+\draw[decorate,decoration={brace,mirror,amplitude=5pt},bluemain] (3.0,-0.45) -- (4.1,-0.45);
+\draw[decorate,decoration={brace,mirror,amplitude=5pt}] (4.75,-0.45) -- (6.9,-0.45);
+\node[align=center,anchor=north,text width=2.1cm] at (1.2,-0.85) {\textbf{kategori}\\\texttt{conf}, \texttt{journals}, \texttt{books}};
+\node[align=center,anchor=north,text width=2.4cm,text=bluemain] at (3.7,-0.85) {\textbf{seri \textit{venue}}\\dipakai sebagai \textit{venue}\\(4.373 seri)};
+\node[align=center,anchor=north,text width=2.6cm] at (6.3,-0.85) {\textbf{ID publikasi}\\nama belakang penulis pertama dan tahun; tidak dibaca};
+\node[anchor=west,font=\scriptsize\bfseries] at (0,-3.0) {Legenda:};
+\fill[bluelight,opacity=0.55] (1.45,-3.12) rectangle (1.85,-2.88);
+\node[anchor=west] at (1.95,-3.0) {bagian yang dipakai};
+\node[anchor=west] at (5.0,-3.0) {kurung kurawal: batas segmen};
+\end{tikzpicture}

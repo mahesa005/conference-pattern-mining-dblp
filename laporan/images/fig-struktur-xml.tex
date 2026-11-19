@@ -1,0 +1,35 @@
+\begin{tikzpicture}[font=\scriptsize]
+\node[abu,text width=1.5cm] (root) at (0,0) {\texttt{<dblp>}\\elemen akar};
+\node[abu,text width=2.2cm] (art) at (3.2,2.2) {\texttt{article}\\4.527.388};
+\node[proses,text width=2.2cm] (inp) at (3.2,0.55) {\texttt{inproceedings}\\4.004.309};
+\node[abu,text width=2.2cm] (www) at (3.2,-1.1) {\texttt{www}\\4.247.510};
+\node[abu,text width=2.2cm] (oth) at (3.2,-2.75) {jenis lain (6 jenis)\\348.772};
+\draw[garis] (root.east) -- (art.west);
+\draw[garis] (root.east) -- (inp.west);
+\draw[garis] (root.east) -- (www.west);
+\draw[garis] (root.east) -- (oth.west);
+% isi inproceedings
+\node[anchor=west,font=\scriptsize\bfseries] at (6.0,2.85) {atribut XML};
+\node[proses,text width=1.5cm] (k) at (7.0,2.2) {\texttt{key}};
+\node[abu,text width=1.5cm] (m) at (9.1,2.2) {\texttt{mdate}};
+\node[anchor=west,font=\scriptsize\bfseries] at (6.0,1.35) {elemen anak};
+\node[proses,text width=1.5cm] (a) at (7.0,0.8) {\texttt{author}\\(berulang)};
+\node[proses,text width=1.5cm] (t) at (9.1,0.8) {\texttt{title}};
+\node[proses,text width=1.5cm] (y) at (11.2,0.8) {\texttt{year}};
+\node[proses,text width=1.5cm] (b) at (7.0,-0.55) {\texttt{booktitle}};
+\node[proses,text width=1.5cm] (c) at (9.1,-0.55) {\texttt{crossref}};
+\node[abu,text width=1.5cm] (p) at (11.2,-0.55) {\texttt{pages}};
+\node[abu,text width=1.5cm] (e) at (7.0,-1.65) {\texttt{ee}};
+\node[abu,text width=1.5cm] (u) at (9.1,-1.65) {\texttt{url}};
+\node[abu,text width=1.5cm] (s) at (11.2,-1.65) {\texttt{stream}};
+\coordinate (tp) at (6.0,3.15);
+\node[draw=blue!60!black,dashed,fit=(tp)(k)(m)(a)(t)(y)(b)(c)(p)(e)(u)(s),inner sep=7pt,rounded corners=2pt] (grp) {};
+\draw[garis] (inp.east) -- (grp.west |- inp.east);
+\node[anchor=west,font=\scriptsize\bfseries] at (-0.8,-3.95) {Legenda:};
+\node[proses,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (1.1,-3.95) {};
+\node[anchor=west] at (1.45,-3.95) {dipakai pada analisis};
+\node[abu,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (5.0,-3.95) {};
+\node[anchor=west] at (5.35,-3.95) {tidak dipakai};
+\draw[blue!60!black,dashed] (8.1,-3.95) -- (8.8,-3.95);
+\node[anchor=west] at (8.9,-3.95) {isi satu record};
+\end{tikzpicture}
