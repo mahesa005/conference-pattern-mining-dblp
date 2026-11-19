@@ -1,0 +1,80 @@
+% !TeX root = Laporan.tex
+% Laporan Tugas Besar Data Mining: Conference Popularity and Association Pattern Mining (DBLP)
+% Kompilasi: ./build.sh  (xelatex -> biber -> xelatex x2)
+\documentclass[oneside]{kp-sti}
+
+\addbibresource{daftar-pustaka.bib}
+
+% --- Tambahan preamble: warna, pustaka TikZ, dan gaya diagram ---
+\usepackage{rotating}
+\usetikzlibrary{patterns,decorations.pathreplacing}
+\definecolor{bluemain}{HTML}{2A78D6}
+\definecolor{bluelight}{HTML}{9EC5F4}
+\definecolor{orangemain}{HTML}{EB6834}
+\definecolor{graymid}{HTML}{B9B8B2}
+\definecolor{grayline}{HTML}{E3E3DF}
+\definecolor{hx104281}{HTML}{104281}
+\definecolor{hx1C5CAB}{HTML}{1C5CAB}
+\definecolor{hx2A78D6}{HTML}{2A78D6}
+\definecolor{hx3987E5}{HTML}{3987E5}
+\definecolor{hx5598E7}{HTML}{5598E7}
+\definecolor{hx6DA7EC}{HTML}{6DA7EC}
+\definecolor{hx86B6EF}{HTML}{86B6EF}
+\definecolor{hx9EC5F4}{HTML}{9EC5F4}
+\definecolor{hxCDE2FB}{HTML}{CDE2FB}
+% Tanda kutip judul pada daftar pustaka (glyph kutip bawaan tidak tampil pada font ini)
+\DeclareFieldFormat[article,inproceedings,incollection]{title}{\char"201C #1\char"201D}
+\newsavebox{\kotakfig}
+\newcommand{\figtikz}[1]{%
+  \sbox{\kotakfig}{\input{images/#1}}%
+  \ifdim\wd\kotakfig>\linewidth
+    \resizebox{\linewidth}{!}{\usebox{\kotakfig}}%
+  \else
+    \usebox{\kotakfig}%
+  \fi}
+\tikzset{
+  proses/.style={kotak,fill=bluelight!35,draw=bluemain},
+  berkas/.style={kotak,fill=grayline!60,draw=black!60,rounded corners=4pt},
+  rencana/.style={kotak,dashed,draw=black!50,fill=white},
+  abu/.style={kotak,fill=grayline,draw=graymid},
+  buang/.style={kotak,fill=orangemain!18,draw=orangemain},
+  grayline/.style={draw=grayline,line width=0.4pt},
+}
+
+\newcommand{\judullaporan}{\textit{Conference Popularity and Association Pattern Mining} pada \textit{Dataset} DBLP}
+
+
+\begin{document}
+\frontmatter
+\addtocontents{toc}{\protect\setlength{\cftbeforechapskip}{0pt}}
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchapfont}{\protect\normalfont}}
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchappagefont}{\protect\normalfont}}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftchapdotsep}}
+
+\input{depan/01-sampul}
+\input{depan/02-daftar}
+
+\mainmatter
+\addtocontents{toc}{\protect\setlength{\cftbeforechapskip}{10pt}}
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchapfont}{\protect\bfseries}}
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchappagefont}{\protect\bfseries}}
+\renewcommand{\cftchapleader}{\bfseries\cftdotfill{\cftchapdotsep}}
+
+\input{bab/bab1-pendahuluan}
+\input{bab/bab2-dataset-teori}
+\input{bab/bab3-metodologi}
+\input{bab/bab4-hasil}
+\input{bab/bab5-kesimpulan}
+
+\cleardoublepage
+\printbibliography[heading=bibintoc, title={DAFTAR PUSTAKA}]
+
+\appendix
+\begin{appendices}
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchappresnum}{}}
+\addtocontents{toc}{\protect\settowidth{\protect\cftchapnumwidth}{A\quad}}
+\input{lampiran/lampiran-a-pembagian-kerja}
+\input{lampiran/lampiran-b-transaksi}
+\end{appendices}
+\backmatter
+\end{document}
