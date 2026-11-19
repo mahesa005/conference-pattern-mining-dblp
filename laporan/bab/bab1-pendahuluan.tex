@@ -1,0 +1,40 @@
+\chapter{PENDAHULUAN}
+\label{chap:pendahuluan}
+
+\section{Latar Belakang}
+DBLP (\textit{Digital Bibliography \& Library Project}) adalah basis data bibliografi publikasi ilmiah bidang ilmu komputer. Setiap publikasi tercatat dengan judul, penulis, tahun, dan tempat terbitnya \cite{ley2009}. Riwayat publikasi para peneliti pada DBLP dapat dipakai untuk menjawab dua pertanyaan. Pertama, konferensi mana yang paling aktif. Kedua, konferensi mana yang sering dipilih oleh peneliti yang sama.
+
+Pertanyaan kedua merupakan persoalan \textit{frequent pattern mining}. Jika setiap peneliti dipandang sebagai satu transaksi dan konferensi tempat ia memublikasikan karya dipandang sebagai item, kombinasi konferensi yang sering muncul bersama dapat dicari dengan algoritma Apriori \cite{agrawal1994} dan FP-Growth \cite{han2000}, lalu diturunkan menjadi \textit{association rules}. Pada laporan ini, popularitas konferensi diukur dari aktivitas publikasi, yaitu jumlah publikasi dan jumlah penulis unik.
+
+\section{Tujuan}
+Tujuan tugas besar ini adalah sebagai berikut.
+\begin{enumerate}
+\item Memahami struktur data DBLP dan melakukan \textit{preprocessing} terhadap publikasi konferensi periode 2015--2025 (\textit{Task} 1).
+\item Menganalisis popularitas konferensi berdasarkan jumlah publikasi dan jumlah penulis unik (\textit{Task} 2).
+\item Membentuk \textit{transactional database} berbasis penulis dan berbasis penulis-tahun (\textit{Task} 3).
+\item Mengimplementasikan Apriori dan FP-Growth untuk menemukan \textit{frequent itemsets} (\textit{Task} 4).
+\item Membangkitkan dan menganalisis \textit{association rules} antarkonferensi (\textit{Task} 5).
+\item Membandingkan performa Apriori dan FP-Growth (\textit{Task} 6).
+\item Menganalisis perubahan pola asosiasi antarperiode waktu (Bagian E).
+\end{enumerate}
+
+\section{Ruang Lingkup}
+\begin{enumerate}
+\item Data yang digunakan adalah \textit{XML dump} DBLP \cite{dblpxml} yang diunduh pada 19 November 2026.
+\item Jenis publikasi yang dianalisis hanya \texttt{inproceedings}, yaitu makalah konferensi dan \textit{workshop}.
+\item Periode publikasi yang dianalisis adalah 2015--2025.
+\item Atribut yang digunakan adalah \textit{key}, \textit{author}, \textit{title}, \textit{year}, dan \textit{booktitle}.
+\item Popularitas konferensi hanya diukur dari aktivitas publikasi, bukan dari sitasi atau kualitas.
+\end{enumerate}
+
+\section{Status Laporan}
+Laporan ini mencakup \textit{Task} 1 sampai \textit{Task} 3, yaitu pemahaman dan \textit{preprocessing} data, analisis popularitas konferensi, dan pembentukan \textit{transactional database}. Subbab hasil untuk \textit{Task} 4 sampai Bagian E belum diisi karena eksperimennya belum dijalankan, dan kesimpulan hanya memuat hal yang dapat dijawab dari tiga \textit{task} tersebut.
+
+\section{Sistematika Penulisan}
+\begin{enumerate}
+\item Bab~\ref{chap:pendahuluan} Pendahuluan berisi latar belakang, tujuan, ruang lingkup, status laporan, dan sistematika penulisan.
+\item Bab~\ref{chap:dataset} Deskripsi Dataset dan Dasar Teori berisi struktur data DBLP serta konsep \textit{frequent pattern mining} dan \textit{association rule mining}.
+\item Bab~\ref{chap:metodologi} Metodologi berisi alur kerja, aturan seleksi, tahapan \textit{preprocessing}, pengukuran popularitas, dan pembentukan transaksi.
+\item Bab~\ref{chap:hasil} Hasil dan Analisis berisi hasil setiap \textit{task} beserta interpretasinya.
+\item Bab~\ref{chap:kesimpulan} Kesimpulan berisi jawaban pertanyaan kesimpulan yang sudah dapat dijawab, keterbatasan, dan asumsi.
+\end{enumerate}
