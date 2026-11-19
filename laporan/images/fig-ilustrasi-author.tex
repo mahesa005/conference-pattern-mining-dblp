@@ -1,0 +1,33 @@
+\begin{tikzpicture}[font=\scriptsize,chip/.style={draw=none,fill=bluelight,rounded corners=3pt,minimum width=2.3cm,minimum height=0.5cm,inner sep=1pt}]
+\def\xa{2.0}\def\xb{5.2}\def\xc{8.4}\def\xd{11.6}
+% panel atas: author-based
+\node[chip] at (\xa,0) {CCTA};\node[chip] at (\xa,0.7) {ICCAD [iccad2]};\node[chip] at (\xa,1.4) {CCE};
+\node[chip] at (\xb,0) {CDC};\node[chip] at (\xb,0.7) {CCE};\node[chip] at (\xb,1.4) {VSS};
+\node[chip] at (\xc,0) {CCE};\node[chip] at (\xc,0.7) {CCE};
+\node[chip] at (\xd,0) {ACC};\node[chip] at (\xd,0.7) {ACC};
+\draw[bluemain,dashed,line width=1.1pt,rounded corners=3pt] (0.6,-0.45) rectangle (13.0,1.85);
+\node[anchor=west,text=bluemain,font=\scriptsize\bfseries] at (0.6,2.2) {\textit{Author-based}: 1 transaksi berisi 6 item};
+% panel bawah: author-year-based
+\begin{scope}[yshift=-4.4cm]
+\node[chip] at (\xa,0) {CCTA};\node[chip] at (\xa,0.7) {ICCAD [iccad2]};\node[chip] at (\xa,1.4) {CCE};
+\node[chip] at (\xb,0) {CDC};\node[chip] at (\xb,0.7) {CCE};\node[chip] at (\xb,1.4) {VSS};
+\node[chip] at (\xc,0) {CCE};\node[chip] at (\xc,0.7) {CCE};
+\node[chip] at (\xd,0) {ACC};\node[chip] at (\xd,0.7) {ACC};
+\draw[orangemain,dashed,line width=1.1pt,rounded corners=3pt] (0.65,-0.42) rectangle (3.35,1.82);
+\draw[orangemain,dashed,line width=1.1pt,rounded corners=3pt] (3.85,-0.42) rectangle (6.55,1.82);
+\draw[orangemain,dashed,line width=1.1pt,rounded corners=3pt] (7.05,-0.42) rectangle (9.75,1.12);
+\draw[orangemain,dashed,line width=1.1pt,rounded corners=3pt] (10.25,-0.42) rectangle (12.95,1.12);
+\node[anchor=west,text=orangemain,font=\scriptsize\bfseries] at (0.6,2.2) {\textit{Author-year-based}: 4 transaksi, satu per tahun};
+\foreach \x/\t in {\xa/{3 makalah, 3 item},\xb/{3 makalah, 3 item},\xc/{2 makalah, 1 item},\xd/{2 makalah, 1 item}}{\node[text=orangemain,font=\scriptsize\bfseries] at (\x,-0.8) {\t};}
+\foreach \x/\y in {\xa/2021,\xb/2022,\xc/2023,\xd/2024}{\node[inner sep=0pt] at (\x,-1.3) {\y};}
+\end{scope}
+\foreach \x/\y in {\xa/2021,\xb/2022,\xc/2023,\xd/2024}{\node[inner sep=0pt] at (\x,-0.85) {\y};}
+% legenda
+\node[anchor=west,font=\scriptsize\bfseries] at (0,-7.4) {Legenda:};
+\node[chip,minimum width=0.7cm] at (1.9,-7.4) {};
+\node[anchor=west] at (2.3,-7.4) {satu publikasi (nama \textit{venue})};
+\draw[bluemain,dashed,line width=1.1pt] (5.9,-7.4) -- (6.6,-7.4);
+\node[anchor=west] at (6.7,-7.4) {satu transaksi \textit{author-based}};
+\draw[orangemain,dashed,line width=1.1pt] (11.0,-7.4) -- (11.7,-7.4);
+\node[anchor=west] at (11.8,-7.4) {satu transaksi \textit{author-year}};
+\end{tikzpicture}

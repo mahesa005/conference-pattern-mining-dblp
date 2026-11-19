@@ -1,0 +1,330 @@
+\section{Pembentukan \textit{Transactional Database} (\textit{Task} 3)}
+\label{sec:hasil-t3}
+
+\subsection{Pembentukan dua \textit{database}}
+\label{sec:hasil-bentuk}
+Dua \textit{transactional database} dibentuk dari 7.870.902 pasangan makalah-penulis dengan aturan pada Subbab~\ref{sec:met-transaksi}. Pada \textit{author-based}, terbentuk 1.821.757 transaksi dengan 4.853.675 pasangan transaksi-item. Pada \textit{author-year-based}, terbentuk 4.085.594 transaksi dengan 6.497.515 pasangan transaksi-item. Berkas hasil dan cuplikan isinya ditunjukkan pada Lampiran~\ref{lamp:transaksi}.
+
+Gambar~\ref{fig:ilustrasi} memperlihatkan perbedaannya pada satu penulis nyata, yaitu penulis dengan 10 makalah di 6 \textit{venue} pada 2021--2024 (daftar makalahnya ada pada Tabel~\ref{tab:instance-paper}). Pada \textit{author-based}, penulis ini menjadi satu transaksi berisi enam item. Pada \textit{author-year-based}, penulis ini menjadi empat transaksi, satu per tahun, yang berisi tiga, tiga, satu, dan satu item. Dua makalah pada \textit{venue} yang sama dalam satu tahun, yaitu CCE pada 2023 dan ACC pada 2024, hanya menjadi satu item.
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-ilustrasi-author}
+\caption{Satu penulis menjadi satu transaksi pada \textit{author-based} dan empat transaksi pada \textit{author-year-based}}
+\label{fig:ilustrasi}
+\end{figure}
+
+\subsection{Sepuluh contoh transaksi}
+\label{sec:hasil-contoh}
+Contoh dipilih acak (\textit{seed} 42) untuk tiap ukuran transaksi sehingga rentang dari kecil sampai besar terlihat. Tabel~\ref{tab:contoh-a} menunjukkan sepuluh transaksi \textit{author-based} dan Tabel~\ref{tab:contoh-ay} sepuluh transaksi \textit{author-year-based}. Nama \textit{venue} yang panjang dipotong dan \textit{venue} dengan nama sama diberi kunci dalam kurung siku.
+
+\begin{table}[ht]
+\caption{Sepuluh contoh transaksi \textit{author-based}}
+\label{tab:contoh-a}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}rlrX@{}}
+\toprule
+\textbf{tid} & \textbf{Author} & \textbf{Item} & \textbf{Isi transaksi} \\
+\midrule
+338077 & Cheoljoong Park & 1 & ISSCC \\
+1245823 & Renann F. Brandao & 2 & LATINCOM, \textit{Image Perception, Observe}\ldots \\
+851248 & Satoru Isaka & 3 & CASE, ICDL, SMC \\
+466299 & Josef Guggemos & 4 & CSEDU, DeLFI, LTEC, RiE \\
+389961 & Solvita Berzisa & 5 & BIR, ICEIS, ICIST, PROFES, SAC \\
+808044 & Arun Kumar Thittai & 6 & HEALTHINF, EMBC, ISBI, \textit{Biomedical Applications i}\ldots, SMC, TENCON \\
+64961 & Wei Li 0022 & 8 & ACAI, ECCV, ICDE, ICIP, ICPADS, NSDI, PCM, SIGIR \\
+391158 & Thierry J. Chaussalet & 10 & BioInfoMed, CBMS, CIBCB, ECMS, HPCC/SmartCity/DSS, ICCS, ICIMTH, INISTA, \textit{IEEE Conf. on}\ldots \\
+78397 & Tomás Masarík & 15 & ESA, GD, ICALP, IJCAI, ISAAC, IWOCA, IPEC [iwpec], MFCS, PODC, EC, \ldots{} ($+$5 lagi) \\
+25570 & Haibo Zhang & 25 & WISA, ADHIP, AIAM, CACRE, CRC, CSPS, DSA, EEET, EIDWT, EMO, \ldots{} ($+$15 lagi) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[ht]
+\caption{Sepuluh contoh transaksi \textit{author-year-based}}
+\label{tab:contoh-ay}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}rlrrX@{}}
+\toprule
+\textbf{tid} & \textbf{Author} & \textbf{Tahun} & \textbf{Item} & \textbf{Isi transaksi} \\
+\midrule
+538906 & Hao Chen 0031 & 2018 & 1 & IJCNN \\
+2566923 & Dirk Väth & 2023 & 2 & ACL, EACL \\
+1626199 & Ayse Keles & 2024 & 3 & COMPSAC, EUVIP, EXPLIMED@ECAI \\
+758263 & Rik Eshuis & 2015 & 4 & ICSOC, PRO-VE, NetWordS, OTM \\
+627726 & Tom Mens & 2018 & 5 & BENEVOL, CDVE, ICSME, ICSR [icsr], MSR \\
+1534896 & Christian Haubelt & 2016 & 6 & ARCS, CPS Data, EICS, MCSoC, SAMOS, WiMob \\
+102172 & Lijie Wen 0001 & 2022 & 7 & COLING, EMNLP, ICASSP, IPDPS, KDD, NAACL-HLT, SIGIR \\
+711013 & Syed Ishtiaque Ahmed & 2020 & 8 & CHI, COMPSAC, CSEE\&T, COMPASS, \textit{Graphics Interface}, ICTD, ICWSM, PDC \\
+136050 & Javier Del Ser & 2020 & 10 & CEC, COMPSAC, CW, GECCO Companion, ICCS, IDEAL, IJCNN, ITSC, SOCO, SSCI \\
+44703 & Feng Li & 2016 & 14 & CDC, CLSW, GECCO Companion, HCC, ICASSP, ICIC, IGARSS, INFOCOM, ISNN, IJCRS, \ldots{} ($+$4 lagi) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Transaksi berukuran empat sampai delapan item umumnya berisi \textit{venue} dari bidang yang tampak berdekatan. Contoh 25 item (\textit{Haibo Zhang}) mencampur banyak \textit{venue} yang tidak seragam dan kemungkinan menggabungkan lebih dari satu orang yang bernama sama. Pada \textit{author-year-based}, penulis yang sama dapat muncul pada beberapa transaksi dengan tahun berbeda sehingga tahun menjadi bagian dari identitas transaksi. Transaksi besar jauh lebih langka pada \textit{author-year-based}: hanya 1.261 transaksi (0,03\%) berisi lebih dari 20 item, dibanding 17.533 (0,96\%) pada \textit{author-based}.
+
+\subsection{Jumlah transaksi, item unik, dan distribusi}
+\label{sec:hasil-statistik-tx}
+Tabel~\ref{tab:statistik-tx} merangkum statistik kedua \textit{database}. Kedua \textit{database} memuat seluruh 4.373 \textit{venue} sebagai item unik. \textit{Author-year-based} memiliki 2,24 kali lebih banyak transaksi karena penulis yang aktif beberapa tahun menjadi beberapa transaksi. Namun, jumlah pasangan transaksi-item hanya naik 1,34 kali sehingga transaksinya jauh lebih kecil.
+
+\begin{table}[ht]
+\caption{Statistik kedua \textit{transactional database}}
+\label{tab:statistik-tx}
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Statistik} & \textbf{\textit{Author-based}} & \textbf{\textit{Author-year-based}} \\
+\midrule
+\textbf{Jumlah transaksi} & \textbf{1.821.757} & \textbf{4.085.594} \\
+\textbf{Item unik} & \textbf{4.373} & \textbf{4.373} \\
+Pasangan transaksi-item & 4.853.675 & 6.497.515 \\
+Item per transaksi: minimum dan median & 1 dan 1 & 1 dan 1 \\
+Item per transaksi: rata-rata & 2,66 & 1,59 \\
+Item per transaksi: persentil 90 & 6 & 3 \\
+Item per transaksi: persentil 99 & 20 & 7 \\
+Item per transaksi: maksimum & 332 & 85 \\
+Transaksi berisi 1 item & 58,4\% & 71,0\% \\
+Transaksi berisi minimal 2 item & 41,6\% & 29,0\% \\
+Transaksi berisi minimal 3 item & 25,6\% & 12,8\% \\
+Kepadatan matriks & 0,06\% & 0,04\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Tabel~\ref{tab:distribusi-tx} dan Gambar~\ref{fig:komposisi} menunjukkan distribusi ukuran transaksi. Mayoritas transaksi hanya berisi satu item (58,4\% dan 71,0\%). Transaksi satu item tidak dapat membentuk pasangan, tetapi tetap masuk penyebut \textit{support}. Distribusinya berekor panjang, ditunjukkan rata-rata (2,66 dan 1,59) yang jauh di atas median (1). Pada \textit{author-year-based}, 93,4\% transaksi berukuran tiga item atau kurang. Transaksi terbesar pada keduanya berasal dari \textit{Yang Liu}, yaitu 332 item pada \textit{author-based} dan 85 item pada 2024, dan nama ini kemungkinan menggabungkan banyak orang. Matriks yang sangat jarang (0,06\% dan 0,04\%) menjadi alasan matriks \textit{dense} tidak dibuat.
+
+\begin{table}[ht]
+\caption{Distribusi jumlah item per transaksi}
+\label{tab:distribusi-tx}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{\textit{Author-based}}} & \multicolumn{2}{c}{\textbf{\textit{Author-year-based}}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+\textbf{Item per transaksi} & \textbf{Transaksi} & \textbf{\%} & \textbf{Transaksi} & \textbf{\%} \\
+\midrule
+1 & 1.063.902 & 58,40 & 2.902.494 & 71,04 \\
+2 & 291.766 & 16,02 & 661.150 & 16,18 \\
+3 & 140.852 & 7,73 & 253.308 & 6,20 \\
+4--5 & 139.310 & 7,65 & 177.548 & 4,35 \\
+6--10 & 117.066 & 6,43 & 78.662 & 1,93 \\
+11--20 & 51.328 & 2,82 & 11.171 & 0,27 \\
+lebih dari 20 & 17.533 & 0,96 & 1.261 & 0,03 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-komposisi-transaksi}
+\caption{Komposisi ukuran transaksi pada kedua \textit{database}}
+\label{fig:komposisi}
+\end{figure}
+
+\subsection{Jumlah makalah di balik satu transaksi}
+\label{sec:hasil-npaper}
+Seorang penulis dapat menerbitkan beberapa makalah pada satu tahun, dan hal itu tidak terlihat pada transaksinya. Pada \textit{author-year-based}, setiap tahun menjadi transaksi terpisah sehingga 2024 dan 2025 menjadi dua transaksi. Pada \textit{author-based}, seluruh tahun digabung dan tahun tidak tersimpan. Dalam satu transaksi, beberapa makalah pada \textit{venue} yang sama hanya menjadi satu item, dan beberapa makalah pada \textit{venue} berbeda menjadi beberapa item. Jumlah makalah tidak tersimpan pada transaksi, tetapi tersimpan pada kolom \texttt{n\_paper} tabel indeks dan dapat ditelusuri per makalah dari \texttt{paper\_author.parquet}. Tabel~\ref{tab:npaper} mengukur seberapa besar hal ini terjadi.
+
+\begin{table}[ht]
+\caption{Jumlah makalah di balik satu transaksi}
+\label{tab:npaper}
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Ukuran} & \textbf{\textit{Author-based}} & \textbf{\textit{Author-year-based}} \\
+\midrule
+Makalah per transaksi: median & 1 & 1 \\
+Makalah per transaksi: rata-rata & 4,32 & 1,93 \\
+Makalah per transaksi: maksimum & 725 & 122 \\
+Transaksi dengan lebih dari 1 makalah & 48,6\% & 35,7\% \\
+Transaksi dengan lebih dari 1 makalah tetapi hanya 1 item & 7,0\% & 6,7\% \\
+Transaksi dengan makalah lebih banyak daripada item & 29,9\% & 17,4\% \\
+\textbf{Makalah yang tidak menambah item baru} & \textbf{38,3\%} & \textbf{17,4\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Sifat ini adalah bawaan model transaksi standar (ada atau tidak ada) dan sesuai bunyi spesifikasi, yaitu daftar konferensi tempat penulis memublikasikan makalah. Keuntungannya, \textit{support} menjadi ukuran berapa banyak penulis (atau pasangan penulis dan tahun) yang menerbitkan di sebuah \textit{venue}, bukan berapa banyak makalah sehingga penulis yang sangat produktif pada satu \textit{venue} tidak mendominasi hasil. Kerugiannya, kekuatan keterkaitan hilang karena penulis dengan satu makalah di ICML dan satu di NeurIPS dihitung sama dengan penulis inti yang menerbitkan puluhan makalah di keduanya. Model himpunan tetap dipakai dan hal ini dicatat sebagai keterbatasan. Contohnya pada Gambar~\ref{fig:ilustrasi}: penulis tersebut menerbitkan dua makalah pada 2023 dan dua pada 2024, tetapi transaksi tiap tahun itu hanya berisi satu item karena kedua makalah berada pada \textit{venue} yang sama.
+
+\subsection{\textit{Support} item dan ambang \textit{min\_sup}}
+\label{sec:hasil-support-item}
+Dua ukuran berikut tidak diminta langsung, tetapi menentukan rancangan \textit{Task} 4. Tabel~\ref{tab:item-frequent} menunjukkan banyaknya item yang lolos tiap \textit{min\_sup}.
+
+\begin{table}[ht]
+\caption{Item \textit{frequent} pada tiap \textit{min\_sup}}
+\label{tab:item-frequent}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{\textit{Author-based}}} & \multicolumn{2}{c}{\textbf{\textit{Author-year-based}}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+\textbf{\textit{min\_sup}} & \textbf{Min count} & \textbf{Item} & \textbf{Min count} & \textbf{Item} \\
+\midrule
+0,1\% & 1.822 & 574 & 4.086 & 298 \\
+0,5\% & 9.109 & 66 & 20.428 & 42 \\
+1\% & 18.218 & 29 & 40.856 & 17 \\
+2\% & 36.436 & 6 & 81.712 & 2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-support-item}
+\caption{\textit{Support} lima belas \textit{venue} teratas pada kedua \textit{database}}
+\label{fig:support-item}
+\end{figure}
+
+\textit{Support} setiap \textit{venue} lebih rendah pada \textit{author-year-based} (Gambar~\ref{fig:support-item}) karena penyebutnya naik 2,24 kali, sedangkan jumlah transaksi yang memuat \textit{venue} naik lebih sedikit. NeurIPS memiliki \textit{support} tertinggi, yaitu 3,17\% pada \textit{author-based} dan 2,34\% pada \textit{author-year-based}, disusul CVPR (2,62\% dan 2,07\%), AAAI (2,55\% dan 1,72\%), ICASSP (2,31\% dan 1,64\%), dan EMBC (2,16\% dan 1,38\%). Ambang yang sama meloloskan lebih sedikit item pada \textit{author-year-based}, dan ambang absolutnya lebih tinggi (4.086 dibanding 1.822 transaksi pada 0,1\%). Hanya 13,1\% \textit{venue} (574 dari 4.373) yang lolos \textit{min\_sup} 0,1\%, dan hanya enam yang lolos 2\%. Karena pasangan \textit{venue} teratas hanya memiliki \textit{support} 1,02\% (Tabel~\ref{tab:top-pasangan}), \textit{min\_sup} 2\% diperkirakan tidak menghasilkan \textit{itemset} berukuran dua pada \textit{Task} 4. Ini perkiraan yang harus dikonfirmasi oleh hasil \textit{mining}.
+
+\subsection{Beban kombinasi}
+\label{sec:hasil-beban}
+Beban kombinasi $B = \sum_{t} \binom{|t|}{2}$ adalah jumlah pasangan item yang dapat dibentuk dari seluruh transaksi. Ukuran ini kasar dan bukan waktu proses. Tabel~\ref{tab:beban} menunjukkan bahwa beban terkonsentrasi pada transaksi terbesar dan bahwa pemangkasan item di bawah \textit{min\_sup} memotong beban dengan tajam.
+
+\begin{table}[ht]
+\caption{Beban kombinasi sebelum dan sesudah pemangkasan item}
+\label{tab:beban}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X rr@{}}
+\toprule
+ & \textbf{\textit{Author-based}} & \textbf{\textit{Author-year-based}} \\
+\midrule
+Beban total (pasangan) & 21.918.442 & 5.919.719 \\
+Transaksi terbesar tunggal (pasangan) & 54.946 & 3.570 \\
+Porsi dari 0,1\% transaksi terbesar & 27,8\% & 14,5\% \\
+Porsi dari 1\% transaksi terbesar & 56,5\% & 39,5\% \\
+Porsi dari 10\% transaksi terbesar & 91,7\% & 83,1\% \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Beban setelah pemangkasan (transaksi dengan minimal 2 item \textit{frequent})}} \\
+\textit{min\_sup} 0,1\% & 10.214.657 (536.543) & 2.403.502 (618.835) \\
+\textit{min\_sup} 0,5\% & 2.301.565 (239.256) & 777.296 (253.179) \\
+\textit{min\_sup} 1\% & 1.045.018 (159.627) & 300.337 (134.303) \\
+\textit{min\_sup} 2\% & 82.850 (42.103) & 14.485 (14.485) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Sebanyak 0,1\% transaksi terbesar (sekitar 1.800) menanggung 27,8\% beban \textit{author-based}, dan 10\% terbesar menanggung 91,7\%. \textit{Author-year-based} memiliki beban 3,7 kali lebih rendah dengan konsentrasi yang lebih rendah. Pemangkasan item mengurangi beban \textit{author-based} dari 21,9 juta menjadi 10,2 juta pada 0,1\% dan 82.850 pada 2\%. Dugaan bahwa Apriori paling berat pada \textit{author-based} dengan \textit{min\_sup} 0,1\% harus dibuktikan pada \textit{Task} 6.
+
+\subsection{Perbedaan kedua representasi}
+\label{sec:hasil-banding-repr}
+\subsubsection{Perbedaan makna}
+Pada \textit{author-based}, dua \textit{venue} dianggap muncul bersama jika seorang penulis pernah menerbitkan di keduanya kapan saja pada 2015--2025. Pertanyaan yang dijawabnya adalah \textit{venue} apa saja yang dipilih penulis yang sama selama sebelas tahun. Pada \textit{author-year-based}, keduanya harus diterbitkan pada tahun yang sama sehingga pertanyaan yang dijawabnya adalah \textit{venue} apa yang dipilih bersamaan oleh penulis yang sama pada tahun yang sama. Pada penulis contoh (Gambar~\ref{fig:ilustrasi}), \textit{author-based} menyediakan 15 pasangan \textit{venue} yang dapat muncul bersama, sedangkan \textit{author-year-based} hanya enam. Selisih sembilan pasangan adalah pasangan lintas tahun, misalnya CCTA pada 2021 dengan ACC pada 2024. Hal ini bukan aturan umum karena pasangan yang berulang pada beberapa tahun dihitung berulang pada \textit{author-year-based}.
+
+\subsubsection{Perbandingan pada seluruh \textit{database}}
+Pasangan dihitung hanya antar \textit{venue} dengan \textit{support} minimal 0,1\% pada \textit{author-based} (574 \textit{venue}, 164.451 pasangan yang mungkin). Ini pratinjau perbandingan, bukan \textit{mining} sebenarnya (\textit{Task} 4). Tabel~\ref{tab:banding-repr} merangkum hasilnya dan Tabel~\ref{tab:top-pasangan} menunjukkan sepuluh pasangan teratas.
+
+\begin{table}[ht]
+\caption{Perbandingan pasangan \textit{venue} pada kedua representasi}
+\label{tab:banding-repr}
+\small
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Ukuran} & \textbf{Nilai} \\
+\midrule
+Pasangan yang muncul sedikitnya sekali, \textit{author-based} & 157.402 \\
+Pasangan yang muncul sedikitnya sekali, \textit{author-year-based} & 120.937 (hilang sekitar 23\%) \\
+Median rasio \textit{support} (\textit{author-year} per \textit{author}), 100 pasangan teratas & 0,29 \\
+Median rasio jumlah transaksi, 100 pasangan teratas & 0,65 \\
+Rasio jumlah transaksi \textit{database} & 2,24 \\
+Irisan 20 pasangan teratas & 18 dari 20 \\
+Korelasi peringkat Spearman & 0,892 \\
+Pasangan teratas dengan jumlah transaksi \textit{author-year} minimal sama & 4 dari 100 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Sepuluh pasangan \textit{venue} teratas pada \textit{author-based} dan padanannya pada \textit{author-year-based}}
+\label{tab:top-pasangan}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X rrrrrr@{}}
+\toprule
+\textbf{Pasangan} & \textbf{Trans. (A)} & \textbf{\textit{Support} (A)} & \textbf{Trans. (AY)} & \textbf{\textit{Support} (AY)} & \textbf{Rank AY} & \textbf{Rasio trans.} \\
+\midrule
+ICML + NeurIPS & 18.503 & 1,02\% & 17.719 & 0,43\% & 1 & 0,96 \\
+ICLR + NeurIPS & 17.852 & 0,98\% & 16.438 & 0,40\% & 2 & 0,92 \\
+AAAI + NeurIPS & 15.973 & 0,88\% & 12.281 & 0,30\% & 6 & 0,77 \\
+CVPR + NeurIPS & 15.640 & 0,86\% & 14.485 & 0,35\% & 4 & 0,93 \\
+CVPR + ICCV & 15.441 & 0,85\% & 12.359 & 0,30\% & 5 & 0,80 \\
+ACL + EMNLP & 14.557 & 0,80\% & 15.232 & 0,37\% & 3 & 1,05 \\
+CVPR + ECCV & 13.752 & 0,75\% & 9.978 & 0,24\% & 9 & 0,73 \\
+ICLR + ICML & 12.947 & 0,71\% & 11.110 & 0,27\% & 7 & 0,86 \\
+AAAI + CVPR & 12.169 & 0,67\% & 9.958 & 0,24\% & 10 & 0,82 \\
+ICRA + IROS & 11.860 & 0,65\% & 9.502 & 0,23\% & 11 & 0,80 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-support-pasangan}
+\caption{\textit{Support} sepuluh pasangan \textit{venue} teratas pada kedua representasi}
+\label{fig:support-pasangan}
+\end{figure}
+
+\textit{Support} pasangan turun tajam pada \textit{author-year-based} (median 0,29 kali; Gambar~\ref{fig:support-pasangan}). Penurunan ini hampir seluruhnya berasal dari penyebut. Jumlah transaksi yang memuat pasangan hanya turun ke 0,65 kali, sedangkan jumlah transaksi \textit{database} naik 2,24 kali (0,65 dibagi 2,24 sama dengan sekitar 0,29). Jadi, \textit{min\_sup} yang sama berarti ambang absolut yang lebih tinggi pada \textit{author-year-based}. Urutan relatifnya terjaga: 18 dari 20 pasangan teratas sama dan korelasi peringkatnya 0,892, dengan ICML+NeurIPS tetap peringkat satu dan ICLR+NeurIPS peringkat dua. Perubahan peringkat memperlihatkan efek representasi. ACL+EMNLP naik dari peringkat 6 ke 3 dan jumlah transaksinya bahkan 1,05 kali \textit{author-based}, karena penulis yang konsisten menerbitkan di keduanya setiap tahun dihitung berulang. AAAI+NeurIPS turun dari peringkat 3 ke 6. Hanya 4 dari 100 pasangan teratas yang mencapai rasio minimal 1.
+
+\subsubsection{Kasus ekstrem: konferensi dua tahunan berselang}
+ICCV dan ECCV adalah konferensi dua tahunan yang berselang tahun sehingga tidak pernah diselenggarakan pada tahun yang sama (Tabel~\ref{tab:iccv}). Pada \textit{author-based}, 27.077 transaksi memuat ICCV, 23.591 memuat ECCV, dan 10.051 memuat keduanya. Pada \textit{author-year-based}, tidak ada satu pun transaksi yang memuat keduanya. Asosiasi nyata antara kedua komunitas ini tidak dapat terdeteksi sama sekali pada \textit{author-year-based}. Ini keterbatasan struktural, bukan kebetulan data.
+
+\begin{table}[ht]
+\caption{Transaksi \textit{author-year-based} yang memuat ICCV dan ECCV per tahun}
+\label{tab:iccv}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lrrrrrrrrrrr@{}}
+\toprule
+ & \textbf{2015} & \textbf{2016} & \textbf{2017} & \textbf{2018} & \textbf{2019} & \textbf{2020} & \textbf{2021} & \textbf{2022} & \textbf{2023} & \textbf{2024} & \textbf{2025} \\
+\midrule
+ICCV & 1.543 & 0 & 1.959 & 0 & 3.627 & 0 & 5.971 & 0 & 8.439 & 0 & 15.260 \\
+ECCV & 0 & 1.986 & 0 & 3.770 & 0 & 6.001 & 0 & 7.869 & 0 & 11.930 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Kelebihan dan keterbatasan untuk \textit{frequent pattern mining}}
+\label{sec:hasil-kelebihan}
+Tabel~\ref{tab:kelebihan} merangkum kelebihan dan keterbatasan kedua representasi untuk \textit{frequent pattern mining}.
+
+\begin{table}[ht]
+\caption{Kelebihan dan keterbatasan kedua representasi}
+\label{tab:kelebihan}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}p{2.2cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+ & \textbf{\textit{Author-based}} & \textbf{\textit{Author-year-based}} \\
+\midrule
+\textbf{Kelebihan} &
+1. Transaksi lebih kaya: 41,6\% berisi minimal 2 item, rata-rata 2,66 item.\newline
+2. \textit{Support} lebih tinggi sehingga lebih banyak item lolos ambang yang sama (574 item pada 0,1\% dibanding 298).\newline
+3. Satu penulis satu transaksi sehingga transaksi saling bebas dan mudah ditafsirkan sebagai profil \textit{venue} seorang penulis.\newline
+4. Menangkap asosiasi lintas waktu, termasuk konferensi dua tahunan berselang (ICCV dan ECCV: 10.051 transaksi) &
+1. Mengikat kemunculan bersama pada waktu yang sama sehingga mengurangi asosiasi semu akibat perpindahan minat dari tahun ke tahun.\newline
+2. Transaksi kecil dan ekor pendek (maksimum 85 item) sehingga beban kombinasi 3,7 kali lebih rendah (5,9 juta dibanding 21,9 juta pasangan).\newline
+3. Memiliki dimensi tahun sehingga dapat dipotong per periode untuk analisis temporal.\newline
+4. Penulis yang konsisten diperhitungkan berulang sehingga mengukur kebiasaan publikasi (contoh ACL dan EMNLP) \\
+\midrule
+\textbf{Keterbatasan} &
+1. Tidak ada dimensi waktu: \textit{venue} yang dipakai pada fase berbeda dianggap muncul bersama.\newline
+2. Beban terkonsentrasi pada transaksi besar (0,1\% transaksi menanggung 27,8\% beban), dan nama umum yang menggabungkan banyak orang (\textit{Yang Liu}, 332 item) menghasilkan asosiasi semu.\newline
+3. 58,4\% transaksi hanya satu item dan tidak berkontribusi pada pasangan.\newline
+4. Tidak dapat dipakai langsung untuk membandingkan perubahan antarperiode &
+1. 71,0\% transaksi berisi satu item dan hanya 29,0\% yang dapat membentuk pasangan sehingga \textit{support} pasangan jauh lebih rendah (median 0,29 kali) dan lebih sedikit pola lolos ambang (dua item pada 2\%).\newline
+2. Transaksi tidak saling bebas: penulis aktif muncul pada banyak transaksi dan mendapat bobot lebih besar.\newline
+3. Kehilangan pasangan lintas tahun (sekitar 23\% pasangan tidak pernah muncul), dan konferensi dua tahunan berselang tidak dapat berpasangan (ICCV dan ECCV: 0 transaksi).\newline
+4. Data 2025 tidak lengkap sehingga transaksi periode terakhir bias \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Kedua representasi menjawab pertanyaan yang berbeda, dan keduanya valid. Untuk pertanyaan \textit{Task} 4, yaitu kombinasi konferensi yang sering muncul bersama dalam riwayat publikasi penulis, \textit{author-based} lebih sesuai karena riwayat yang dimaksud mencakup seluruh periode. \textit{Author-year-based} lebih sesuai untuk analisis temporal (Bagian E) karena tahun menjadi bagian transaksi dan periode dapat dipisahkan. Pada kedua representasi, mayoritas transaksi hanya berisi satu item dan sebagian kecil transaksi besar menanggung sebagian besar beban kombinasi. Hal ini penting untuk \textit{Task} 4 karena \textit{min\_sup} dihitung terhadap seluruh transaksi dan waktu proses kemungkinan didominasi transaksi besar.
+
+\subsection{Jawaban pertanyaan \textit{Task} 3}
+\label{sec:jawab-t3}
+\textbf{Pembentukan database.} Dua \textit{transactional database} dibentuk dari 7.870.902 pasangan makalah-penulis dengan \textit{venue} sebagai item. Pada \textit{author-based}, setiap transaksi mewakili satu penulis dan berisi himpunan \textit{venue} tempat ia menerbitkan makalah selama 2015--2025 sehingga terbentuk 1.821.757 transaksi. Pada \textit{author-year-based}, setiap transaksi mewakili satu kombinasi penulis dan tahun dan berisi himpunan \textit{venue} pada tahun itu sehingga terbentuk 4.085.594 transaksi. Kedua \textit{database} memuat 4.373 \textit{venue} sebagai item unik.
+
+\textbf{Distribusi ukuran transaksi.} Mayoritas transaksi hanya berisi satu item (58,4\% dan 71,0\%) dengan median satu item pada keduanya. Rata-rata item per transaksi adalah 2,66 dan 1,59, persentil ke-99 adalah 20 dan 7 item, dan transaksi terbesar berisi 332 dan 85 item.
+
+\textbf{Perbedaan representasi.} \textit{Support} pasangan \textit{venue} lebih rendah pada \textit{author-year-based} (median 0,29 kali), terutama karena penyebutnya 2,24 kali lebih besar. Sekitar 23\% pasangan \textit{venue} pada \textit{author-based} tidak pernah muncul pada \textit{author-year-based}, dan konferensi dua tahunan berselang seperti ICCV dan ECCV tidak dapat berpasangan sama sekali. Urutan pasangan teratas relatif terjaga, dengan 18 dari 20 pasangan teratas sama dan korelasi peringkat 0,892.
