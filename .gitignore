@@ -1,0 +1,21 @@
+# Data dan keluaran notebook (dibagikan terpisah sebagai zip)
+data/
+outputs/
+
+# Artefak kompilasi LaTeX
+laporan/*.aux
+laporan/*.bbl
+laporan/*.bcf
+laporan/*.blg
+laporan/*.lof
+laporan/*.lot
+laporan/*.log
+laporan/*.out
+laporan/*.toc
+laporan/*.run.xml
+laporan/*.pdf
+
+# Python dan Jupyter
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
