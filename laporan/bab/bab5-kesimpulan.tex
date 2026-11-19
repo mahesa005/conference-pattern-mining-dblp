@@ -1,0 +1,29 @@
+\chapter{KESIMPULAN}
+\label{chap:kesimpulan}
+
+\section{Jawaban Pertanyaan Kesimpulan}
+Pertanyaan kesimpulan pada spesifikasi tugas didasarkan pada seluruh eksperimen. Tiga \textit{task} pertama sudah dikerjakan sehingga hanya sebagian pertanyaan yang dapat dijawab saat ini. Jawaban sisanya akan dilengkapi setelah \textit{Task} 4 sampai Bagian E selesai.
+
+\begin{enumerate}
+\item \textbf{Konferensi dengan popularitas publikasi tertinggi.} NeurIPS, dengan 25.455 makalah (1,27\% dari 1.997.244 publikasi pada 2015--2025) dan 57.800 penulis unik. NeurIPS tetap berada di peringkat pertama ketika \textit{workshop} dan acara satelit dikeluarkan dari perhitungan. Peringkat berikutnya, yaitu CVPR dan ICASSP, bergantung pada definisi: CVPR turun ke peringkat enam jika \textit{CVPR Workshops} dikeluarkan.
+\item \textbf{Asosiasi konferensi paling populer dengan konferensi lain.} Belum dapat dijawab karena \textit{frequent itemsets} dan \textit{association rules} belum dihitung (\textit{Task} 4 dan \textit{Task} 5). Bukti awal dari pratinjau pada Subbab~\ref{sec:hasil-banding-repr} menunjukkan bahwa NeurIPS muncul pada empat dari sepuluh pasangan teratas, tetapi ini belum merupakan hasil \textit{mining}.
+\item \textbf{Kombinasi konferensi yang paling sering muncul bersama.} Belum dapat dijawab secara resmi. Pratinjau pada \textit{author-based} menunjukkan pasangan ICML dan NeurIPS sebagai kandidat teratas (18.503 penulis, \textit{support} 1,02\%), disusul ICLR dan NeurIPS (17.852), serta AAAI dan NeurIPS (15.973).
+\item \textbf{\textit{Rule} dengan \textit{lift} tertinggi.} Belum dapat dijawab (\textit{Task} 5).
+\item \textbf{Perbedaan pola pada \textit{author-based} dan \textit{author-year-based}.} Sebagian sudah dapat dijawab dari pratinjau pasangan. Kedua representasi menjawab pertanyaan yang berbeda. \textit{Support} pasangan pada \textit{author-year-based} median 0,29 kali \textit{author-based}, sekitar 23\% pasangan tidak pernah muncul, dan konferensi dua tahunan berselang seperti ICCV dan ECCV tidak dapat berpasangan sama sekali (10.051 transaksi pada \textit{author-based}, nol pada \textit{author-year-based}). Urutan pasangan teratas relatif terjaga (18 dari 20 sama, korelasi peringkat 0,892). Jawaban lengkap menunggu hasil \textit{mining}.
+\item \textbf{Algoritma dengan performa terbaik.} Belum dapat dijawab (\textit{Task} 6).
+\item \textbf{Pengetahuan atau \textit{insight} utama.} Sementara ini, popularitas terkonsentrasi dan makin terkonsentrasi pada konferensi kecerdasan buatan: porsi sepuluh konferensi teratas naik dari 7,0\% pada 2015 menjadi 11,7\% pada 2024, dan NeurIPS tumbuh 10,2 kali. Sebagian kecil penulis menanggung sebagian besar aktivitas (8,3\% penulis menyumbang 52,6\% pasangan makalah-penulis), dan pilihan representasi transaksi menentukan jenis pola yang dapat ditemukan. Kesimpulan akhir menunggu hasil \textit{mining}.
+\end{enumerate}
+
+\section{Keterbatasan dan Asumsi}
+\begin{enumerate}
+\item \textit{Venue} diambil dari segmen kedua \textit{key} sehingga \textit{workshop} dan acara pendamping ikut terhitung sebagai konferensi induknya (7,2\% makalah menurut \textit{booktitle}). Dampaknya besar pada CVPR, CHI, dan ICC (Tabel~\ref{tab:sensitivitas}).
+\item \textit{Record} \texttt{inproceedings} yang \textit{key}-nya bukan \texttt{conf/} (3.161 makalah, 0,16\%) dibuang, termasuk beberapa prosiding \textit{workshop} kecil.
+\item Data 2025 tidak lengkap karena konferensi dua tahunan genap dan konferensi tahunan yang belum terindeks sehingga tidak dipakai menghitung tren dan membuat transaksi \textit{author-year-based} pada periode terakhir bias.
+\item Nama penulis umum tanpa sufiks disambiguasi dapat mewakili banyak orang (\textit{Yang Liu} tercatat pada 332 \textit{venue}), dan 7.573 kelompok nama yang hanya berbeda diakritik atau huruf besar-kecil tidak digabung. Akibatnya, penulis unik cenderung terhitung lebih rendah dan sebagian transaksi menjadi terlalu besar.
+\item Aturan duplikat berdasarkan judul, tahun, dan \textit{venue} dapat membuang sebagian makalah berbeda yang berjudul generik (paling banyak 421 baris, 0,02\% data).
+\item ICLR tidak tercatat pada DBLP untuk 2015 dan 2016 sehingga dikeluarkan dari \textit{heatmap} indeks.
+\item Pengenalan acara satelit lewat kata kunci \textit{booktitle} adalah pendekatan. Beberapa acara resmi, misalnya \textit{CHI Extended Abstracts}, dapat dianggap bagian konferensi utama.
+\item Model transaksi berupa himpunan tidak menyimpan jumlah makalah per \textit{venue}: 38,3\% makalah pada \textit{author-based} dan 17,4\% pada \textit{author-year-based} tidak menambah item baru (Subbab~\ref{sec:hasil-npaper}).
+\item Pratinjau perbandingan pasangan hanya mencakup \textit{venue} dengan \textit{support} minimal 0,1\% pada \textit{author-based} (574 \textit{venue}) dan belum merupakan hasil \textit{mining}.
+\item Popularitas hanya diukur dari aktivitas publikasi, bukan dari sitasi atau kualitas. Pengelompokan bidang konferensi pada narasi adalah pengetahuan umum, bukan atribut dari data DBLP.
+\end{enumerate}
