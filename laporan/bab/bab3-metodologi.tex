@@ -1,0 +1,191 @@
+\chapter{METODOLOGI}
+\label{chap:metodologi}
+
+\section{Alur Kerja}
+\label{sec:alur}
+Setiap tahap dikerjakan pada \textit{notebook} tersendiri agar masukan, keluaran, dan tanggung jawabnya jelas serta mudah diperiksa. Setiap tahap menyimpan hasilnya ke disk dan tahap berikutnya hanya membaca hasil tersebut. Gambar~\ref{fig:alur-kerja} memperlihatkan alur datanya, dan Tabel~\ref{tab:notebook} merinci isi tiap \textit{notebook}.
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-alur-kerja}
+\caption{Alur data dan \textit{notebook} dari \textit{dump} XML sampai \textit{transactional database}}
+\label{fig:alur-kerja}
+\end{figure}
+
+\begin{table}[ht]
+\caption{Pembagian \textit{notebook} dan \textit{task}}
+\label{tab:notebook}
+\small
+\begin{tabularx}{\textwidth}{@{}p{3.3cm}p{2.4cm}X@{}}
+\toprule
+\textbf{\textit{Notebook}} & \textbf{\textit{Task}} & \textbf{Isi} \\
+\midrule
+\texttt{00\_extract} & Pendukung & Ekstraksi XML menjadi tabel mentah \\
+\texttt{01\_eda} & 1 dan 2 & Eksplorasi, \textit{preprocessing}, statistik, dan popularitas konferensi \\
+\texttt{02\_transactions} & 3 & Pembentukan dua \textit{transactional database} \\
+\texttt{03\_apriori} & 4 & Apriori pada \textit{author-based} (belum dikerjakan) \\
+\texttt{04\_fpgrowth} & 4 & FP-Growth dan validasi \texttt{mlxtend} (belum dikerjakan) \\
+\texttt{05\_rules} & 5 & \textit{Association rules} (belum dikerjakan) \\
+\texttt{06\_performance} & 6 & Perbandingan Apriori dan FP-Growth (belum dikerjakan) \\
+\texttt{07\_temporal} & E & Analisis temporal pada \textit{author-year-based} (belum dikerjakan) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Ekstraksi Data}
+\label{sec:ekstraksi}
+Berkas \texttt{dblp.xml.gz} dibaca langsung tanpa dekompresi memakai \texttt{lxml.etree.iterparse} secara \textit{streaming}, dan setiap elemen dilepas dari memori setelah diproses. DTD dimuat agar entitas karakter terbaca sebagai huruf yang benar. Proses ini memerlukan 102 detik. Jumlah \textit{record} setiap jenis dihitung untuk keperluan deskripsi, tetapi hanya \textit{record} \texttt{inproceedings} dengan tahun 2015--2025 yang disimpan, yaitu 2.004.202 \textit{record} pada \texttt{inproceedings\_raw.parquet}. Hasil ekstraksi diverifikasi identik dengan hasil skrip sebelumnya.
+
+\section{Aturan Seleksi Data}
+\label{sec:seleksi}
+Tiga syarat harus terpenuhi sekaligus.
+\begin{enumerate}
+\item \textit{Tag} \texttt{<inproceedings>}.
+\item \textit{Key} berawalan \texttt{conf/}.
+\item Tahun terbit pada 2015--2025.
+\end{enumerate}
+Syarat pertama dan ketiga berasal dari spesifikasi tugas, sedangkan syarat kedua ditambahkan oleh kami. Menurut dokumentasi DBLP, \texttt{conf/*} adalah definisi DBLP untuk makalah konferensi atau \textit{workshop}. \textit{Record} \texttt{inproceedings} yang \textit{key}-nya bukan \texttt{conf/} berjumlah 3.161 setelah makalah tanpa penulis dibuang. Seluruhnya berawalan \texttt{journals/corr} (2.734), \texttt{journals/entcs} (387), dan \texttt{books/sp} (40).
+
+Syarat tersebut ditambahkan karena tiga alasan. Pertama, isinya prosiding acara kecil (misalnya MFPS, QPL, GandALF, dan TARK) yang diarsipkan DBLP pada seri jurnal. Terdapat sekitar 150 acara berbeda dan yang terbesar hanya memuat 187 makalah. Kedua, \textit{min\_sup} terendah (0,1\% dari 1,82 juta penulis) setara sekitar 1.800 penulis per \textit{venue} sehingga tidak ada acara tersebut yang dapat menjadi \textit{frequent itemset}. Ketiga, jika dipertahankan, 2.734 makalah dari 130 acara berbeda akan menyatu menjadi satu \textit{venue} palsu \texttt{corr}. Sebagian dari 3.161 \textit{record} ini memang prosiding konferensi atau \textit{workshop} kecil sehingga sebagian kecil \textit{workshop} tidak terambil. Dampaknya terhadap hasil \textit{mining} diperkirakan tidak ada.
+
+\section{\textit{Preprocessing}}
+\label{sec:preprocessing}
+Tabel~\ref{tab:prepro} merangkum tahapan \textit{preprocessing}, butir spesifikasi yang dijawabnya, dan alasannya. Setiap tahap dikerjakan pada salinan data mentah dan jumlah makalah yang tersisa dicatat per tahap.
+
+\begin{table}[ht]
+\caption{Tahapan \textit{preprocessing} beserta alasannya}
+\label{tab:prepro}
+\small
+\begin{tabularx}{\textwidth}{@{}p{2.9cm}XX@{}}
+\toprule
+\textbf{Tahap} & \textbf{Perlakuan} & \textbf{Alasan} \\
+\midrule
+1. Konsistensi tahun & Konversi teks ke bilangan bulat dan validasi rentang 2015--2025 & Nilai \texttt{year} berupa teks pada XML \\
+2. \textit{Missing values} & Buang makalah tanpa penulis; kolom lain dibiarkan & Makalah tanpa penulis tidak dapat masuk transaksi dan umumnya bukan makalah. \textit{Booktitle} dan \textit{crossref} tidak dipakai karena \textit{venue} diambil dari \textit{key} \\
+3. Seleksi dan normalisasi \textit{venue} & Hanya \textit{key} \texttt{conf/}; \textit{venue} = segmen kedua \textit{key} & \texttt{conf/*} adalah konferensi atau \textit{workshop}; \textit{booktitle} tidak konsisten (Subbab~\ref{sec:key-booktitle}) \\
+4. Duplikat & Buang \textit{key} ganda, lalu judul, tahun, dan \textit{venue} ganda & Satu makalah tidak boleh terhitung dua kali \\
+5. Normalisasi penulis & Normalisasi Unicode NFKC dan perapian spasi; sufiks DBLP dipertahankan; pecah per penulis & Menyeragamkan nama tanpa menggabungkan orang berbeda. Menghapus sufiks justru menggabungkan orang yang berbeda \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Aturan duplikat memakai kombinasi judul, tahun, dan \textit{venue}, tanpa daftar penulis. Jika daftar penulis ikut menjadi kunci, baris yang dibuang berjumlah 1.127 sehingga selisihnya hanya sekitar 415 baris (0,02\% data). Aturan yang lebih longgar dipertahankan karena dampaknya sangat kecil (Subbab~\ref{sec:hasil-prepro}). Risikonya adalah terbuangnya makalah berbeda yang berjudul generik, dan hal ini dicatat sebagai keterbatasan.
+
+\section{Format Penyimpanan}
+\label{sec:format}
+Tiga tabel disimpan dalam format Parquet, sedangkan tabel agregat kecil disimpan sebagai CSV. Tabel~\ref{tab:parquet} merangkum ketiga tabel tersebut.
+
+\begin{table}[ht]
+\caption{Tabel Parquet hasil ekstraksi dan \textit{preprocessing}}
+\label{tab:parquet}
+\small
+\begin{tabularx}{\textwidth}{@{}p{3.7cm}p{3.3cm}rX@{}}
+\toprule
+\textbf{Tabel} & \textbf{Satu baris} & \textbf{Baris} & \textbf{Dipakai untuk} \\
+\midrule
+\texttt{raw} & 1 makalah & 2.004.202 & Memahami kondisi sebelum dibersihkan \\
+\texttt{clean} & 1 makalah & 1.997.244 & Perhitungan per makalah (per tahun dan per \textit{venue}) \\
+\texttt{paper\_author} & 1 pasangan makalah-penulis & 7.870.902 & Perhitungan per penulis dan pembentukan transaksi \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Perhitungan per makalah memakai tabel \texttt{clean}, dan perhitungan per penulis atau transaksi memakai \texttt{paper\_author}. Jumlah makalah tidak boleh dihitung dari \texttt{paper\_author} karena makalah dengan empat penulis muncul empat kali. Parquet dipilih untuk tabel besar karena ukurannya lebih kecil dan pembacaannya lebih cepat. \texttt{paper\_author} berukuran 390 MB sebagai CSV dan 132 MB sebagai Parquet, dengan waktu baca 2,6 detik dan 1,1 detik. Parquet juga memungkinkan pemuatan hanya kolom yang dibutuhkan (dua kolom 1.066 MB, dibanding 1.762 MB untuk semua kolom) atau hanya baris yang disaring saat dibaca (124 MB untuk satu tahun). Pada skala ini pemuatan ke \textit{DataFrame} aman sehingga basis data tambahan seperti DuckDB tidak diperlukan.
+
+\section{Pengukuran Popularitas Konferensi}
+\label{sec:met-popularitas}
+Popularitas konferensi diukur dengan dua ukuran utama. Ukuran pertama adalah jumlah publikasi, yang dihitung dari tabel \texttt{clean}. Ukuran kedua adalah jumlah penulis unik, yang dihitung dari tabel \texttt{paper\_author}. Dua ukuran turunan melengkapinya, yaitu makalah per penulis (seberapa sering penulis kembali ke konferensi itu) dan penulis unik per makalah (luas komunitas relatif terhadap volume makalah).
+
+Nama tampilan konferensi diambil dari \textit{booktitle} yang paling sering dipakai \textit{venue} tersebut setelah dibersihkan dari keterangan dalam kurung dan akhiran \textit{Workshops} atau \textit{Extended Abstracts}. Dengan cara ini \texttt{nips} tampil sebagai NeurIPS. Jika dua \textit{venue} mendapat nama yang sama, \textit{venue} terbesar memakai nama polos dan \textit{venue} lain diberi kunci dalam kurung siku, misalnya ICSR [icsr].
+
+Tren dihitung untuk 2015--2024. Tahun 2025 tidak dipakai karena data tahun tersebut tidak lengkap (Subbab~\ref{sec:hasil-2025}), dan digambar dengan arsiran pada setiap grafik. Pertumbuhan dinyatakan dengan \textit{compound annual growth rate} (CAGR), dan keselarasan dua peringkat diukur dengan korelasi peringkat Spearman.
+
+Jenis grafik dipilih mengikuti panduan Datawrapper \cite{datawrapper} menurut pertanyaan yang dijawab, dan sengaja ditambah elemen analitik di atas grafik standar, misalnya garis tren pada grafik batang. Setiap grafik dilengkapi legenda dan tidak ada yang memakai sumbu ganda. Tabel~\ref{tab:chart} merangkum pilihan jenis grafik.
+
+\begin{table}[ht]
+\caption{Jenis grafik menurut pertanyaan yang dijawab}
+\label{tab:chart}
+\small
+\begin{tabularx}{\textwidth}{@{}p{4.3cm}p{3.5cm}X@{}}
+\toprule
+\textbf{Pertanyaan} & \textbf{Jenis grafik} & \textbf{Tambahan analitik} \\
+\midrule
+Konferensi terbesar & Bar horizontal & Warna menandai irisan dua peringkat \\
+Tren per tahun, banyak kategori & \textit{Small multiples} & Garis tren linear, 2025 diarsir \\
+Laju pertumbuhan & Bar divergen & Garis CAGR seluruh dataset \\
+Banyak kategori sepanjang waktu & \textit{Heatmap} & Indeks terhadap awal periode \\
+Perubahan antardua ukuran & \textit{Slope chart} & Warna menandai naik atau turun \\
+Hubungan dua ukuran & \textit{Scatter} log-log & Garis panduan 1, 2, 4 penulis per makalah \\
+Alur seleksi data & Diagram aliran & Ketebalan sesuai jumlah \\
+Komposisi & \textit{Waffle}, kolom bertumpuk & Dua \textit{waffle} berwarna sama \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Pembentukan \textit{Transactional Database}}
+\label{sec:met-transaksi}
+\subsection{Definisi dua \textit{database}}
+Tujuan \textit{Task} 3 adalah mengubah data bersih menjadi bentuk yang menjadi masukan algoritma \textit{frequent pattern mining}. Dua \textit{transactional database} dibentuk dari tabel \texttt{paper\_author} dengan \textit{venue} sebagai item. Tabel~\ref{tab:def-db} membandingkan keduanya.
+
+\begin{table}[ht]
+\caption{Definisi dua \textit{transactional database}}
+\label{tab:def-db}
+\small
+\begin{tabularx}{\textwidth}{@{}p{2.6cm}XX@{}}
+\toprule
+ & \textbf{\textit{Author-based}} & \textbf{\textit{Author-year-based}} \\
+\midrule
+Satu transaksi & Satu penulis & Satu kombinasi penulis dan tahun \\
+Item & \textit{Venue} yang pernah diterbitkan penulis selama 2015--2025 & \textit{Venue} yang diterbitkan penulis pada tahun itu \\
+Dipakai pada & \textit{Task} 4 dan \textit{Task} 5 & Bagian E (analisis temporal) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Kedua database dibentuk dengan aturan yang sama: baris \texttt{paper\_author} dikelompokkan, lalu diambil \textbf{himpunan \textit{venue} unik} pada tiap kelompok. Kunci kelompoknya adalah penulis (\textit{author-based}) atau penulis dan tahun (\textit{author-year-based}). Konsekuensi memakai himpunan adalah dua makalah pada \textit{venue} yang sama dalam satu transaksi hanya menghasilkan satu item. Jumlah makalah tidak tersimpan pada transaksi, dan \textit{support} menghitung berapa transaksi yang memuat sebuah \textit{itemset}, bukan berapa kali ia muncul. Bentuk ini sesuai spesifikasi, yang meminta transaksi berisi daftar konferensi tempat penulis memublikasikan makalah. Jumlah makalah tetap dicatat pada kolom \texttt{n\_paper} tabel indeks sehingga dapat ditelusuri.
+
+\subsection{Satu sumber, dua bentuk}
+Isi sebuah transaksi hanya satu hal: penulis mana menerbitkan di \textit{venue} mana. Struktur adalah cara menyimpan hal itu di memori. Sebagai contoh, tiga penulis dengan riwayat Ani (NeurIPS dan ICML), Budi (NeurIPS), dan Citra (ICML dan CVPR) dapat disimpan sebagai daftar himpunan, yaitu \texttt{[\{nips, icml\}, \{nips\}, \{icml, cvpr\}]}, atau sebagai matriks 0 dan 1 dengan satu baris per penulis dan satu kolom per \textit{venue}. Kedua bentuk berisi informasi yang sama persis. Karena itu, hanya ada dua data yang berbeda isi, yaitu \textit{author-based} dan \textit{author-year-based}, dan keduanya disimpan dalam dua bentuk di memori.
+
+Kedua bentuk dibentuk dari \textbf{satu tabel panjang} \texttt{(tid, item)} yang disimpan ke disk sebagai sumber kebenaran (Gambar~\ref{fig:satu-sumber}). Tujuannya adalah konsistensi. Jika dua bentuk dibuat lewat dua kode terpisah, keduanya dapat berbeda tanpa disadari, misalnya jika satu menghapus duplikat dan yang lain tidak sehingga hasil Apriori dan FP-Growth dapat berbeda karena data, bukan karena algoritma. Kesetaraan diperiksa secara eksplisit pada jumlah transaksi, jumlah pasangan, ukuran tiap transaksi, dan isi 2.000 transaksi acak, dan seluruh pemeriksaan lolos.
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-satu-sumber}
+\caption{Satu sumber data menghasilkan dua \textit{database}, masing-masing dalam dua bentuk}
+\label{fig:satu-sumber}
+\end{figure}
+
+\subsection{Bentuk representasi dan kegunaannya}
+Tabel~\ref{tab:bentuk} membandingkan bentuk representasi yang dipertimbangkan, diukur pada \textit{database} \textit{author-based} (1.821.757 transaksi dan 4.373 item). Memori diukur per proses terpisah pada komputer dengan memori 16 GB sehingga yang penting adalah perbandingan relatifnya.
+
+\begin{table}[ht]
+\caption{Bentuk representasi \textit{database} \textit{author-based}}
+\label{tab:bentuk}
+\small
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}p{4.2cm}r>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Bentuk} & \textbf{Struktur} & \textbf{Memori} & \textbf{Tujuan} \\
+\midrule
+Horizontal & \textit{list} \textit{frozenset} berkode integer & 270 MB & Masukan Apriori dan FP-Growth \\
+\textit{Sparse} CSR & Matriks boolean transaksi $\times$ item & 35 MB & Statistik, validasi \texttt{mlxtend}, \textit{support} item \\
+\textit{Dense} \textit{one-hot} & Matriks boolean penuh & 8,0 GB & Tidak dibuat \\
+Vertikal & \textit{dict} item ke larik id transaksi & 37 MB & Cadangan bila Apriori terlalu lambat \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Venue diubah menjadi kode integer 0 sampai 4.372 (urut alfabet \textit{key}), dan \texttt{tx\_items.csv} memetakan kode ke nama. Matriks \textit{dense} tidak dibuat karena 1,82 juta kali 4.373 sel setara 8 GB, sedangkan matriks \textit{sparse} cukup 35 MB. Pada algoritma, Apriori memakai bentuk horizontal dengan penghitung per tingkat dan himpunan kandidat. FP-Growth memakai bentuk yang sama sebagai masukan untuk membangun FP-\textit{tree} (setiap \textit{node} menyimpan \textit{item}, \textit{count}, \textit{parent}, dan \textit{children}) beserta \textit{header table}.
+
+\subsection{Aturan untuk tahap mining}
+\label{sec:aturan-mining}
+Empat aturan ditetapkan sejak tahap ini agar tahap berikutnya konsisten.
+\begin{enumerate}
+\item Item yang tidak \textit{frequent} dipangkas sebelum \textit{mining}.
+\item Penyebut \textit{support} tetap seluruh transaksi (1.821.757 pada \textit{author-based}), walaupun transaksi yang dipindai untuk \textit{itemset} berukuran dua ke atas dikurangi. Transaksi dengan kurang dari dua item \textit{frequent} tidak mungkin memuat pasangan sehingga cukup dilewati (teknik \textit{transaction reduction}).
+\item Pengukuran waktu pada \textit{Task} 6 tidak menghitung pemuatan Parquet dan pembentukan \textit{database} horizontal bersama. Waktu Apriori mencakup seluruh pemindaian dan pembangkitan kandidat. Waktu FP-Growth mencakup pembentukan FP-\textit{tree} dan penambangan rekursifnya, dengan pembentukan pohon dilaporkan terpisah. Pembentukan pohon adalah bagian dari algoritma dan sering menjadi porsi biaya yang besar sehingga bila pohon dibangun di luar penghitung waktu, FP-Growth terlihat lebih cepat dari seharusnya.
+\item Apriori dan FP-Growth diimplementasikan sendiri, dan hasilnya divalidasi dengan \texttt{mlxtend} \cite{raschka2018}. \textit{Itemset} dan \textit{support} harus identik.
+\end{enumerate}
+
+\section{Rancangan Eksperimen Selanjutnya}
+Tahap berikutnya dijalankan pada \textit{author-based database} dengan \textit{min\_sup} 0,1\%, 0,5\%, 1\%, dan 2\%, lalu \textit{association rules} dengan \textit{min\_conf} 50\% dihitung beserta \textit{support}, \textit{confidence}, dan \textit{lift}. Perbandingan performa mencakup jumlah \textit{frequent itemsets}, jumlah \textit{rules}, dan waktu eksekusi untuk setiap \textit{min\_sup}. Analisis temporal dilakukan pada \textit{author-year-based database} untuk periode 2015--2017, 2018--2020, 2021--2023, dan 2024--2025.

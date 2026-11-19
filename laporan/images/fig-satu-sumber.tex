@@ -1,0 +1,26 @@
+\begin{tikzpicture}[font=\scriptsize]
+\node[berkas,text width=3.1cm] (pa) at (1.6,0) {\texttt{paper\_author.parquet}\\7.870.902 pasangan};
+\node[proses,text width=3.3cm] (la) at (6.0,1.6) {tabel panjang \texttt{(tid, item)}\\\textit{author-based}\\1.821.757 transaksi};
+\node[proses,text width=3.3cm] (lay) at (6.0,-1.6) {tabel panjang \texttt{(tid, item)}\\\textit{author-year-based}\\4.085.594 transaksi};
+\node[sorot,text width=3.3cm] (ha) at (10.7,2.35) {horizontal: \textit{list of frozenset}\\(Apriori, FP-Growth)};
+\node[sorot,text width=3.3cm] (sa) at (10.7,0.85) {\textit{sparse} CSR\\(statistik, validasi)};
+\node[sorot,text width=3.3cm] (hy) at (10.7,-0.85) {horizontal: \textit{list of frozenset}\\(Apriori, FP-Growth)};
+\node[sorot,text width=3.3cm] (sy) at (10.7,-2.35) {\textit{sparse} CSR\\(statistik, validasi)};
+\draw[garis] (pa.east) -- (la.west);
+\draw[garis] (pa.east) -- (lay.west);
+\draw[garis] (la.east) -- (ha.west);
+\draw[garis] (la.east) -- (sa.west);
+\draw[garis] (lay.east) -- (hy.west);
+\draw[garis] (lay.east) -- (sy.west);
+\node[draw=black!60,dashed,fit=(ha)(sa),inner sep=3pt,rounded corners=2pt] (f1) {};
+\node[draw=black!60,dashed,fit=(hy)(sy),inner sep=3pt,rounded corners=2pt] (f2) {};
+\node[anchor=north,text width=3.6cm,align=center,font=\tiny] at (10.7,3.25) {pemeriksaan kesetaraan (\texttt{assert})};
+\node[anchor=south,text width=3.6cm,align=center,font=\tiny] at (10.7,-3.3) {pemeriksaan kesetaraan (\texttt{assert})};
+\node[anchor=west,font=\scriptsize\bfseries] at (-0.2,-4.35) {Legenda:};
+\node[proses,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (1.55,-4.35) {};
+\node[anchor=west] at (1.9,-4.35) {tabel panjang (disimpan)};
+\node[sorot,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (5.9,-4.35) {};
+\node[anchor=west] at (6.25,-4.35) {bentuk di memori};
+\node[berkas,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (9.4,-4.35) {};
+\node[anchor=west] at (9.75,-4.35) {sumber};
+\end{tikzpicture}
