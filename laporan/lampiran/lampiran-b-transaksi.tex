@@ -1,0 +1,166 @@
+\chapter{Hasil \textit{Transactional Database}}
+\lampirancaption{Hasil \textit{Transactional Database}}
+\label{lamp:transaksi}
+
+Lampiran ini memperlihatkan isi berkas hasil \textit{Task} 3 dan beberapa instance nyata dari data. Seluruh isi diambil langsung dari berkas pada folder \texttt{data/processed/}.
+
+\section{Berkas hasil}
+Tabel~\ref{tab:berkas-tx} merangkum lima berkas hasil. Tabel panjang menyimpan pasangan \texttt{(tid, item)} satu baris per pasangan. Tabel indeks memetakan \texttt{tid} ke identitas transaksi, dan \texttt{item} berupa kode integer yang dipetakan ke nama \textit{venue} oleh \texttt{tx\_items.csv}.
+
+\begin{table}[ht]
+\caption{Berkas hasil pembentukan \textit{transactional database}}
+\label{tab:berkas-tx}
+\scriptsize
+\begin{tabularx}{\textwidth}{@{}p{5.0cm}>{\raggedright\arraybackslash}Xrr@{}}
+\toprule
+\textbf{Berkas} & \textbf{Kolom (tipe)} & \textbf{Baris} & \textbf{Ukuran} \\
+\midrule
+\texttt{tx\_items.csv} & \texttt{venue}, \texttt{item\_id}, \texttt{nama} & 4.373 & 0,08 MB \\
+\texttt{tx\_author.parquet} & \texttt{tid} (int32), \texttt{item} (int32) & 4.853.675 & 20 MB \\
+\texttt{tx\_author\_index.parquet} & \texttt{tid}, \texttt{author} (string), \texttt{n\_paper} (int32) & 1.821.757 & 36 MB \\
+\texttt{tx\_author\_year.parquet} & \texttt{tid} (int32), \texttt{item} (int32) & 6.497.515 & 31 MB \\
+\texttt{tx\_author\_year\_index.parquet} & \texttt{tid}, \texttt{author}, \texttt{year} (int16), \texttt{n\_paper} & 4.085.594 & 75 MB \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Cuplikan berkas}
+Tabel~\ref{tab:cuplikan-items} sampai Tabel~\ref{tab:cuplikan-index} menampilkan baris pertama dari tiap berkas, dan item pada Tabel~\ref{tab:cuplikan-a} dapat dicocokkan dengan \texttt{tid} yang sama pada Tabel~\ref{tab:cuplikan-a-index}.
+
+\begin{table}[ht]
+\caption{Lima baris pertama \texttt{tx\_items.csv}}
+\label{tab:cuplikan-items}
+\small
+\begin{tabular}{@{}lp{7.2cm}r@{}}
+\toprule
+\textbf{\texttt{venue}} (segmen \textit{key}) & \textbf{\texttt{nama}} & \textbf{\texttt{item\_id}} \\
+\midrule
+\texttt{3dic} & 3DIC & 0 \\
+\texttt{3dica} & \textit{3D Image Processing, Measurement (3DIPM), and Applications} & 1 \\
+\texttt{3dim} & 3DV & 2 \\
+\texttt{3dor} & 3DOR@Eurographics & 3 \\
+\texttt{3dtv} & 3DTV-Conference & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Cuplikan \texttt{tx\_author.parquet} (tabel panjang \textit{author-based}, \texttt{tid} 0 dan 1)}
+\label{tab:cuplikan-a}
+\small
+\begin{tabular}{@{}rrl@{}}
+\toprule
+\textbf{\texttt{tid}} & \textbf{\texttt{item}} & \textbf{Nama \textit{venue}} \\
+\midrule
+0 & 1007 & DAC \\
+1 & 1007 & DAC \\
+1 & 1161 & DSN \\
+1 & 1375 & ETS \\
+1 & 1737 & HPCA \\
+1 & 2486 & IOLTS \\
+1 & \multicolumn{1}{c}{\ldots} & \multicolumn{1}{c}{\ldots} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Cuplikan \texttt{tx\_author\_index.parquet} (tabel indeks \textit{author-based}, \texttt{tid} 0 dan 1)}
+\label{tab:cuplikan-a-index}
+\small
+\begin{tabular}{@{}rlr@{}}
+\toprule
+\textbf{\texttt{tid}} & \textbf{\texttt{author}} & \textbf{\texttt{n\_paper}} \\
+\midrule
+0 & Lucas Roquet & 1 \\
+1 & Fernando Fernandes dos Santos & 24 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Cuplikan tabel indeks \textit{author-year-based} (\texttt{tid} 0 sampai 5)}
+\label{tab:cuplikan-index}
+\small
+\begin{tabular}{@{}rlrr@{}}
+\toprule
+\textbf{\texttt{tid}} & \textbf{\texttt{author}} & \textbf{\texttt{year}} & \textbf{\texttt{n\_paper}} \\
+\midrule
+0 & Lucas Roquet & 2024 & 1 \\
+1 & Fernando Fernandes dos Santos & 2024 & 5 \\
+2 & Paolo Rech & 2024 & 5 \\
+3 & Marcello Traiola & 2024 & 8 \\
+4 & Olivier Sentieys & 2024 & 8 \\
+5 & Angeliki Kritikakou & 2024 & 9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{\textit{Instance} nyata 1: penulis dengan 10 makalah}
+\label{sec:instance1}
+Penulis pada Gambar~\ref{fig:ilustrasi} adalah \textit{Brian Camilo Gómez-León} (\texttt{tid} 127307 pada \textit{author-based}). Tabel~\ref{tab:instance-paper} menunjukkan 10 makalahnya pada \texttt{paper\_author.parquet}, dan Tabel~\ref{tab:instance-tx} menunjukkan transaksi yang terbentuk dari makalah-makalah tersebut. Segmen kedua \textit{key} menentukan \textit{venue}, misalnya \texttt{iceee} bernama tampilan CCE dan \texttt{amcc} bernama tampilan ACC.
+
+\begin{table}[ht]
+\caption{Sepuluh makalah \textit{Brian Camilo Gómez-León} pada \texttt{paper\_author.parquet}}
+\label{tab:instance-paper}
+\footnotesize
+\begin{tabular}{@{}llrl@{}}
+\toprule
+\textbf{\textit{Key}} & \textbf{\texttt{venue}} & \textbf{Tahun} & \textbf{Nama tampilan} \\
+\midrule
+\texttt{conf/ccta/Sira-RamirezGAZ21} & \texttt{ccta} & 2021 & CCTA \\
+\texttt{conf/iccad2/Sira-RamirezGA21} & \texttt{iccad2} & 2021 & ICCAD [iccad2] \\
+\texttt{conf/iceee/Gomez-LeonAS21} & \texttt{iceee} & 2021 & CCE \\
+\texttt{conf/cdc/Aguilar-OrdunaS22} & \texttt{cdc} & 2022 & CDC \\
+\texttt{conf/iceee/Aguilar-OrdunaS22} & \texttt{iceee} & 2022 & CCE \\
+\texttt{conf/vss/Sira-RamirezAG22} & \texttt{vss} & 2022 & VSS \\
+\texttt{conf/iceee/AguilarOrdunaSGG23} & \texttt{iceee} & 2023 & CCE \\
+\texttt{conf/iceee/HernandezAGS23} & \texttt{iceee} & 2023 & CCE \\
+\texttt{conf/amcc/GomezLeonASG24} & \texttt{amcc} & 2024 & ACC \\
+\texttt{conf/amcc/SiraRamirezGA24} & \texttt{amcc} & 2024 & ACC \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Transaksi yang terbentuk dari 10 makalah pada Tabel~\ref{tab:instance-paper}}
+\label{tab:instance-tx}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}p{4.4cm}rrX@{}}
+\toprule
+\textbf{\textit{Database}} & \textbf{\texttt{tid}} & \textbf{Makalah} & \textbf{Isi transaksi} \\
+\midrule
+\textit{Author-based} & 127307 & 10 & CCTA, ICCAD [iccad2], CCE, CDC, VSS, ACC \\
+\midrule
+\textit{Author-year-based}, 2021 & 993297 & 3 & CCTA, ICCAD [iccad2], CCE \\
+\textit{Author-year-based}, 2022 & 199569 & 3 & CDC, CCE, VSS \\
+\textit{Author-year-based}, 2023 & 1565683 & 2 & CCE \\
+\textit{Author-year-based}, 2024 & 2668311 & 2 & ACC \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{\textit{Instance} nyata 2: penulis yang aktif delapan tahun}
+\label{sec:instance2}
+\textit{Fernando Fernandes dos Santos} menerbitkan 24 makalah pada 2017--2025. Pada \textit{author-based}, ia menjadi satu transaksi (\texttt{tid} 1) berisi 11 item, yaitu DAC, DSN, ETS, HPCA, IOLTS, IPDPS, ISVLSI, ITC, SC, VLSI-SoC, dan VTS. Dalam bentuk horizontal dengan kode integer, transaksi ini berbentuk \texttt{frozenset(\{1007, 1161, 1375, 1737, 2486, 2512, 2659, 2673, 3638, 4171, 4200\})}. Pada \textit{author-year-based}, ia menjadi delapan transaksi (Tabel~\ref{tab:instance2}). Contoh ini menunjukkan bahwa satu penulis aktif menyumbang banyak transaksi pada \textit{author-year-based}, dan bahwa IOLTS serta ETS dihitung berulang sebagai pasangan yang sama pada beberapa tahun.
+
+\begin{table}[ht]
+\caption{Delapan transaksi \textit{author-year-based} milik \textit{Fernando Fernandes dos Santos}}
+\label{tab:instance2}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}rrrX@{}}
+\toprule
+\textbf{\texttt{tid}} & \textbf{Tahun} & \textbf{Makalah} & \textbf{Isi transaksi} \\
+\midrule
+2692157 & 2017 & 2 & DSN, SC \\
+2100036 & 2019 & 3 & ETS, HPCA, IOLTS \\
+3858468 & 2020 & 2 & ETS, IOLTS \\
+133786 & 2021 & 4 & DSN, IOLTS, IPDPS, VTS \\
+577535 & 2022 & 4 & IOLTS, ISVLSI, ITC \\
+2693558 & 2023 & 3 & ETS, ITC, SC \\
+1 & 2024 & 5 & DAC, ETS, IOLTS, VLSI-SoC, VTS \\
+4043841 & 2025 & 1 & ETS \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Jumlah makalah per tahun pada Tabel~\ref{tab:instance2} berjumlah 24 (2+3+2+4+4+3+5+1) dan sesuai dengan kolom \texttt{n\_paper} pada transaksi \textit{author-based}. Pada contoh ini, 24 makalah hanya menghasilkan 11 item pada \textit{author-based}, yang berarti sebagian besar makalah tidak menambah item baru.
