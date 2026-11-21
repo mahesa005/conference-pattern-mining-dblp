@@ -122,3 +122,10 @@ def test_to_frame_columns_and_order():
     assert df.iloc[0]["itemset"] == (2,)
     assert df.iloc[0]["support"] == pytest.approx(7 / 9)
     assert df.loc[df["itemset"].apply(lambda s: s == (1, 2)), "names"].item() == "I1 + I2"
+
+
+def test_keep_tree_false_drops_tree_only():
+    full = fpgrowth(TEXTBOOK, 2 / 9)
+    light = fpgrowth(TEXTBOOK, 2 / 9, keep_tree=False)
+    assert light.tree is None
+    assert light.itemsets == full.itemsets

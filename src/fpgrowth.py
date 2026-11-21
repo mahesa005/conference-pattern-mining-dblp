@@ -84,7 +84,7 @@ class FPGrowthResult:
     min_count: int
     t_build: float
     t_mine: float
-    tree: FPTree = field(repr=False)
+    tree: Optional[FPTree] = field(repr=False)
 
 
 def _mine(tree: FPTree, counts: Mapping[int, int], suffix: Tuple[int, ...],
@@ -110,7 +110,8 @@ def _mine(tree: FPTree, counts: Mapping[int, int], suffix: Tuple[int, ...],
         _mine(cond_tree, cond_counts, itemset, min_count, out)
 
 
-def fpgrowth(transactions: Sequence[FrozenSet[int]], min_support: float) -> FPGrowthResult:
+def fpgrowth(transactions: Sequence[FrozenSet[int]], min_support: float, keep_tree: bool = True) -> FPGrowthResult:
+    """keep_tree=False membuang FP-tree setelah penambangan untuk menghemat memori."""
     n = len(transactions)
     min_count = min_count_for(min_support, n)
 
@@ -133,7 +134,7 @@ def fpgrowth(transactions: Sequence[FrozenSet[int]], min_support: float) -> FPGr
     _mine(tree, frequent, (), min_count, itemsets)
     t2 = time.perf_counter()
 
-    return FPGrowthResult(itemsets, n, min_support, min_count, t1 - t0, t2 - t1, tree)
+    return FPGrowthResult(itemsets, n, min_support, min_count, t1 - t0, t2 - t1, tree if keep_tree else None)
 
 
 def to_frame(result: FPGrowthResult, names: Optional[Mapping[int, str]] = None) -> pd.DataFrame:

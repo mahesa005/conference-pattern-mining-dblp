@@ -29,3 +29,9 @@ def test_compare_itemsets_reports_differences():
 def test_mlxtend_reference_item_ids_not_starting_at_zero():
     tx = [frozenset([5, 7]), frozenset([5, 7]), frozenset([5]), frozenset()]
     assert mlxtend_reference(tx, 0.5) == {frozenset([5]): 3, frozenset([7]): 2, frozenset([5, 7]): 2}
+
+
+def test_mlxtend_reference_keeps_full_denominator():
+    tx = [frozenset()] * 95 + [frozenset([1, 2])] * 3 + [frozenset([1]), frozenset([3])]
+    assert mlxtend_reference(tx, 0.03) == {frozenset([1]): 4, frozenset([2]): 3, frozenset([1, 2]): 3}
+    assert mlxtend_reference(tx, 0.04) == {frozenset([1]): 4}
