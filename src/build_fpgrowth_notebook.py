@@ -333,6 +333,109 @@ assert checks["identical"].all(), "hasil FP-Growth berbeda dengan mlxtend"
 checks
 """))
 
+# ---------------------------------------------------------------------------
+# 6. Analisis
+# ---------------------------------------------------------------------------
+cells.append(section("Analisis Frequent Itemsets (Task 4.2 sampai 4.5)", "6"))
+
+cells.append(md("""
+## 6.1 Jumlah Itemset per Ukuran (Task 4.2)
+
+Itemset dikelompokkan menurut ukurannya. Kolom `k4+` menampung itemset berisi empat item atau lebih.
+"""))
+
+cells.append(code("""
+def length_counts(df):
+    return df["length"].clip(upper=4).value_counts().reindex([1, 2, 3, 4], fill_value=0)
+
+summary = pd.DataFrame([
+    {"min_support": ms, "min_count": res.min_count, "itemsets": len(res.itemsets),
+     **dict(zip(["k1", "k2", "k3", "k4+"], length_counts(frames[ms]).tolist())),
+     "max_length": int(frames[ms]["length"].max()),
+     "t_build_s": round(res.t_build, 3), "t_mine_s": round(res.t_mine, 3)}
+    for ms, res in results.items()
+])
+save_table(summary, "t4_fpgrowth_ringkasan.csv", index=False)
+summary
+"""))
+
+cells.append(md("""
+## 6.2 Sepuluh Itemset dengan Support Tertinggi (Task 4.3)
+
+Sepuluh teratas secara keseluruhan hampir pasti berisi 1-itemset, karena support sebuah itemset tidak pernah melebihi support item penyusunnya. Karena itu ditampilkan juga sepuluh teratas untuk itemset berukuran dua atau lebih.
+"""))
+
+cells.append(code("""
+cols = ["names", "length", "count", "support"]
+for ms, df in frames.items():
+    top = df.head(CFG.TOP_K)[cols]
+    top_k2 = df[df["length"] >= 2].head(CFG.TOP_K)[cols]
+    save_table(top, f"t4_fpgrowth_top10_{tag(ms)}.csv", index=False)
+    save_table(top_k2, f"t4_fpgrowth_top10_k2plus_{tag(ms)}.csv", index=False)
+    print(f"\\nmin_sup {pct_id(ms * 100)}: semua ukuran")
+    display(top.style.format({"support": "{:.4%}"}))
+    print(f"min_sup {pct_id(ms * 100)}: ukuran >= 2 ({len(df[df['length'] >= 2])} itemset)")
+    display(top_k2.style.format({"support": "{:.4%}"}))
+"""))
+
+cells.append(md("""
+## 6.3 Pengaruh Min Support (Task 4.4)
+
+Sumbu y memakai skala symlog agar jumlah nol tetap terlihat dan rentang ratusan sampai ribuan dapat dibandingkan.
+"""))
+
+cells.append(code("""
+fig, ax = plt.subplots(figsize=(7.2, 3.8))
+x = np.arange(len(CFG.MIN_SUPPORTS))
+width = 0.2
+for j, (col, color) in enumerate(zip(["k1", "k2", "k3", "k4+"], [CFG.BLUE, CFG.ORANGE, CFG.BLUE_LIGHT, CFG.GRAY])):
+    vals = summary[col].to_numpy()
+    bars = ax.bar(x + (j - 1.5) * width, vals, width, color=color, label=col)
+    for b, v in zip(bars, vals):
+        ax.annotate(fmt_id(v), (b.get_x() + b.get_width() / 2, max(v, 0.5)), ha="center", va="bottom", fontsize=7.5, color=CFG.INK_2)
+ax.set_yscale("symlog", linthresh=1)
+id_ticks(ax, "y")
+ax.set_xticks(x, [pct_id(ms * 100) for ms in CFG.MIN_SUPPORTS])
+ax.set_xlabel("min support")
+ax.set_ylabel("jumlah frequent itemsets")
+ax.set_title("Jumlah frequent itemsets per ukuran dan min support")
+ax.legend(ncol=4, loc="upper right")
+save_fig(fig, "t4_fpgrowth_jumlah_itemset.png")
+"""))
+
+cells.append(md("""
+## 6.4 Kombinasi Konferensi yang Paling Sering Muncul Bersama (Task 4.5)
+
+Hasil pada min support 0,1% memuat seluruh hasil pada min support yang lebih tinggi, sehingga pasangan dan triple teratas diambil dari sana. Kolom `bertahan_sampai` menunjukkan min support tertinggi tempat kombinasi tersebut masih frequent.
+"""))
+
+cells.append(code("""
+base = frames[min(CFG.MIN_SUPPORTS)]
+
+def survives(itemset):
+    kept = [ms for ms in CFG.MIN_SUPPORTS if frozenset(itemset) in results[ms].itemsets]
+    return pct_id(max(kept) * 100)
+
+pairs = base[base["length"] == 2].head(CFG.TOP_K).copy()
+triples = base[base["length"] == 3].head(CFG.TOP_K).copy()
+for t in (pairs, triples):
+    t["bertahan_sampai"] = t["itemset"].map(survives)
+save_table(pairs[["names", "count", "support", "bertahan_sampai"]], "t4_fpgrowth_pasangan_teratas.csv", index=False)
+save_table(triples[["names", "count", "support", "bertahan_sampai"]], "t4_fpgrowth_triple_teratas.csv", index=False)
+display(pairs[["names", "count", "support", "bertahan_sampai"]].style.format({"support": "{:.4%}"}))
+display(triples[["names", "count", "support", "bertahan_sampai"]].style.format({"support": "{:.4%}"}))
+
+fig, ax = plt.subplots(figsize=(7.2, 3.8))
+plot = pairs.iloc[::-1]
+ax.barh(plot["names"], plot["count"], color=CFG.BLUE)
+for y, v in enumerate(plot["count"]):
+    ax.annotate(fmt_id(v), (v, y), xytext=(3, 0), textcoords="offset points", va="center", fontsize=7.5, color=CFG.INK_2)
+id_ticks(ax, "x")
+ax.set_xlabel("jumlah author")
+ax.set_title("Sepuluh pasangan konferensi teratas (min support 0,1%)")
+save_fig(fig, "t4_fpgrowth_pasangan_teratas.png")
+"""))
+
 # @@APPEND@@
 
 # ---------------------------------------------------------------------------
