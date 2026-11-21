@@ -360,6 +360,10 @@ summary
 """))
 
 cells.append(md("""
+> Pada min support 0,1% ditemukan 1.514 frequent itemsets: 574 1-itemset, 393 pasangan, 348 triple, dan 199 itemset berukuran empat sampai enam. Pada 0,5% tersisa 88 itemset dengan hanya satu triple, pada 1% tersisa 30 itemset dengan hanya satu pasangan, dan pada 2% hanya enam konferensi tunggal tanpa satu pun pasangan. Jadi 3-itemset hanya ada pada 0,1% dan 0,5%, dan tidak ada sama sekali pada 1% dan 2%.
+"""))
+
+cells.append(md("""
 ## 6.2 Sepuluh Itemset dengan Support Tertinggi (Task 4.3)
 
 Sepuluh teratas secara keseluruhan hampir pasti berisi 1-itemset, karena support sebuah itemset tidak pernah melebihi support item penyusunnya. Karena itu ditampilkan juga sepuluh teratas untuk itemset berukuran dua atau lebih.
@@ -376,6 +380,10 @@ for ms, df in frames.items():
     display(top.style.format({"support": "{:.4%}"}))
     print(f"min_sup {pct_id(ms * 100)}: ukuran >= 2 ({len(df[df['length'] >= 2])} itemset)")
     display(top_k2.style.format({"support": "{:.4%}"}))
+"""))
+
+cells.append(md("""
+> Sepuluh itemset teratas pada setiap min support selalu berupa konferensi tunggal, dipimpin NeurIPS (57.800 author, support 3,17%), CVPR (47.664), dan AAAI (46.437). Hal ini sesuai sifat anti-monoton support: support sebuah kombinasi tidak mungkin melebihi support item penyusunnya. Pasangan teratas, ICML + NeurIPS, hanya memiliki support 1,02% (18.503 author), sekitar sepertiga support NeurIPS sendiri.
 """))
 
 cells.append(md("""
@@ -401,6 +409,12 @@ ax.set_ylabel("jumlah frequent itemsets")
 ax.set_title("Jumlah frequent itemsets per ukuran dan min support")
 ax.legend(ncol=4, loc="upper right")
 save_fig(fig, "t4_fpgrowth_jumlah_itemset.png")
+"""))
+
+cells.append(md("""
+> Dari 0,1% ke 0,5% jumlah itemset berkurang 17,2 kali (1.514 menjadi 88), dan dari 0,1% ke 2% berkurang 252 kali (1.514 menjadi 6). Itemset berukuran besar hilang lebih dulu: ukuran empat ke atas hanya ada pada 0,1%, triple hilang setelah 0,5%, dan pasangan hilang setelah 1%. Penyebabnya adalah ekor panjang data. Notebook 02 menunjukkan 58,4% transaksi author-based hanya berisi satu venue, sehingga hanya sebagian kecil transaksi yang dapat memuat kombinasi dan support kombinasi jauh di bawah support item penyusunnya.
+>
+> Akibatnya, min support 0,1% adalah satu-satunya ambang yang menghasilkan pola kombinasi yang cukup kaya untuk dianalisis. Pada 1% dan 2% hasilnya praktis hanya mengulang peringkat popularitas Task 2.
 """))
 
 cells.append(md("""
@@ -434,6 +448,86 @@ id_ticks(ax, "x")
 ax.set_xlabel("jumlah author")
 ax.set_title("Sepuluh pasangan konferensi teratas (min support 0,1%)")
 save_fig(fig, "t4_fpgrowth_pasangan_teratas.png")
+"""))
+
+cells.append(md("""
+> Sepuluh pasangan teratas membentuk kelompok bidang yang jelas. Machine learning diwakili ICML + NeurIPS (18.503 author), ICLR + NeurIPS (17.852), dan ICLR + ICML (12.947). Computer vision diwakili CVPR + ICCV (15.441) dan CVPR + ECCV (13.752). NLP diwakili ACL + EMNLP (14.557), dan robotika diwakili ICRA + IROS (11.860). NeurIPS muncul pada empat dari sepuluh pasangan teratas dan delapan dari sepuluh triple teratas, sehingga menjadi penghubung antara machine learning, computer vision, dan AI umum (AAAI).
+>
+> ICML + NeurIPS adalah satu-satunya pasangan yang masih frequent pada 1%, dan ICLR + ICML + NeurIPS (10.413 author) adalah satu-satunya triple yang masih frequent pada 0,5%. Sisanya hanya frequent sampai 0,5% (pasangan) atau 0,1% (triple selain yang pertama).
+"""))
+
+cells.append(md("""
+## 6.5 Keterhubungan dan Itemset Terpanjang (Task 4.5)
+
+Konferensi yang populer belum tentu sering muncul bersama konferensi lain. Tabel pertama menghitung, untuk sepuluh konferensi dengan support tertinggi, berapa banyak pasangan frequent pada min support 0,1% yang memuatnya. Tabel kedua menampilkan itemset terpanjang yang ditemukan.
+"""))
+
+cells.append(code("""
+pair_items = base[base["length"] == 2]["itemset"]
+degree = pd.Series([i for s in pair_items for i in s]).value_counts()
+top_items = base[base["length"] == 1].head(CFG.TOP_K)
+connect = pd.DataFrame({
+    "konferensi": top_items["names"].to_numpy(),
+    "author": top_items["count"].to_numpy(),
+    "pasangan_frequent": [int(degree.get(s[0], 0)) for s in top_items["itemset"]],
+})
+save_table(connect, "t4_fpgrowth_keterhubungan_top10.csv", index=False)
+print(f"Item yang muncul pada minimal satu pasangan frequent: {degree.size} dari {(base['length'] == 1).sum()} item frequent")
+display(connect)
+
+longest = base[base["length"] >= 5][["names", "length", "count", "support"]]
+save_table(longest, "t4_fpgrowth_itemset_terpanjang.csv", index=False)
+venue_freq = pd.Series([v for s in longest["names"] for v in s.split(" + ")]).value_counts()
+print(f"Itemset berukuran 5 atau lebih: {len(longest)}, melibatkan {venue_freq.size} konferensi")
+print(venue_freq.to_string())
+display(longest[longest["length"] == longest["length"].max()].style.format({"support": "{:.4%}"}))
+display(longest[longest["length"] == 5].head(CFG.TOP_K // 2).style.format({"support": "{:.4%}"}))
+"""))
+
+cells.append(md("""
+> Hanya 105 dari 574 konferensi frequent yang muncul pada minimal satu pasangan frequent. Popularitas tidak sama dengan keterhubungan. AAAI (44 pasangan), NeurIPS (42), ICASSP (41), dan CVPR (34) terhubung luas. Sebaliknya, EMBC dan IGARSS, yang termasuk sepuluh konferensi terbesar, masing-masing hanya muncul pada empat pasangan, dan HCI hanya pada satu pasangan. Author di ketiga konferensi itu jarang menerbitkan di konferensi besar lain dalam jumlah yang melewati ambang, sehingga komunitasnya relatif tertutup.
+>
+> Itemset terpanjang berisi enam konferensi, yaitu AAAI + CVPR + ECCV + ICCV + ICLR + NeurIPS (2.005 author) dan dua itemset lain dengan count di atas 1.800. Seluruh 40 itemset berukuran lima atau enam hanya melibatkan 14 konferensi, dan NeurIPS ada pada 35 di antaranya. Pola panjang hanya muncul di inti AI, machine learning, dan computer vision.
+"""))
+
+# ---------------------------------------------------------------------------
+# 7. Interpretasi
+# ---------------------------------------------------------------------------
+cells.append(section("Interpretasi (Task 4.6)", "7"))
+
+cells.append(md("""
+**Pola publikasi.** Kombinasi konferensi yang frequent hampir seluruhnya terjadi di dalam satu bidang (machine learning, computer vision, NLP, robotika) atau di antara bidang yang bertetangga dekat, yaitu machine learning dengan computer vision dan AI umum. Artinya, author pada periode 2015-2025 cenderung menerbitkan di beberapa konferensi dalam komunitas yang sama, bukan berpindah ke bidang yang jauh.
+
+**Inti AI, machine learning, dan computer vision.** NeurIPS, ICML, ICLR, AAAI, CVPR, ICCV, dan ECCV adalah satu-satunya kelompok yang menghasilkan itemset berukuran lima dan enam. Banyak author di kelompok ini menerbitkan di banyak konferensi besar sekaligus, dan NeurIPS menjadi titik temu kelompok tersebut.
+
+**Popularitas dan keterhubungan berbeda.** Konferensi besar seperti EMBC, IGARSS, dan HCI hampir tidak membentuk pasangan frequent, sedangkan ICASSP terhubung dengan 41 konferensi lain. Pertanyaan apakah konferensi terpopuler juga memiliki asosiasi terkuat dijawab dengan lift pada Task 5, karena support pasangan yang tinggi juga dapat muncul hanya karena kedua konferensinya besar.
+
+**Pemilihan min support.** Hanya 0,1% yang menghasilkan pola kombinasi yang cukup kaya. Pada 1% dan 2% hasilnya hampir seluruhnya konferensi tunggal, sehingga Task 5 akan memakai hasil 0,1% sebagai dasar utama.
+
+**Keterbatasan.**
+
+1. Item adalah seri konferensi berdasarkan key DBLP. Satu konferensi nyata dapat terpecah menjadi beberapa key, dan workshop dapat menjadi item terpisah dari konferensi induknya, sehingga support-nya terbagi.
+2. Identitas author mengikuti disambiguasi DBLP. Dua orang dengan nama sama dapat tergabung, dan satu orang dapat tercatat dengan dua nama.
+3. Support menghitung author, bukan paper. Author yang menerbitkan satu paper dan author yang menerbitkan puluhan paper di konferensi yang sama dihitung sama.
+4. Transaksi author-based menggabungkan seluruh 2015-2025, sehingga dua konferensi dapat muncul bersama walaupun dipakai pada tahun yang berbeda. Pengaruh waktu dianalisis pada Bagian E dengan author-year-based database.
+"""))
+
+# ---------------------------------------------------------------------------
+# 8. Ringkasan
+# ---------------------------------------------------------------------------
+cells.append(section("Ringkasan dan Langkah Berikutnya", "8"))
+
+cells.append(md("""
+| Task | Hasil | Bagian |
+|---|---|---|
+| 4.1 | FP-Growth pada empat min support menghasilkan 1.514, 88, 30, dan 6 frequent itemsets, identik dengan `mlxtend` | 4, 5 |
+| 4.2 | 1-, 2-, dan 3-itemset: 574, 393, 348 (0,1%); 66, 21, 1 (0,5%); 29, 1, 0 (1%); 6, 0, 0 (2%) | 6.1 |
+| 4.3 | Sepuluh teratas selalu konferensi tunggal (NeurIPS, CVPR, AAAI); pasangan teratas ICML + NeurIPS dengan support 1,02% | 6.2 |
+| 4.4 | Jumlah itemset turun 17,2 kali dari 0,1% ke 0,5% dan 252 kali dari 0,1% ke 2%; itemset besar hilang lebih dulu | 6.3 |
+| 4.5 | Pasangan teratas ICML + NeurIPS, ICLR + NeurIPS, AAAI + NeurIPS; triple teratas ICLR + ICML + NeurIPS; hanya 105 dari 574 konferensi frequent yang membentuk pasangan frequent | 6.4, 6.5 |
+| 4.6 | Pola terbentuk per bidang, NeurIPS menjadi penghubung, dan popularitas berbeda dengan keterhubungan | 7 |
+
+Frequent itemsets setiap min support disimpan di `outputs/fpgrowth/itemsets_<tag>.parquet` (kolom `itemset`, `length`, `count`, `support`, `names`). Notebook `05_rules` membangkitkan association rules dari berkas ini, dan notebook `06_performance` membandingkan FP-Growth dengan Apriori dari notebook `03_apriori`.
 """))
 
 # @@APPEND@@
