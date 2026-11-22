@@ -74,9 +74,9 @@ def apriori(transactions: Sequence[FrozenSet[int]], min_support: float) -> Aprio
     frequent1 = {i: c for i, c in item_counts.items() if c >= min_count}
     merged: Counter = Counter()
     for t in transactions:
-        kept = tuple(sorted(i for i in t if i in frequent1))
+        kept = [i for i in t if i in frequent1]
         if len(kept) >= 2:
-            merged[kept] += 1
+            merged[tuple(sorted(kept))] += 1
     db = list(merged.items())
     itemsets: Dict[FrozenSet[int], int] = {frozenset([i]): c for i, c in frequent1.items()}
     level = [(i,) for i in sorted(frequent1)]
