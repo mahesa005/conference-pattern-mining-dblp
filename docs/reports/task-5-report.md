@@ -250,18 +250,50 @@ Support menjawab "seberapa sering", confidence menjawab "seberapa sering B jika 
 
 ## 9. File, reproduksi, dan commit
 
-**File**
+`data/` dan `outputs/` tidak masuk git (dibagikan lewat zip).
+
+**File input**
+
+| File | Asal | Isi |
+|---|---|---|
+| `outputs/fpgrowth/itemsets_{0p1,0p5,1,2}.parquet` | notebook 04 | Frequent itemsets per min support |
+| `data/processed/tx_items.csv` | notebook 02 | Nama konferensi per `item_id` |
+| `data/processed/tx_author_index.parquet` | notebook 02 | Hanya jumlah barisnya dibaca, sebagai N = 1.821.757 |
+
+**File output: data**
+
+| File | Isi | Dipakai oleh |
+|---|---|---|
+| `outputs/rules/rules_{0p1,0p5,1,2}.parquet` | Association rules per min support, min confidence 50% (1.387 / 7 / 1 / 0 baris). Kolom: `antecedent`, `consequent` (list `item_id`), `n_antecedent`, `n_consequent`, `count`, `antecedent_count`, `consequent_count`, `support`, `confidence`, `lift`, `rule` | rencana 06 (jumlah rules) |
+
+**File output: tabel** (`outputs/tables/`)
 
 | File | Isi |
 |---|---|
-| `src/rules.py` | Pembangkitan rules: `load_itemsets`, `generate_rules`, `rule_label` |
+| `t5_jumlah_rules.csv` | Jumlah kandidat dan rules per min support, per ukuran itemset asal |
+| `t5_validasi_mlxtend.csv` | Perbandingan dengan mlxtend per min support |
+| `t5_top10_lift.csv` | 10 rules dengan lift tertinggi (0,1%) |
+| `t5_rules_satu_ke_satu.csv` | Seluruh 22 rule satu-ke-satu (0,1%) |
+| `t5_rules_satu_ke_satu_arah.csv` | Rule satu-ke-satu dengan confidence arah balik dan rasio ukuran |
+| `t5_lift_per_ukuran_consequent.csv` | Median support dan lift menurut ukuran consequent |
+| `t5_support_vs_lift_consequent.csv` | Support konferensi vs lift rules yang menuju kepadanya |
+| `t5_support_vs_lift_antecedent.csv` | Support konferensi vs lift rules yang berangkat darinya |
+| `t5_contoh_metrik.csv` | Tiga contoh rule dengan count di balik metriknya |
+| `t5_kelompok_konferensi.csv` | Delapan kelompok konferensi dari rules satu-ke-satu |
+| `t5_consequent_terbanyak.csv` | Jumlah rules yang menuju setiap konferensi |
+
+**File output: gambar** (`outputs/figures/`): `t5_rules_satu_ke_satu.png`, `t5_support_vs_lift.png`
+
+**Kode dan notebook** (masuk git)
+
+| File | Isi |
+|---|---|
+| `src/rules.py` | `load_itemsets`, `generate_rules`, `rule_label` |
 | `src/validation.py` | Ditambah `mlxtend_rules_reference` dan `compare_rules` |
 | `src/build_rules_notebook.py` | Pembangkit notebook 05 |
-| `tests/test_rules.py`, `tests/test_validation.py` | Test rules (total 53 test) |
+| `tests/test_rules.py`, `tests/test_validation.py` | Test `pytest` (total 53 test di `tests/`) |
 | `notebooks/05_rules.ipynb` | Notebook hasil eksekusi |
-| `outputs/rules/rules_{0p1,0p5,1,2}.parquet` | Rules per min support; kolom `antecedent`, `consequent` (list id item), `n_antecedent`, `n_consequent`, `count`, `antecedent_count`, `consequent_count`, `support`, `confidence`, `lift`, `rule` |
-| `outputs/tables/t5_*.csv` | Jumlah rules, validasi, top 10, rules satu-ke-satu, support vs lift, contoh metrik, kelompok konferensi |
-| `outputs/figures/t5_rules_satu_ke_satu.png`, `t5_support_vs_lift.png` | Grafik |
+| `docs/reports/task-5-report.md` | Report ini |
 
 **Reproduksi** (dari akar repo, setelah notebook 04 dijalankan):
 ```bash

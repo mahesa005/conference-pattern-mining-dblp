@@ -268,21 +268,49 @@ Masih terbuka: satu run notebook pernah gagal dengan error terpotong; seluruh ru
 
 ## 9. File, reproduksi, dan commit
 
-**File**
+`data/` dan `outputs/` tidak masuk git (dibagikan lewat zip).
+
+**File input**
+
+| File | Asal | Isi |
+|---|---|---|
+| `data/processed/tx_author.parquet` | notebook 02 | Author-based database, tabel panjang `(tid, item)`, 1.821.757 transaksi |
+| `data/processed/tx_items.csv` | notebook 02 | Kode item: `venue`, `item_id`, `nama` |
+
+**File output: data**
+
+| File | Isi | Dipakai oleh |
+|---|---|---|
+| `outputs/fpgrowth/itemsets_{0p1,0p5,1,2}.parquet` | Frequent itemsets per min support (1.514 / 88 / 30 / 6 baris). Kolom: `itemset` (list `item_id` terurut), `length`, `count`, `support`, `names` | notebook 05, rencana 06 |
+
+Tag pada nama file: `0p1` = 0,1%, `0p5` = 0,5%, `1` = 1%, `2` = 2%.
+
+**File output: tabel** (`outputs/tables/`)
+
+| File | Isi |
+|---|---|
+| `t4_fpgrowth_validasi_mlxtend.csv` | Perbandingan dengan mlxtend per min support |
+| `t4_fpgrowth_ringkasan.csv` | Jumlah itemset per ukuran, `t_build`, `t_mine` |
+| `t4_fpgrowth_top10_{0p1,0p5,1,2}.csv` | 10 itemset dengan support tertinggi |
+| `t4_fpgrowth_top10_k2plus_{0p1,0p5,1,2}.csv` | 10 itemset berukuran ≥2 dengan support tertinggi |
+| `t4_fpgrowth_pasangan_teratas.csv` | 10 pasangan teratas pada 0,1%, dengan kolom `bertahan_sampai` |
+| `t4_fpgrowth_triple_teratas.csv` | 10 triple teratas pada 0,1%, dengan kolom `bertahan_sampai` |
+| `t4_fpgrowth_keterhubungan_top10.csv` | Untuk 10 konferensi terbesar: pasangan frequent, persen author satu konferensi, median konferensi per author |
+| `t4_fpgrowth_itemset_terpanjang.csv` | Itemset berukuran ≥5 |
+
+**File output: gambar** (`outputs/figures/`): `t4_fpgrowth_jumlah_itemset.png`, `t4_fpgrowth_pasangan_teratas.png`
+
+**Kode dan notebook** (masuk git)
 
 | File | Isi |
 |---|---|
 | `src/fpgrowth.py` | Algoritma FP-Growth |
-| `src/fpm_data.py` | Pemuat transaksi dan nama item |
+| `src/fpm_data.py` | `load_horizontal` (tabel panjang ke list frozenset), `load_item_names` |
 | `src/validation.py` | Pembanding dengan `mlxtend` |
 | `src/build_fpgrowth_notebook.py` | Pembangkit notebook 04 |
-| `tests/` | 36 test `pytest` |
+| `tests/test_fpgrowth.py`, `tests/test_fpm_data.py`, `tests/test_validation.py` | Test `pytest` |
 | `notebooks/04_fpgrowth.ipynb` | Notebook hasil eksekusi |
-| `outputs/fpgrowth/itemsets_{0p1,0p5,1,2}.parquet` | Frequent itemsets; kolom `itemset` (list id item terurut), `length`, `count`, `support`, `names` |
-| `outputs/tables/t4_fpgrowth_*.csv` | Tabel ringkasan, top 10, validasi, pasangan dan triple teratas |
-| `outputs/figures/t4_fpgrowth_jumlah_itemset.png`, `t4_fpgrowth_pasangan_teratas.png` | Grafik |
-
-`outputs/` dan `data/` tidak masuk git (dibagikan lewat zip).
+| `docs/reports/task-4-report.md` | Report ini |
 
 **Reproduksi** (dari akar repo):
 ```bash
