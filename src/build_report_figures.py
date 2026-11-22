@@ -378,8 +378,58 @@ def fig_t5_lift_konferensi():
     write("t5-lift-konferensi", body + items)
 
 
+def fig_t4_apriori_kandidat():
+    lv = pd.read_csv(TAB / "t4_apriori_level.csv")
+    lv = lv[lv["min_support"] == 0.001]
+    height, decades, group, bar = 4.2, 6, 1.9, 0.75
+    k = height / decades
+    body = []
+    for d in range(decades + 1):
+        body.append(f"\\draw[grayline] (0,{d * k}) -- ({group * len(lv)},{d * k});")
+        body.append(f"\\node[left,inner sep=2pt] at (0,{d * k}) {{{idn(10 ** d)}}};")
+    body.append(f"\\node[rotate=90] at (-1.25,{height / 2}) {{Jumlah \\textit{{itemset}} (skala log)}};")
+    for i, (_, r) in enumerate(lv.iterrows()):
+        x0 = 0.2 + i * group
+        for j, (col, color) in enumerate((("kandidat", GRAY), ("frequent", BLUE))):
+            x, v = x0 + j * bar, int(r[col])
+            y = np.log10(v) * k if v > 0 else 0
+            body.append(f"\\fill[{color}] ({x},0) rectangle ({x + bar * 0.9},{y});")
+            body.append(f"\\node[above,inner sep=1pt,font=\\tiny] at ({x + bar * 0.45},{y}) {{{idn(v)}}};")
+        body.append(f"\\node[below,inner sep=2pt] at ({x0 + bar},0) {{$k = {int(r['k'])}$}};")
+    items, _ = legend([("rect", GRAY, "kandidat $C_k$"), ("rect", BLUE, "\\textit{frequent} $L_k$")], 0, -1.0)
+    write("t4-apriori-kandidat", body + items)
+
+
+def fig_t6_waktu():
+    raw = pd.read_csv(TAB / "t6_waktu_mentah.csv")
+    height, vmax, group, bar = 4.2, 6, 3.0, 0.9
+    k = height / vmax
+    body = []
+    for g in range(0, vmax + 1):
+        body.append(f"\\draw[grayline] (0,{g * k}) -- ({group * 4},{g * k});")
+        body.append(f"\\node[left,inner sep=2pt] at (0,{g * k}) {{{g}}};")
+    body.append(f"\\node[rotate=90] at (-0.7,{height / 2}) {{Waktu (detik)}};")
+    for i, (ms, runs) in enumerate(raw.groupby("min_support", sort=True)):
+        x0 = 0.5 + i * group
+        for j, algo in enumerate(("Apriori", "FP-Growth")):
+            r = runs[runs["algorithm"] == algo].sort_values("seconds").iloc[1]  # run median dari tiga pengulangan
+            x = x0 + j * (bar + 0.15)
+            if algo == "Apriori":
+                body.append(f"\\fill[{ORANGE}] ({x},0) rectangle ({x + bar},{r['seconds'] * k});")
+            else:
+                body.append(f"\\fill[{BLUE}] ({x},0) rectangle ({x + bar},{r['t_build'] * k});")
+                body.append(f"\\fill[{BLUE_L}] ({x},{r['t_build'] * k}) rectangle ({x + bar},{r['seconds'] * k});")
+            body.append(f"\\node[above,inner sep=1pt,font=\\tiny] at ({x + bar / 2},{r['seconds'] * k}) {{{idn(r['seconds'], 2)}}};")
+        label = pct(ms * 100, 1).replace(",0\\%", "\\%")
+        body.append(f"\\node[below,inner sep=2pt] at ({x0 + bar + 0.075},0) {{\\textit{{min\\_sup}} {label}}};")
+    items, _ = legend([("rect", ORANGE, "Apriori (total)"), ("rect", BLUE, "FP-Growth: pembentukan FP-tree"),
+                       ("rect", BLUE_L, "FP-Growth: penambangan")], 0, -1.0)
+    write("t6-waktu", body + items)
+
+
 FIGURES = [fig_jenis_publikasi, fig_publikasi_tahun, fig_top10, fig_cagr, fig_slope, fig_komposisi, fig_waffle,
-           fig_dumbbells, fig_t4_itemset_ukuran, fig_t4_pasangan, fig_t5_arah_rules, fig_t5_lift_konferensi]
+           fig_dumbbells, fig_t4_itemset_ukuran, fig_t4_pasangan, fig_t5_arah_rules, fig_t5_lift_konferensi,
+           fig_t4_apriori_kandidat, fig_t6_waktu]
 
 
 if __name__ == "__main__":
