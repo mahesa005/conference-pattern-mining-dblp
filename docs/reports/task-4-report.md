@@ -4,7 +4,7 @@
 |---|---|
 | Penanggung jawab | Mahesa Andre (13523140), sisi FP-Growth. Sisi Apriori: Harfhan Ikhtiar (notebook `03_apriori`). |
 | Tanggal selesai | 21 November 2026 |
-| Status | Selesai dan di-commit di branch `fp-growth-t4`. Lima perbaikan kecil di notebook masih menunggu (lihat bagian 8). |
+| Status | Selesai di branch `fp-growth-t4`. Perbaikan hasil review sudah diterapkan ke notebook pada 22 November 2026 (lihat bagian 8). |
 | Notebook | `notebooks/04_fpgrowth.ipynb`, dibangkitkan oleh `src/build_fpgrowth_notebook.py` |
 | Kode | `src/fpgrowth.py`, `src/fpm_data.py`, `src/validation.py`, test di `tests/` |
 
@@ -173,46 +173,22 @@ Tidak ada kombinasi yang masuk sepuluh besar karena pasangan teratas (18.503 aut
 
 Konferensi yang besar belum tentu sering dipasangkan dengan konferensi lain. Dari 574 konferensi yang frequent pada 0,1%, hanya **105** yang muncul pada minimal satu pasangan frequent.
 
-Jumlah pasangan frequent untuk sepuluh konferensi terbesar:
+Untuk sepuluh konferensi terbesar (notebook bagian 6.5):
 
-| Konferensi | Author | Pasangan frequent |
-|---|---|---|
-| NeurIPS | 57.800 | 42 |
-| CVPR | 47.664 | 34 |
-| AAAI | 46.437 | 44 |
-| ICASSP | 42.057 | 41 |
-| EMBC | 39.318 | 4 |
-| HCI | 37.884 | 1 |
-| IGARSS | 35.229 | 4 |
-| EMNLP | 33.954 | 25 |
-| ICML | 31.896 | 24 |
-| IROS | 31.249 | 14 |
-
-Perbandingan lima konferensi dengan ukuran mirip (dihitung saat review, belum masuk notebook):
-
-| Konferensi | Pasangan frequent | Author yang hanya publish di konferensi ini | Median jumlah konferensi per author |
-|---|---|---|---|
-| NeurIPS | 42 | 11,6% | 6 |
-| ICASSP | 41 | 10,6% | 6 |
-| EMBC | 4 | 37,4% | 2 |
-| HCI | 1 | 40,8% | 2 |
-| IGARSS | 4 | 54,2% | 1 |
-
-Author NeurIPS dan ICASSP biasanya publish di sekitar enam konferensi, sehingga banyak pasangan yang lolos ambang. Author EMBC, HCI, dan IGARSS biasanya hanya publish di satu atau dua konferensi, dan yang publish di tempat lain tersebar ke banyak konferensi berbeda, sehingga tidak ada pasangan yang mencapai 1.822 author.
-
----|---|---|---|---|
+| Konferensi | Author | Pasangan frequent | Author yang hanya publish di konferensi ini | Median jumlah konferensi per author |
+|---|---|---|---|---|
 | NeurIPS | 57.800 | 42 | 11,6% | 6 |
-| CVPR | 47.664 | 34 | | |
-| AAAI | 46.437 | 44 | | |
+| CVPR | 47.664 | 34 | 10,3% | 6 |
+| AAAI | 46.437 | 44 | 8,5% | 8 |
 | ICASSP | 42.057 | 41 | 10,6% | 6 |
 | EMBC | 39.318 | 4 | 37,4% | 2 |
 | HCI | 37.884 | 1 | 40,8% | 2 |
 | IGARSS | 35.229 | 4 | 54,2% | 1 |
-| EMNLP | 33.954 | 25 | | |
-| ICML | 31.896 | 24 | | |
-| IROS | 31.249 | 14 | | |
+| EMNLP | 33.954 | 25 | 11,1% | 7 |
+| ICML | 31.896 | 24 | 8,4% | 7 |
+| IROS | 31.249 | 14 | 16,4% | 4 |
 
-Dua kolom terakhir hanya dihitung untuk lima konferensi pembanding (diperiksa saat review, belum masuk notebook).
+Author NeurIPS dan ICASSP biasanya publish di sekitar enam konferensi, sehingga banyak pasangan yang lolos ambang. Author EMBC, HCI, dan IGARSS biasanya hanya publish di satu atau dua konferensi, dan yang publish di tempat lain tersebar ke banyak konferensi berbeda, sehingga tidak ada pasangan yang mencapai 1.822 author.
 
 ---
 
@@ -277,17 +253,16 @@ Bug yang ditemukan dan diperbaiki: `mlxtend` menolak nama kolom integer yang tid
 
 ---
 
-## 8. Hasil review dan pekerjaan tersisa
+## 8. Hasil review dan perbaikan
 
-Review ulang (21 November 2026) memastikan seluruh angka di notebook benar. Yang masih perlu diperbaiki di notebook (belum dikerjakan, menunggu persetujuan):
-1. **Sedang**: klaim "author cenderung menerbitkan dalam komunitas yang sama, bukan berpindah ke bidang yang jauh" (bagian 7) terlalu kuat untuk dibuktikan dengan support. Dilunakkan menjadi "pola yang melewati ambang berada di dalam satu bidang".
-2. **Sedang**: frasa "komunitasnya relatif tertutup" untuk HCI, EMBC, IGARSS (6.5) diganti dengan angka di bagian 4.6 report ini (persentase author satu venue dan median jumlah venue).
-3. **Rendah**: alasan di 6.2 diganti dari "sifat anti-monoton" ke perbandingan langsung pasangan teratas (18.503) dengan konferensi ke-10 (31.249).
-4. **Rendah**: output sel `%pip` menampilkan path lokal Windows; tambah `--disable-pip-version-check`.
-5. **Sedang**: keterbatasan nomor 1 di bagian 7 notebook ("satu konferensi nyata dapat terpecah menjadi beberapa key") diganti dengan versi di bagian 6 report ini. Pengecekan `venue_proceedings.csv` menunjukkan key dengan singkatan sama (contoh ICIS) adalah konferensi berbeda, bukan satu konferensi yang terpecah.
-6. **Open issue**: satu run notebook pernah gagal dengan error terpotong; run berikutnya berhasil. Dugaan RAM, belum terbukti.
+Review ulang (21 sampai 22 November 2026) memastikan seluruh angka di notebook benar, lalu perbaikan berikut diterapkan ke notebook dan notebook dijalankan ulang (22 November 2026, tanpa error):
+1. Klaim "author cenderung menerbitkan dalam komunitas yang sama, bukan berpindah ke bidang yang jauh" (bagian 7) dilunakkan menjadi "di antara kombinasi yang cukup besar untuk melewati ambang", dengan catatan bahwa hasil ini tidak membuktikan author jarang berpindah bidang.
+2. Frasa "komunitasnya relatif tertutup" untuk HCI, EMBC, IGARSS (6.5) diganti dengan angka: persentase author yang hanya publish di satu konferensi dan median jumlah konferensi per author, kini dihitung untuk sepuluh konferensi terbesar.
+3. Alasan di 6.2 diganti dari "sifat anti-monoton" ke perbandingan langsung pasangan teratas (18.503) dengan konferensi ke-10 (31.249).
+4. Output sel `%pip` tidak lagi menampilkan path lokal (`--disable-pip-version-check`).
+5. Keterbatasan nomor 1 di bagian 7 diganti dengan versi di bagian 6 report ini (workshop terpisah dari konferensi utama; key dengan singkatan sama adalah konferensi berbeda).
 
-Jawaban di bagian 5 report ini sudah memakai versi yang diperbaiki.
+Masih terbuka: satu run notebook pernah gagal dengan error terpotong; seluruh run berikutnya berhasil. Dugaan RAM, belum terbukti.
 
 ---
 

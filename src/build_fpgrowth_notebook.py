@@ -122,7 +122,7 @@ Notebook ini tidak memakai GPU. Prasyaratnya adalah notebook `02_transactions` s
 cells.append(md("Sel berikut memasang semua pustaka yang dipakai notebook ini."))
 
 cells.append(code("""
-%pip install -q numpy pandas scipy matplotlib pyarrow mlxtend
+%pip install -q --disable-pip-version-check numpy pandas scipy matplotlib pyarrow mlxtend
 """))
 
 cells.append(md("""
@@ -383,7 +383,7 @@ for ms, df in frames.items():
 """))
 
 cells.append(md("""
-> Sepuluh itemset teratas pada setiap min support selalu berupa konferensi tunggal, dipimpin NeurIPS (57.800 author, support 3,17%), CVPR (47.664), dan AAAI (46.437). Hal ini sesuai sifat anti-monoton support: support sebuah kombinasi tidak mungkin melebihi support item penyusunnya. Pasangan teratas, ICML + NeurIPS, hanya memiliki support 1,02% (18.503 author), sekitar sepertiga support NeurIPS sendiri.
+> Sepuluh itemset teratas pada setiap min support selalu berupa konferensi tunggal, dipimpin NeurIPS (57.800 author, support 3,17%), CVPR (47.664), dan AAAI (46.437). Tidak ada kombinasi yang masuk sepuluh besar karena pasangan teratas, ICML + NeurIPS, hanya memiliki 18.503 author (support 1,02%), lebih kecil dari konferensi ke-10, IROS (31.249 author). Support pasangan itu sekitar sepertiga support NeurIPS sendiri.
 """))
 
 cells.append(md("""
@@ -459,7 +459,7 @@ cells.append(md("""
 cells.append(md("""
 ## 6.5 Keterhubungan dan Itemset Terpanjang (Task 4.5)
 
-Konferensi yang populer belum tentu sering muncul bersama konferensi lain. Tabel pertama menghitung, untuk sepuluh konferensi dengan support tertinggi, berapa banyak pasangan frequent pada min support 0,1% yang memuatnya. Tabel kedua menampilkan itemset terpanjang yang ditemukan.
+Konferensi yang populer belum tentu sering muncul bersama konferensi lain. Tabel pertama menghitung, untuk sepuluh konferensi dengan support tertinggi, berapa banyak pasangan frequent pada min support 0,1% yang memuatnya, berapa persen author-nya yang hanya publish di konferensi itu, dan median jumlah konferensi per author-nya. Tabel kedua menampilkan itemset terpanjang yang ditemukan.
 """))
 
 cells.append(code("""
@@ -471,6 +471,9 @@ connect = pd.DataFrame({
     "author": top_items["count"].to_numpy(),
     "pasangan_frequent": [int(degree.get(s[0], 0)) for s in top_items["itemset"]],
 })
+breadth = [np.fromiter((len(t) for t in transactions if s[0] in t), dtype=np.int32) for s in top_items["itemset"]]
+connect["author_hanya_di_sini_pct"] = [round(float((b == 1).mean()) * 100, 1) for b in breadth]
+connect["median_konferensi_per_author"] = [float(np.median(b)) for b in breadth]
 save_table(connect, "t4_fpgrowth_keterhubungan_top10.csv", index=False)
 print(f"Item yang muncul pada minimal satu pasangan frequent: {degree.size} dari {(base['length'] == 1).sum()} item frequent")
 display(connect)
@@ -485,7 +488,7 @@ display(longest[longest["length"] == 5].head(CFG.TOP_K // 2).style.format({"supp
 """))
 
 cells.append(md("""
-> Hanya 105 dari 574 konferensi frequent yang muncul pada minimal satu pasangan frequent. Popularitas tidak sama dengan keterhubungan. AAAI (44 pasangan), NeurIPS (42), ICASSP (41), dan CVPR (34) terhubung luas. Sebaliknya, EMBC dan IGARSS, yang termasuk sepuluh konferensi terbesar, masing-masing hanya muncul pada empat pasangan, dan HCI hanya pada satu pasangan. Author di ketiga konferensi itu jarang menerbitkan di konferensi besar lain dalam jumlah yang melewati ambang, sehingga komunitasnya relatif tertutup.
+> Hanya 105 dari 574 konferensi frequent yang muncul pada minimal satu pasangan frequent. Popularitas tidak sama dengan keterhubungan. AAAI (44 pasangan), NeurIPS (42), ICASSP (41), dan CVPR (34) terhubung luas. Sebaliknya, EMBC dan IGARSS, yang termasuk sepuluh konferensi terbesar, masing-masing hanya muncul pada empat pasangan, dan HCI hanya pada satu pasangan. Penyebabnya terlihat pada dua kolom terakhir. Author EMBC, HCI, dan IGARSS biasanya hanya publish di satu atau dua konferensi (median 2, 2, dan 1), dan 37,4%, 40,8%, serta 54,2% di antaranya tidak pernah publish di konferensi lain. Author NeurIPS dan ICASSP biasanya publish di enam konferensi, dan hanya 11,6% serta 10,6% yang publish di satu konferensi saja. Author EMBC, HCI, dan IGARSS yang publish di tempat lain tersebar ke banyak konferensi berbeda, sehingga tidak ada pasangan yang mencapai 1.822 author.
 >
 > Itemset terpanjang berisi enam konferensi, yaitu AAAI + CVPR + ECCV + ICCV + ICLR + NeurIPS (2.005 author) dan dua itemset lain dengan count di atas 1.800. Seluruh 40 itemset berukuran lima atau enam hanya melibatkan 14 konferensi, dan NeurIPS ada pada 35 di antaranya. Pola panjang hanya muncul di inti AI, machine learning, dan computer vision.
 """))
@@ -496,7 +499,7 @@ cells.append(md("""
 cells.append(section("Interpretasi (Task 4.6)", "7"))
 
 cells.append(md("""
-**Pola publikasi.** Kombinasi konferensi yang frequent hampir seluruhnya terjadi di dalam satu bidang (machine learning, computer vision, NLP, robotika) atau di antara bidang yang bertetangga dekat, yaitu machine learning dengan computer vision dan AI umum. Artinya, author pada periode 2015-2025 cenderung menerbitkan di beberapa konferensi dalam komunitas yang sama, bukan berpindah ke bidang yang jauh.
+**Pola publikasi.** Kombinasi konferensi yang frequent hampir seluruhnya terjadi di dalam satu bidang (machine learning, computer vision, NLP, robotika) atau di antara bidang yang bertetangga dekat, yaitu machine learning dengan computer vision dan AI umum. Artinya, di antara kombinasi yang cukup besar untuk melewati ambang, author biasanya publish di beberapa konferensi dalam bidang yang sama. Hasil ini tidak membuktikan bahwa author jarang berpindah bidang, karena kombinasi lintas bidang dapat saja banyak secara total tetapi tersebar ke banyak pasangan kecil yang tidak lolos ambang.
 
 **Inti AI, machine learning, dan computer vision.** NeurIPS, ICML, ICLR, AAAI, CVPR, ICCV, dan ECCV adalah satu-satunya kelompok yang menghasilkan itemset berukuran lima dan enam. Banyak author di kelompok ini menerbitkan di banyak konferensi besar sekaligus, dan NeurIPS menjadi titik temu kelompok tersebut.
 
@@ -506,7 +509,7 @@ cells.append(md("""
 
 **Keterbatasan.**
 
-1. Item adalah seri konferensi berdasarkan key DBLP. Satu konferensi nyata dapat terpecah menjadi beberapa key, dan workshop dapat menjadi item terpisah dari konferensi induknya, sehingga support-nya terbagi.
+1. Item adalah seri konferensi berdasarkan key DBLP. Beberapa acara dipecah DBLP menjadi konferensi utama dan workshop dengan key berbeda, misalnya `iccv` (ICCV) dan `iccvw` (ICCV Workshops), sehingga author yang hanya publish di workshop tidak terhitung pada konferensi utamanya. Key dengan singkatan sama, misalnya `icis`, `ACISicis`, dan `icis2`, adalah konferensi yang memang berbeda dan benar dipisah.
 2. Identitas author mengikuti disambiguasi DBLP. Dua orang dengan nama sama dapat tergabung, dan satu orang dapat tercatat dengan dua nama.
 3. Support menghitung author, bukan paper. Author yang menerbitkan satu paper dan author yang menerbitkan puluhan paper di konferensi yang sama dihitung sama.
 4. Transaksi author-based menggabungkan seluruh 2015-2025, sehingga dua konferensi dapat muncul bersama walaupun dipakai pada tahun yang berbeda. Pengaruh waktu dianalisis pada Bagian E dengan author-year-based database.
