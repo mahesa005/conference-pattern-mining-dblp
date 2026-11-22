@@ -395,7 +395,36 @@ save_fig(fig, "t6_waktu_per_min_support.png")
 cells.append(section("Jawaban Pertanyaan Task 6", "8"))
 
 cells.append(md("""
-**Belum diisi.** Jawaban ketiga pertanyaan Task 6 ditulis setelah Apriori dari notebook `03_apriori` tersedia di `src/apriori.py` dan notebook ini dijalankan ulang. Selama sel di bagian 3 mencetak peringatan pengganti sementara, angka Apriori di atas tidak boleh dipakai.
+Jawaban di bawah memakai angka dari bagian 5 sampai 7 (median tiga pengulangan pada satu mesin lokal) dan rincian per level Apriori dari notebook `03_apriori` bagian 4.
+
+## 8.1 Pengaruh Min Support terhadap Performa
+
+Menaikkan min support mempercepat kedua algoritma, tetapi jauh lebih lambat daripada turunnya jumlah pola. Dari 0,1% ke 2%, waktu Apriori turun dari 5,41 menjadi 0,83 detik dan waktu FP-Growth dari 5,19 menjadi 0,83 detik, atau turun sekitar 6,3 sampai 6,5 kali. Pada rentang yang sama, jumlah frequent itemsets turun 252 kali (1.514 menjadi 6). Waktu tidak turun sebanyak itu karena kedua algoritma selalu membayar biaya tetap: satu pemindaian 1.821.757 transaksi untuk menghitung support 1-itemset, lalu pemangkasan dan penggabungan transaksi. Pada 2%, biaya tetap ini praktis seluruh waktunya. Penambangan FP-Growth hanya 0,00006 detik dari 0,83 detik, dan Apriori berhenti di level 2 setelah 15 kandidat tidak ada yang frequent.
+
+Pada min support rendah, bagian yang bergantung pada min support mulai dominan, dan kedua algoritma membayarnya di tempat berbeda.
+
+- **Apriori** membayar di level 2. Pada 0,1% terdapat 574 item frequent, sehingga semua 164.451 pasangan menjadi kandidat, dan hanya 393 (0,24%) yang frequent. Level 2 memakan sekitar separuh total waktu Apriori. Mulai level 3, prune membuat kandidat kecil (1.228, 337, 54, dan 5).
+- **FP-Growth** membayar saat membangun FP-tree. Pada 0,1%, pembentukan pohon dari transaksi yang sudah digabung memakan 3,33 detik, sedangkan penambangannya hanya 1,75 detik. Pada 0,5% ke atas, pembentukan pohon mencakup 82% sampai 100% waktunya.
+
+## 8.2 Kesamaan Frequent Itemsets
+
+Ya. Pada keempat min support, kedua algoritma menghasilkan himpunan frequent itemsets yang sama persis (1.514, 88, 30, dan 6), tanpa itemset yang hanya ditemukan salah satunya dan tanpa perbedaan count (bagian 5). Akibatnya, association rules dengan min confidence 50% juga identik: 1.387, 7, 1, dan 0 rules dengan support, confidence, dan lift yang sama (bagian 6). Notebook 03 dan 04 juga memvalidasi masing-masing algoritma terhadap `mlxtend` dengan hasil identik.
+
+Kesamaan ini memang diharapkan. Keduanya algoritma eksak dengan definisi support dan ambang yang sama (`min_count_for`), sehingga perbedaannya hanya pada cara menghitung, bukan pada hasil.
+
+## 8.3 Algoritma yang Lebih Sesuai untuk DBLP
+
+Pada keempat min support yang diuji, **keduanya praktis setara**. Rasio median Apriori terhadap FP-Growth adalah 1,04, 1,02, 0,94, dan 1,00. FP-Growth konsisten sedikit lebih cepat hanya pada 0,1% (sekitar 4%, rentang min-maks tidak tumpang tindih). Pada 0,5% dan 2% rentangnya tumpang tindih, dan pada 1% Apriori sedikit lebih cepat. Selisih sebesar ini lebih kecil daripada pengaruh detail implementasi, sehingga data ini tidak mendukung klaim bahwa salah satu algoritma jelas lebih unggul pada pengaturan Task 4.
+
+Hasil ini berbeda dari gambaran umum bahwa FP-Growth jauh lebih cepat, dan penyebabnya ada pada sifat data DBLP:
+
+1. **Transaksi pendek dan ekor panjang.** 58,4% author hanya publish di satu venue (notebook 02). Setelah dipangkas, hanya 536.543 transaksi yang berisi minimal dua item frequent pada 0,1%, dan setelah digabung tersisa 315.694 transaksi unik. Database yang dipindai Apriori per level jadi kecil.
+2. **Pola sedikit dan dangkal.** Itemset terpanjang hanya berisi enam item, sehingga Apriori hanya perlu enam pemindaian, dan prune pada level 3 ke atas membuang hampir semua kombinasi.
+3. **Optimasi yang sama.** Kedua implementasi memakai pra-pemrosesan yang sama, dan Apriori memilih cara penghitungan kandidat yang lebih murah per transaksi. Tanpa pilihan itu, transaksi terpanjang (187 item frequent) membuat enumerasi subset meledak.
+
+Meskipun begitu, **FP-Growth lebih sesuai sebagai pilihan utama** untuk DBLP, dengan dua alasan dari angka di atas. Pertama, bagian penambangan FP-Growth (1,75 detik pada 0,1%) lebih cepat daripada level 2 ke atas Apriori (sekitar 4,4 detik pada notebook 03). Selisih total yang kecil terjadi karena FP-Growth menghabiskan lebih banyak waktu membangun pohon. Kedua, biaya Apriori tumbuh kuadratik terhadap jumlah item frequent: dari 2% ke 0,1%, item frequent naik 96 kali tetapi kandidat level 2 naik sekitar 11.000 kali. Analisis yang menurunkan min support di bawah 0,1% (untuk menangkap pola bidang yang lebih kecil) akan menambah item frequent, dan di situ biaya kandidat Apriori tumbuh lebih cepat daripada biaya FP-tree. Pernyataan kedua ini adalah perkiraan dari pola pertumbuhan kandidat, bukan hasil pengukuran di notebook ini.
+
+**Keterbatasan pengukuran.** Kedua algoritma ditulis dalam Python murni satu thread, sehingga waktu absolutnya mencerminkan overhead interpreter dan dapat berbeda dari implementasi C atau Java. Pengukuran dilakukan tiga kali pada satu mesin, dan variasi antarpengulangan mencapai 19% (Apriori pada 1%: 0,99 sampai 1,19 detik), sehingga selisih median beberapa persen sebaiknya dianggap setara.
 """))
 
 # ---------------------------------------------------------------------------
@@ -404,7 +433,13 @@ cells.append(md("""
 cells.append(section("Ringkasan dan Langkah Berikutnya", "9"))
 
 cells.append(md("""
-Notebook ini sudah menyiapkan seluruh pengukuran Task 6: jumlah frequent itemsets, jumlah rules, kesamaan hasil, dan waktu eksekusi berulang untuk keempat min support. Langkah berikutnya adalah menambahkan `src/apriori.py` (kontraknya diuji oleh `tests/test_apriori_contract.py`), menjalankan ulang notebook ini, lalu menulis jawaban bagian 8 berdasarkan angka yang dihasilkan.
+| Pertanyaan | Jawaban | Bagian |
+|---|---|---|
+| Pengaruh min support | Waktu kedua algoritma turun sekitar 6,3 sampai 6,5 kali dari 0,1% ke 2%, sedangkan jumlah itemset turun 252 kali, karena keduanya selalu membayar pemindaian awal seluruh transaksi | 7, 8.1 |
+| Kesamaan hasil | Frequent itemsets (1.514, 88, 30, 6) dan rules (1.387, 7, 1, 0) identik pada keempat min support | 5, 6, 8.2 |
+| Algoritma yang sesuai | Waktu praktis setara (rasio 0,94 sampai 1,04). FP-Growth dipilih sebagai pilihan utama karena fase penambangannya lebih cepat dan tidak membangkitkan kandidat yang tumbuh kuadratik | 7, 8.3 |
+
+Tabel `t6_*.csv` di `outputs/tables/` dan grafik `t6_waktu_per_min_support.png` di `outputs/figures/` memuat seluruh angka yang dipakai bagian 8.
 """))
 
 # @@APPEND@@
