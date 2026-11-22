@@ -1,7 +1,8 @@
-"""Validasi hasil FP-Growth terhadap mlxtend."""
+"""Validasi hasil FP-Growth dan association rules terhadap mlxtend."""
 from __future__ import annotations
 
-from typing import Dict, FrozenSet, Mapping, Sequence
+import math
+from typing import Dict, FrozenSet, Mapping, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -46,3 +47,37 @@ def compare_itemsets(ours: Mapping[FrozenSet[int], int], ref: Mapping[FrozenSet[
         "n_ours": len(ours), "n_ref": len(ref), "missing": len(missing), "extra": len(extra),
         "count_mismatch": len(mismatch), "identical": not (missing or extra or mismatch),
     }
+
+
+RuleKey = Tuple[FrozenSet[int], FrozenSet[int]]
+
+
+def mlxtend_rules_reference(itemsets: Mapping[FrozenSet[int], int], n_transactions: int,
+                            min_confidence: float) -> Dict[RuleKey, Tuple[float, float, float]]:
+    """Rules dari mlxtend.association_rules: {(antecedent, consequent): (support, confidence, lift)}."""
+    from mlxtend.frequent_patterns import association_rules
+
+    if not any(len(s) >= 2 for s in itemsets):
+        return {}
+    df = pd.DataFrame({
+        "support": [c / n_transactions for c in itemsets.values()],
+        "itemsets": [frozenset(str(i) for i in s) for s in itemsets],
+    })
+    res = association_rules(df, num_itemsets=n_transactions, metric="confidence", min_threshold=min_confidence)
+
+    def to_ids(s):
+        return frozenset(int(i) for i in s)
+
+    cols = ["antecedents", "consequents", "support", "confidence", "lift"]
+    return {(to_ids(a), to_ids(c)): (s, cf, l) for a, c, s, cf, l in res[cols].itertuples(index=False)}
+
+
+def compare_rules(ours: pd.DataFrame, ref: Mapping[RuleKey, Tuple[float, float, float]], rel_tol: float = 1e-9) -> dict:
+    cols = ["antecedent", "consequent", "support", "confidence", "lift"]
+    mine = {(frozenset(a), frozenset(c)): (s, cf, l) for a, c, s, cf, l in ours[cols].itertuples(index=False)}
+    missing = set(ref) - set(mine)
+    extra = set(mine) - set(ref)
+    mismatch = [k for k in set(mine) & set(ref)
+                if not all(math.isclose(x, y, rel_tol=rel_tol) for x, y in zip(mine[k], ref[k]))]
+    return {"n_ours": len(mine), "n_ref": len(ref), "missing": len(missing), "extra": len(extra),
+            "metric_mismatch": len(mismatch), "identical": not (missing or extra or mismatch)}

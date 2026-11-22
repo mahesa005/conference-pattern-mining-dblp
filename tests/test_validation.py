@@ -3,7 +3,8 @@ import random
 import pytest
 
 from fpgrowth import fpgrowth
-from validation import compare_itemsets, mlxtend_reference
+from rules import generate_rules
+from validation import compare_itemsets, compare_rules, mlxtend_reference, mlxtend_rules_reference
 
 
 @pytest.mark.parametrize("min_support", [0.02, 0.1])
@@ -35,3 +36,17 @@ def test_mlxtend_reference_keeps_full_denominator():
     tx = [frozenset()] * 95 + [frozenset([1, 2])] * 3 + [frozenset([1]), frozenset([3])]
     assert mlxtend_reference(tx, 0.03) == {frozenset([1]): 4, frozenset([2]): 3, frozenset([1, 2]): 3}
     assert mlxtend_reference(tx, 0.04) == {frozenset([1]): 4}
+
+
+@pytest.mark.parametrize("min_confidence", [0.3, 0.5])
+def test_rules_agree_with_mlxtend(min_confidence):
+    rng = random.Random(11)
+    tx = [frozenset(rng.sample(range(12), rng.choice([0, 1, 2, 3, 4]))) for _ in range(300)]
+    itemsets = fpgrowth(tx, 0.03).itemsets
+    ours = generate_rules(itemsets, len(tx), min_confidence)
+    ref = mlxtend_rules_reference(itemsets, len(tx), min_confidence)
+    assert compare_rules(ours, ref)["identical"]
+
+
+def test_rules_reference_empty_when_no_pairs():
+    assert mlxtend_rules_reference({frozenset([1]): 5}, 10, 0.5) == {}
