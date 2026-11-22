@@ -8,6 +8,8 @@
 | Notebook | `notebooks/04_fpgrowth.ipynb`, dibangkitkan oleh `src/build_fpgrowth_notebook.py` |
 | Kode | `src/fpgrowth.py`, `src/fpm_data.py`, `src/validation.py`, test di `tests/` |
 
+> **Penanda [PU-n]**: klaim yang memakai pengetahuan umum di luar data DBLP (misalnya nama bidang riset sebuah konferensi). Seluruh angka di report ini berasal dari data DBLP. Daftar klaim [PU-n] beserta status pembuktiannya ada di akhir bagian 6.
+
 ---
 
 ## 1. Ringkasan
@@ -16,7 +18,7 @@ FP-Growth diimplementasikan sendiri dan dijalankan pada author-based transaction
 
 Temuan utama:
 - Hanya min support **0,1%** yang menghasilkan pola kombinasi yang kaya (1.514 itemset, sampai 6 konferensi). Pada 2% tidak ada satu pun pasangan konferensi yang frequent.
-- Kombinasi yang frequent **mengelompok per bidang**: machine learning, computer vision, NLP, dan robotika.
+- Kombinasi yang frequent **mengelompok per bidang**: machine learning, computer vision, NLP, dan robotika. **[PU-1]**
 - **NeurIPS menjadi penghubung**. Pasangan teratas adalah ICML + NeurIPS (18.503 author).
 - **Populer belum tentu terhubung**. EMBC, IGARSS, dan HCI termasuk sepuluh konferensi terbesar, tetapi hampir tidak membentuk pasangan frequent.
 
@@ -101,12 +103,12 @@ Detail lain:
 
 | min support | t_build | t_mine |
 |---|---|---|
-| 0,1% | 8,29 s | 5,29 s |
-| 0,5% | 3,12 s | 0,99 s |
-| 1% | 2,82 s | 0,21 s |
-| 2% | 2,33 s | 0,00 s |
+| 0,1% | 9,70 s | 8,13 s |
+| 0,5% | 4,70 s | 1,10 s |
+| 1% | 4,04 s | 0,26 s |
+| 2% | 3,33 s | 0,00 s |
 
-Waktu bervariasi antar run (t_build pada 0,1%: 10,65 s, 6,02 s, dan 8,29 s pada tiga run berbeda). Angka ini bukan untuk perbandingan performa. Perbandingan dengan pengukuran berulang dilakukan di Task 6 (`06_performance`).
+Angka di atas berasal dari run notebook terakhir (22 November 2026). Waktu bervariasi antar run (t_build pada 0,1%: 10,65 s, 6,02 s, 8,29 s, dan 9,70 s pada empat run berbeda). Angka ini bukan untuk perbandingan performa. Perbandingan dengan pengukuran berulang dilakukan di Task 6 (`06_performance`).
 
 ### 4.4 Sepuluh itemset dengan support tertinggi
 
@@ -206,13 +208,13 @@ Author NeurIPS dan ICASSP biasanya publish di sekitar enam konferensi, sehingga 
 
 **6. Interpretasi.**
 
-*Kombinasi yang sering muncul berasal dari bidang yang sama.* Kombinasi yang lolos ambang hampir selalu berasal dari satu bidang riset: machine learning (ICML + NeurIPS, 18.503 author), computer vision (CVPR + ICCV, 15.441), NLP (ACL + EMNLP, 14.557), dan robotika (ICRA + IROS, 11.860). Kombinasi lintas bidang yang sering muncul hanya terjadi antara bidang yang dekat, yaitu machine learning dengan computer vision dan AI umum, misalnya CVPR + NeurIPS (15.640). Artinya, di antara kombinasi yang cukup besar untuk lolos ambang, author biasanya publish di beberapa konferensi dalam bidang yang sama.
+*Kombinasi yang sering muncul berasal dari bidang yang sama.* **[PU-1]** Kombinasi yang lolos ambang hampir selalu berasal dari satu bidang riset: machine learning (ICML + NeurIPS, 18.503 author), computer vision (CVPR + ICCV, 15.441), NLP (ACL + EMNLP, 14.557), dan robotika (ICRA + IROS, 11.860). Kombinasi lintas bidang yang sering muncul hanya terjadi antara bidang yang dekat, yaitu machine learning dengan computer vision dan AI umum, misalnya CVPR + NeurIPS (15.640). Artinya, di antara kombinasi yang cukup besar untuk lolos ambang, author biasanya publish di beberapa konferensi dalam bidang yang sama.
 
-*NeurIPS adalah pusatnya.* NeurIPS muncul pada 4 dari 10 pasangan teratas, 8 dari 10 triple teratas, dan 35 dari 40 itemset berisi lima atau enam konferensi. Kombinasi panjang hanya terbentuk di sekitar machine learning dan computer vision, misalnya AAAI + CVPR + ECCV + ICCV + ICLR + NeurIPS (2.005 author). Artinya, NeurIPS menjadi tempat bertemunya author dari machine learning, computer vision, dan AI umum.
+*NeurIPS adalah pusatnya.* **[PU-1]** (nama bidang; angka keterlibatan NeurIPS berasal dari data) NeurIPS muncul pada 4 dari 10 pasangan teratas, 8 dari 10 triple teratas, dan 35 dari 40 itemset berisi lima atau enam konferensi. Kombinasi panjang hanya terbentuk di sekitar machine learning dan computer vision, misalnya AAAI + CVPR + ECCV + ICCV + ICLR + NeurIPS (2.005 author). Artinya, NeurIPS menjadi tempat bertemunya author dari machine learning, computer vision, dan AI umum.
 
 *Konferensi besar belum tentu terhubung.* EMBC, IGARSS, dan HCI termasuk sepuluh konferensi terbesar, tetapi hanya punya 4, 4, dan 1 pasangan frequent, karena author di sana biasanya hanya publish di satu atau dua konferensi (author NeurIPS biasanya di enam). Artinya, popularitas tidak menjamin konferensi sering dipasangkan dengan konferensi lain.
 
-*Batasan interpretasi.* Support hanya mengukur seberapa sering dua konferensi muncul bersama, bukan seberapa kuat hubungannya. Dua konferensi besar bisa sering muncul bersama hanya karena keduanya besar; kekuatan hubungan diukur dengan lift pada Task 5. Kombinasi lintas bidang juga bisa banyak secara total tetapi tersebar ke banyak pasangan kecil yang tidak lolos ambang, sehingga hasil ini tidak membuktikan bahwa author jarang berpindah bidang.
+*Batasan interpretasi.* Support hanya mengukur seberapa sering dua konferensi muncul bersama, bukan seberapa kuat hubungannya. Dua konferensi besar bisa sering muncul bersama hanya karena keduanya besar; kekuatan hubungan diukur dengan lift pada Task 5. Kombinasi lintas bidang juga bisa banyak secara total tetapi tersebar ke banyak pasangan kecil yang tidak lolos ambang, sehingga hasil ini tidak membuktikan bahwa author jarang berpindah bidang. **[PU-1]**
 
 ---
 
@@ -220,13 +222,20 @@ Author NeurIPS dan ICASSP biasanya publish di sekitar enam konferensi, sehingga 
 
 1. Item adalah seri konferensi berdasarkan key DBLP. Beberapa acara dipecah DBLP menjadi konferensi utama dan workshop dengan key berbeda, misalnya `iccv` (ICCV) dan `iccvw` (ICCV Workshops), sehingga author yang hanya publish di workshop tidak terhitung pada konferensi utamanya. Sebaliknya, beberapa key dengan singkatan sama adalah konferensi yang memang berbeda, misalnya `icis` (Information Systems), `ACISicis` (Computer and Information Science), dan `icis2` (Intelligence Science); ketiganya benar dipisah, dan nama tampilnya dibedakan dengan akhiran `[key]`.
 2. Identitas author mengikuti disambiguasi DBLP. Dua orang bernama sama dapat tergabung menjadi satu transaksi, dan satu orang dapat tercatat dengan dua nama sehingga riwayatnya terbelah. Kasus pertama terlihat jelas pada data:
-   - Lima belas transaksi terbesar seluruhnya milik nama yang sangat umum tanpa nomor disambiguasi DBLP, misalnya Yang Liu (332 konferensi, 725 paper), Wei Wang (280), dan Lei Wang (262). Jumlah ini tidak wajar untuk satu orang, sehingga kemungkinan besar setiap nama tersebut menampung paper banyak orang berbeda.
+   - Lima belas transaksi terbesar seluruhnya milik nama yang sangat umum tanpa nomor disambiguasi DBLP, misalnya Yang Liu (332 konferensi, 725 paper), Wei Wang (280), dan Lei Wang (262). Jumlah ini tidak wajar untuk satu orang, sehingga kemungkinan besar setiap nama tersebut menampung paper banyak orang berbeda. **[PU-2]**
    - Terdapat 291 transaksi dengan 100 konferensi atau lebih, dan hanya satu di antaranya yang memiliki nomor disambiguasi.
    - Pengaruhnya pada hasil min support 0,1%: median kontribusi ke-291 transaksi ini terhadap count sebuah itemset adalah 0,6% (1-itemset), 3,0% (pasangan), dan 3,9% (triple ke atas), dengan maksimum 11,5%. Tanpa transaksi ini, 109 dari 1.514 itemset (7%) akan jatuh di bawah ambang 1.822 author, yaitu 5 1-itemset, 31 pasangan, 42 triple, dan 31 itemset berukuran empat ke atas. Sepuluh pasangan teratas hanya mendapat 0,8% sampai 1,8% count-nya dari transaksi ini (contoh: ICML + NeurIPS turun dari 18.503 menjadi 18.348).
    - Kesimpulan utama Task 4 tidak berubah, tetapi itemset yang nyaris lolos ambang pada 0,1% sebagian bergantung pada profil gabungan ini. Hasil tetap dilaporkan apa adanya, tanpa membuang transaksi tersebut.
 3. Support menghitung author, bukan paper.
 4. Author-based menggabungkan seluruh 2015-2025, sehingga dua konferensi bisa muncul bersama walaupun dipakai pada tahun berbeda. Pengaruh waktu dianalisis di Bagian E (author-year-based).
-5. Frequent itemsets pada ambang tinggi didominasi konferensi besar. Kombinasi lintas bidang bisa saja banyak secara total tetapi tersebar, sehingga tidak ada yang lolos ambang.
+5. Frequent itemsets pada ambang tinggi didominasi konferensi besar. Kombinasi lintas bidang bisa saja banyak secara total tetapi tersebar, sehingga tidak ada yang lolos ambang. **[PU-1]**
+
+### Klaim berbasis pengetahuan umum
+
+| Kode | Klaim | Sumber | Dukungan data DBLP | Status |
+|---|---|---|---|---|
+| PU-1 | Nama bidang riset untuk konferensi: machine learning (NeurIPS, ICML, ICLR), computer vision (CVPR, ICCV, ECCV), NLP (ACL, EMNLP), robotika (ICRA, IROS), AI umum (AAAI), serta pernyataan "satu bidang" atau "lintas bidang" yang memakai nama ini | Pengetahuan umum penulis | Judul proceedings di `data/processed/venue_proceedings.csv` (hasil notebook 00 dari dump DBLP) cocok dengan setiap nama: "Neural Information Processing Systems", "Machine Learning", "Learning Representations", "Computer Vision (and Pattern Recognition)", "Computational Linguistics", "Natural Language Processing", "Robotics and Automation", "Intelligent Robots and Systems", "Artificial Intelligence" | Didukung judul proceedings (diperiksa 22 November 2026). Pengelompokan konferensi ke bidang tetap penilaian manual, bukan hasil algoritma. |
+| PU-2 | Nama umum tanpa nomor disambiguasi (Yang Liu, Wei Wang, dan seterusnya) adalah profil gabungan banyak orang | Pengetahuan tentang cara DBLP membedakan author bernama sama | Indikasi kuat: Yang Liu tercatat di 332 konferensi dengan 725 paper, dan hanya 1 dari 291 transaksi dengan ≥100 konferensi yang memiliki nomor disambiguasi | Dugaan; tidak dibuktikan per orang |
 
 ---
 

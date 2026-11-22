@@ -8,6 +8,8 @@
 | Notebook | `notebooks/05_rules.ipynb`, dibangkitkan oleh `src/build_rules_notebook.py` |
 | Kode | `src/rules.py`, `src/validation.py` (fungsi rules), test di `tests/test_rules.py` dan `tests/test_validation.py` |
 
+> **Penanda [PU-n]**: klaim yang memakai pengetahuan umum di luar data DBLP (misalnya nama bidang riset sebuah konferensi). Seluruh angka di report ini berasal dari data DBLP. Daftar klaim [PU-n] beserta status pembuktiannya ada di akhir bagian 6.
+
 ---
 
 ## 1. Ringkasan
@@ -16,9 +18,9 @@ Association rules dibangkitkan dari frequent itemsets FP-Growth (Task 4) dengan 
 
 Temuan utama:
 - Pada min support 0,1% terdapat **1.387 rules**, tetapi hanya **22** yang berbentuk satu-ke-satu (satu konferensi ke satu konferensi). Pada 1% hanya ada satu rule (ICML → NeurIPS), dan pada 2% tidak ada rule.
-- **Tidak ada pasangan konferensi yang berlaku dua arah.** Seluruh rule satu-ke-satu mengarah dari konferensi yang lebih kecil ke konferensi utama di bidang yang sama, misalnya EACL → ACL dan BMVC → CVPR.
+- **Tidak ada pasangan konferensi yang berlaku dua arah.** Seluruh rule satu-ke-satu mengarah dari konferensi yang lebih kecil ke konferensi utama di bidang yang sama, misalnya EACL → ACL dan BMVC → CVPR. **[PU-1, PU-2]**
 - **Support tinggi tidak berarti lift tinggi.** Semakin populer sebuah konferensi, semakin rendah lift rules yang menuju kepadanya (Spearman -0,933). NeurIPS memiliki rules terbanyak, tetapi lift-nya termasuk yang terendah.
-- Rules satu-ke-satu membentuk **delapan kelompok bidang** yang tidak saling terhubung.
+- Rules satu-ke-satu membentuk **delapan kelompok bidang** yang tidak saling terhubung. **[PU-1]** (pengelompokan dari data, nama bidang dari pengetahuan umum)
 
 ---
 
@@ -171,7 +173,7 @@ Lift terendah dari seluruh rules adalah 15,83. Batas bawah teoretisnya 0,5 / 3,1
 
 ### 4.7 Kelompok konferensi dari rules satu-ke-satu
 
-| Kelompok | Konferensi | Rules |
+| Kelompok **[PU-1]** | Konferensi | Rules |
 |---|---|---|
 | Computer vision | CVPR, ICCV, ECCV, BMVC, ACCV, 3DV | 5 |
 | NLP | ACL, EMNLP, NAACL-HLT, EACL, IJCNLP-AACL | 6 |
@@ -193,8 +195,8 @@ Consequent terbanyak dari 1.114 rules dengan consequent tunggal: NeurIPS (240 ru
 **2. Rules dengan support, confidence, dan lift.** Seluruh rules disimpan di `outputs/rules/rules_<tag>.parquet` dan ditampilkan di notebook bagian 5. Sepuluh lift tertinggi ada di bagian 4.3 report ini, dipimpin ECCV + ACM Multimedia + NeurIPS → AAAI + CVPR + ICCV (lift 172,27).
 
 **3. Hubungan antarkonferensi paling menarik.** Definisi awal ("rule berlaku ke dua arah dengan confidence ≥ 50%") tidak menghasilkan apa pun: tidak ada satu pun pasangan yang berlaku dua arah. Karena itu ada dua jenis hubungan yang paling menarik:
-- *Lift tertinggi:* ECOC → OFC (lift 80,12; 66,5% author ECOC publish di OFC) dan ASRU → INTERSPEECH (lift 74,17; 72,7%). Keduanya pasangan di bidang sempit (komunikasi optik dan pengenalan suara), sehingga author-nya sangat terkonsentrasi.
-- *Paling mendekati timbal balik:* ICCV → CVPR, ICML → NeurIPS, ICLR → NeurIPS, ECOC → OFC, dan ECCV → CVPR, dengan confidence arah balik 28,9% sampai 32,4%. Ini konferensi utama dengan ukuran mirip di bidang yang sama.
+- *Lift tertinggi:* ECOC → OFC (lift 80,12; 66,5% author ECOC publish di OFC) dan ASRU → INTERSPEECH (lift 74,17; 72,7%). Keduanya pasangan di bidang sempit (komunikasi optik dan pengenalan suara), sehingga author-nya sangat terkonsentrasi. **[PU-1, PU-3]**
+- *Paling mendekati timbal balik:* ICCV → CVPR, ICML → NeurIPS, ICLR → NeurIPS, ECOC → OFC, dan ECCV → CVPR, dengan confidence arah balik 28,9% sampai 32,4%. Ini konferensi utama dengan ukuran mirip di bidang yang sama. **[PU-1, PU-2]**
 
 **4. Apakah support tinggi selalu menghasilkan lift tinggi?** Tidak, justru sebaliknya. Semakin besar support sebuah konferensi, semakin rendah lift rules yang menuju kepadanya (Spearman -0,933 pada 26 konferensi). NeurIPS (support 3,17%) menjadi tujuan 240 rules, terbanyak, tetapi median lift-nya hanya 23,61, kedua terendah. CDC (support 0,79%) memiliki median lift 92,90. Penyebabnya rumus lift = confidence / support(Y): konferensi besar sudah memiliki support tinggi, sehingga rule yang menuju kepadanya sulit mencapai lift tinggi. Lift juga membesar ketika consequent berisi beberapa konferensi (median 31,40 untuk satu konferensi, 137,19 untuk tiga), karena kombinasi konferensi selalu jarang.
 
@@ -206,13 +208,13 @@ Consequent terbanyak dari 1.114 rules dengan consequent tunggal: NeurIPS (240 ru
 Support menjawab "seberapa sering", confidence menjawab "seberapa sering B jika A", dan lift menjawab "seberapa kuat hubungan dibanding jika tidak berkaitan". Pada data ini lift tidak menyaring rules (setiap rule otomatis memiliki lift minimal sekitar 15,8), sehingga lift dipakai untuk mengurutkan kekuatan hubungan.
 
 **6. Pola publikasi antarkonferensi.**
-- *Hubungan kuat hanya terjadi di dalam satu bidang.* Rules satu-ke-satu membentuk delapan kelompok bidang (computer vision, NLP, machine learning, komunikasi nirkabel, komunikasi optik, pengenalan suara, robotika, HCI), tanpa satu pun rule yang menghubungkan dua kelompok.
-- *Arahnya dari konferensi yang lebih kecil ke konferensi utama.* Mayoritas author EACL, BMVC, AISTATS, CoRL, dan konferensi lain yang lebih kecil juga publish di konferensi utama bidangnya, tetapi tidak sebaliknya.
-- *Konferensi utama yang ukurannya mirip paling mendekati timbal balik:* CVPR dengan ICCV dan ECCV, serta NeurIPS dengan ICML dan ICLR.
+- *Hubungan kuat hanya terjadi di dalam satu bidang.* **[PU-1]** Rules satu-ke-satu membentuk delapan kelompok bidang (computer vision, NLP, machine learning, komunikasi nirkabel, komunikasi optik, pengenalan suara, robotika, HCI), tanpa satu pun rule yang menghubungkan dua kelompok.
+- *Arahnya dari konferensi yang lebih kecil ke konferensi utama.* **[PU-2]** Mayoritas author EACL, BMVC, AISTATS, CoRL, dan konferensi lain yang lebih kecil juga publish di konferensi utama bidangnya, tetapi tidak sebaliknya.
+- *Konferensi utama yang ukurannya mirip paling mendekati timbal balik:* **[PU-2]** CVPR dengan ICCV dan ECCV, serta NeurIPS dengan ICML dan ICLR.
 - *Kombinasi beberapa konferensi mengarah ke NeurIPS, AAAI, dan CVPR.* AAAI tidak menjadi tujuan rule satu-ke-satu mana pun, tetapi menjadi tujuan 189 rules dari kombinasi dua konferensi atau lebih.
 
 **Kaitan dengan pertanyaan kesimpulan.**
-- *H.2 (apakah konferensi terpopuler juga memiliki asosiasi terkuat):* tidak. NeurIPS memiliki asosiasi terbanyak tetapi lift-nya termasuk yang terendah; asosiasi terkuat ada pada pasangan konferensi bidang sempit (ECOC → OFC, ASRU → INTERSPEECH).
+- *H.2 (apakah konferensi terpopuler juga memiliki asosiasi terkuat):* tidak. NeurIPS memiliki asosiasi terbanyak tetapi lift-nya termasuk yang terendah; asosiasi terkuat ada pada pasangan konferensi bidang sempit (ECOC → OFC, ASRU → INTERSPEECH). **[PU-3]**
 - *H.4 (rule dengan lift tertinggi dan maknanya):* ECCV + ACM Multimedia + NeurIPS → AAAI + CVPR + ICCV (lift 172,27). Dari 2.983 author yang publish di ECCV, ACM Multimedia, dan NeurIPS, 61,2% juga publish di AAAI, CVPR, dan ICCV, atau 172 kali lebih sering dibanding author pada umumnya. Rule ini hanya berlaku untuk 1.827 author dan rapuh (lihat keterbatasan 4). Untuk rule satu-ke-satu, lift tertinggi adalah ECOC → OFC (80,12).
 
 ---
@@ -223,6 +225,14 @@ Support menjawab "seberapa sering", confidence menjawab "seberapa sering B jika 
 2. Rules hanya ada untuk kombinasi yang lolos min support 0,1%. Hubungan kuat antara dua konferensi kecil tidak terlihat.
 3. Dengan min confidence 50% dan support setiap konferensi di bawah 3,2%, setiap rule otomatis memiliki lift minimal sekitar 15,8. Lift yang tinggi pada data ini sebagian besar mencerminkan kecilnya support konferensi, sehingga lift lebih tepat dipakai untuk membandingkan rules daripada sebagai ukuran mutlak.
 4. **Sepuluh rule dengan lift tertinggi rapuh.** Count-nya hanya 1.827 sampai 1.973 author terhadap ambang 1.822. Pengecekan terhadap 291 profil author gabungan di DBLP (keterbatasan 2 Task 4) menunjukkan profil tersebut menyumbang 54 sampai 60 author pada setiap rule itu. Tanpa profil gabungan, **7 dari 10** rule tersebut tidak lagi lolos min support 0,1%. Hasil tetap dilaporkan apa adanya, sesuai keputusan pada Task 4. Rule satu-ke-satu lebih kokoh karena count-nya lebih besar (1.828 sampai 18.503), walaupun yang terkecil juga dekat ambang.
+
+### Klaim berbasis pengetahuan umum
+
+| Kode | Klaim | Sumber | Dukungan data DBLP | Status |
+|---|---|---|---|---|
+| PU-1 | Nama bidang untuk konferensi dan kelompok: computer vision, NLP, machine learning, komunikasi nirkabel, komunikasi optik, pengenalan suara, robotika, interaksi manusia-komputer, serta pernyataan "satu bidang" yang memakai nama ini | Pengetahuan umum penulis | Pembentukan kelompok berasal dari data (komponen terhubung rules satu-ke-satu). Judul proceedings di `data/processed/venue_proceedings.csv` cocok dengan nama ketujuh kelompok, misalnya "Computer Vision", "Computational Linguistics", "Machine Learning", "Optical Communications", "Speech Recognition", "Robotics and Automation", "Human Factors in Computing Systems" | Didukung judul proceedings (diperiksa 22 November 2026), **kecuali "komunikasi nirkabel"**: hanya SPAWC yang khusus nirkabel ("Wireless Communications"), sedangkan GLOBECOM dan ICC berjudul "Communications" secara umum; nama yang lebih tepat adalah "telekomunikasi" |
+| PU-2 | Konferensi tujuan rules (CVPR, NeurIPS, ACL, EMNLP, dan lainnya) disebut "konferensi utama" bidangnya | Pengetahuan umum penulis | Data hanya menunjukkan ukuran: pada seluruh 22 rule satu-ke-satu, konferensi tujuan memiliki author lebih banyak dari konferensi asal (1,8 sampai 15,9 kali). Data tidak menunjukkan status "utama", dan ACL bukan konferensi terbesar di kelompoknya (EMNLP lebih besar) | Istilah "utama" tidak didukung data; yang didukung adalah "lebih besar dari konferensi asal" |
+| PU-3 | ECOC/OFC dan ASRU/INTERSPEECH adalah "bidang sempit" | Pengetahuan umum penulis | Tidak ada ukuran keluasan bidang di data. Yang didukung data hanya lift dan confidence yang tinggi | Tidak didukung data |
 
 ---
 
