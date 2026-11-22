@@ -150,7 +150,7 @@ cells.append(md("""
 
 *Notebook ini membaca tabel mentah hasil `00_extract`, menjelaskan kondisinya, membersihkannya dalam enam tahap, lalu menghitung statistik pada data bersih. Setiap tahap menyimpan hasilnya ke disk dan tahap berikutnya hanya membaca, sehingga bagian statistik dapat dijalankan ulang tanpa mengulang preprocessing.*
 
-*Pemilihan jenis chart mengikuti panduan Datawrapper (https://www.datawrapper.de/blog/chart-types-guide). Perkembangan waktu memakai column chart dengan garis tren dan small multiples, angka absolut memakai bar, lollipop, dan dumbbell chart, komposisi memakai stacked column dan waffle chart, perubahan peringkat memakai slope chart, hubungan dua ukuran memakai scatter plot, pola banyak kategori sepanjang waktu memakai heatmap, dan alur seleksi data memakai sankey diagram.*
+*Pemilihan jenis chart mengikuti panduan Datawrapper (https://www.datawrapper.de/blog/chart-types-guide). Perkembangan waktu memakai column chart dengan garis tren dan small multiples, angka absolut memakai bar, lollipop, dan dumbbell chart, komposisi memakai stacked bar, perubahan peringkat memakai slope chart, hubungan dua ukuran memakai scatter plot, pola banyak kategori sepanjang waktu memakai heatmap, dan alur seleksi data memakai sankey diagram.*
 
 ```
 inproceedings_raw.parquet            (00_extract)
@@ -195,6 +195,7 @@ import json
 import os
 import random
 import re
+import textwrap
 import unicodedata
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -294,7 +295,13 @@ def pct_id(value, digits=1):
     return f"{value:.{digits}f}".replace(".", ",") + "%"
 
 
-def save_fig(fig, name):
+def save_fig(fig, name, insight=None):
+    if insight:
+        wrapped = textwrap.fill("Insight: " + insight, width=max(46, int(fig.get_figwidth() * 11.5)))
+        fig.canvas.draw()
+        bottom = fig.get_tightbbox(fig.canvas.get_renderer()).y0
+        fig.text(0.01, (bottom - 0.14) / fig.get_figheight(), wrapped, ha="left", va="top", fontsize=9.6, color=CFG.INK,
+                 bbox=dict(boxstyle="round,pad=0.55", fc="#e3effc", ec="none"))
     fig.savefig(CFG.FIG_DIR / name)
     plt.show()
 
@@ -379,7 +386,7 @@ cells.append(md("""
 cells.append(md("""
 ## 3.2 Jenis Publikasi
 
-Jenis publikasi dibandingkan pada dua cakupan, yaitu seluruh dump dan hanya periode 2015-2025. Karena jumlah record antarjenis berbeda sampai jutaan kali lipat (dari 27 sampai 4,5 juta), chart ini memakai dumbbell chart dengan sumbu logaritmik, yaitu varian bar chart untuk angka absolut dalam panduan Datawrapper. Garis penghubung memperlihatkan seberapa besar bagian yang jatuh pada periode analisis.
+Jenis publikasi dibandingkan pada dua cakupan, yaitu seluruh dump dan hanya periode 2015-2025. Karena jumlah record antarjenis berbeda sampai jutaan kali lipat (dari 27 sampai 4,5 juta), chart ini memakai bar chart horizontal dengan sumbu logaritmik, yaitu bentuk yang dalam panduan Datawrapper paling tepat untuk angka absolut. Batang terang adalah seluruh dump dan batang gelap adalah bagian yang jatuh pada periode analisis.
 """))
 
 cells.append(code("""
@@ -391,33 +398,30 @@ save_table(types, "t1_jenis_publikasi.csv")
 types.round(1)
 """))
 
-cells.append(code("""
-fig, ax = plt.subplots(figsize=(9.2, 4.4))
+cells.append(code(r"""
+fig, ax = plt.subplots(figsize=(7.0, 4.2))
 order = types.index[::-1]
-for y, name in enumerate(order):
-    all_n, per_n = types.loc[name, "seluruh_dblp"], max(types.loc[name, "periode"], 1)
-    used = name == "inproceedings"
-    ax.plot([per_n, all_n], [y, y], color=CFG.BLUE if used else CFG.GRAY, lw=2.4 if used else 1.6, zorder=1)
-    ax.scatter(all_n, y, s=70, facecolor=CFG.SURFACE, edgecolor=CFG.INK_2, lw=1.4, zorder=3)
-    ax.scatter(per_n, y, s=70, color=CFG.BLUE if used else CFG.INK_2, zorder=4)
-    share = types.loc[name, "porsi_periode_%"]
-    ax.text(all_n * 1.35, y, f"{fmt_id(all_n)} -> {fmt_id(types.loc[name, 'periode'])}  ({pct_id(share, 0)} pada 2015-2025)",
-            va="center", fontsize=8.6, color=CFG.INK if used else CFG.INK_2, fontweight="bold" if used else "normal")
-
-ax.set_yticks(range(len(order)))
+pos = np.arange(len(order))
+ax.barh(pos, types.loc[order, "seluruh_dblp"], color=CFG.GRAY, height=0.64, zorder=2)
+ax.barh(pos, types.loc[order, "periode"].clip(lower=1), height=0.64, zorder=3,
+        color=[CFG.BLUE if name == "inproceedings" else CFG.INK_2 for name in order])
+used_y = list(order).index("inproceedings")
+all_n, per_n = types.loc["inproceedings", "seluruh_dblp"], types.loc["inproceedings", "periode"]
+ax.text(all_n * 1.25, used_y, f"{fmt_id(all_n)} -> {fmt_id(per_n)}", va="center", fontsize=9.4, fontweight="bold", color=CFG.BLUE)
+ax.set_yticks(pos)
 ax.set_yticklabels(order)
-ax.get_yticklabels()[list(order).index("inproceedings")].set_fontweight("bold")
+ax.get_yticklabels()[used_y].set_fontweight("bold")
 ax.set_xscale("log")
-ax.set_xlim(0.7, 4e9)
+ax.set_xlim(1, 4e7)
 ax.set_xticks([1, 100, 1e4, 1e6])
 ax.set_xticklabels(["1", "100", "10 rb", "1 jt"])
 ax.set_xlabel("Jumlah record (skala logaritmik)")
 ax.grid(axis="y", visible=False)
-ax.set_title("Jenis publikasi DBLP: seluruh dump dibanding periode 2015-2025")
-ax.legend(handles=[Line2D([], [], marker="o", ls="", mfc=CFG.SURFACE, mec=CFG.INK_2, mew=1.4, ms=8, label="Seluruh dump"),
-                   Line2D([], [], marker="o", ls="", color=CFG.INK_2, ms=8, label="Periode 2015-2025")],
-          loc="lower right", bbox_to_anchor=(1.0, 0.0), fontsize=8.6)
-save_fig(fig, "t1_jenis_publikasi.png")
+ax.set_title("Jenis publikasi DBLP")
+ax.legend(handles=[Patch(color=CFG.GRAY, label="Seluruh dump"), Patch(color=CFG.INK_2, label="Periode 2015-2025")],
+          loc="lower right", fontsize=8.8)
+save_fig(fig, "t1_jenis_publikasi.png",
+         insight=f"inproceedings hanya {pct_id(all_n / types['seluruh_dblp'].sum() * 100, 1)} isi dump, dan separuhnya ({fmt_id(per_n)} record) terbit 2015-2025: itulah bahan analisis.")
 """))
 
 cells.append(md("""
@@ -687,7 +691,7 @@ axes[0].annotate("2018: NIPS menjadi NeurIPS", xy=(2018, 1.0), xytext=(2015.2, 4
                  fontsize=8.4, color=CFG.INK, arrowprops=dict(arrowstyle="-", color=CFG.INK_2, lw=0.8))
 fig.suptitle("Satu key, banyak nama booktitle: alasan venue diambil dari key", x=0.01, ha="left", fontweight="bold", fontsize=11.5, y=1.04)
 fig.tight_layout()
-save_fig(fig, "t1_normalisasi_venue.png")
+save_fig(fig, "t1_normalisasi_venue.png", insight="booktitle memecah satu konferensi (NIPS menjadi NeurIPS) sedangkan key tetap satu (nips): venue diambil dari key.")
 """))
 
 cells.append(md(r"""
@@ -897,7 +901,7 @@ ax.grid(axis="y", visible=False)
 ax.set_title("Dampak setiap tahap preprocessing")
 ax.text(0.99, 0.04, f"Tersisa {fmt_id(final_paper)} dari {fmt_id(raw_total)} paper\nRetensi {pct_id(final_paper / raw_total * 100, 2)}",
         transform=ax.transAxes, ha="right", va="bottom", fontsize=9.5, fontweight="bold", color=CFG.BLUE)
-save_fig(fig, "t1_dampak_preprocessing.png")
+save_fig(fig, "t1_dampak_preprocessing.png", insight="Hanya 0,35% data dibuang; penyumbang terbesar adalah key bukan conf/.")
 """))
 
 cells.append(md(r"""
@@ -985,7 +989,7 @@ ax.set_xlim(0, 100)
 ax.set_ylim(82, 3)
 ax.axis("off")
 ax.set_title("Alur seleksi data: dari seluruh dump DBLP sampai dataset bersih", pad=10)
-save_fig(fig, "t1_alur_seleksi.png")
+save_fig(fig, "t1_alur_seleksi.png", insight="Dari seluruh dump, hanya inproceedings 2015-2025 yang dianalisis, dan 99,65% bertahan setelah pra-pemrosesan.")
 """))
 
 cells.append(md(r"""
@@ -1069,7 +1073,7 @@ cells.append(md(r"""
 cells.append(md(r"""
 ## 5.2 Distribusi Publikasi per Tahun
 
-Perkembangan jumlah publikasi per tahun ditampilkan sebagai column chart, jenis chart yang dalam panduan Datawrapper paling jelas untuk membaca nilai tiap periode. Dua tambahan membuatnya lebih informatif, yaitu garis tren linear yang dihitung hanya dari tahun lengkap (2015-2024) dan panel perubahan tahunan di bawahnya. Tahun 2025 digambar dengan arsiran karena indeks DBLP untuk tahun tersebut belum lengkap.
+Perkembangan jumlah publikasi per tahun ditampilkan sebagai column chart, jenis chart yang dalam panduan Datawrapper paling jelas untuk membaca nilai tiap periode. Tambahan analitiknya adalah garis tren linear yang dihitung hanya dari tahun lengkap (2015-2024), dan label nilai hanya diberikan pada 2015, 2020, dan 2024 agar grafik tetap bersih. Tahun 2025 digambar dengan arsiran karena indeks DBLP untuk tahun tersebut belum lengkap.
 """))
 
 cells.append(code(r"""
@@ -1124,58 +1128,30 @@ years = per_year.index.values
 values = per_year.values
 yoy = per_year.pct_change().dropna() * 100
 
-fig = plt.figure(figsize=(10.4, 6.8))
-grid = fig.add_gridspec(2, 1, height_ratios=[3.2, 1.25], hspace=0.12)
-ax = fig.add_subplot(grid[0])
-ax_yoy = fig.add_subplot(grid[1], sharex=ax)
-
+fig, ax = plt.subplots(figsize=(7.2, 4.8))
 bar_colors = [CFG.BLUE if y < CFG.YEAR_INCOMPLETE else CFG.BLUE_LIGHT for y in years]
 bars = ax.bar(years, values / 1e3, color=bar_colors, width=0.7, zorder=2)
 bars[-1].set_hatch("///")
 bars[-1].set_edgecolor(CFG.BLUE)
 bars[-1].set_linewidth(0.8)
-for x, v in zip(years, values):
-    complete_year = x < CFG.YEAR_INCOMPLETE
-    ax.text(x, 8, fmt_id(v / 1e3, 1), ha="center", va="bottom", fontsize=8.8, fontweight="bold",
-            color="#ffffff" if complete_year else CFG.INK,
-            bbox=None if complete_year else dict(boxstyle="round,pad=0.15", fc=CFG.SURFACE, ec="none", alpha=0.9))
-ax.plot(years, (slope * years + intercept) / 1e3, color=CFG.INK, ls="--", lw=1.5, zorder=3)
-
-ax.set_ylim(0, values.max() / 1e3 * 1.3)
+ax.plot(years, (slope * years + intercept) / 1e3, color=CFG.INK, ls="--", lw=1.5, zorder=3, label="Tren linear 2015-2024")
+for x in (years[0], 2020, 2024):
+    v = per_year.loc[x] / 1e3
+    ax.text(x, v + 4, fmt_id(v, 1), ha="center", va="bottom", fontsize=9.2, fontweight="bold", color=CFG.INK)
+ax.text(years[-1], 6, "belum\nlengkap", ha="center", va="bottom", fontsize=8.6, color=CFG.INK,
+        bbox=dict(boxstyle="round,pad=0.2", fc=CFG.SURFACE, ec="none", alpha=0.92), zorder=5)
+ax.set_ylim(0, values.max() / 1e3 * 1.18)
+ax.set_xticks(years)
 ax.set_ylabel("Publikasi (ribu)")
-ax.set_title("Publikasi inproceedings per tahun, 2015-2025")
-plt.setp(ax.get_xticklabels(), visible=False)
-
+ax.set_title("Publikasi inproceedings per tahun")
 ax.text(0.012, 0.95, "CAGR 2015-2024: +" + f"{cagr * 100:.1f}".replace(".", ",") + "% per tahun",
-        transform=ax.transAxes, fontsize=10, fontweight="bold", color=CFG.BLUE, va="top")
-ax.text(0.012, 0.875, f"Tren linear: +{fmt_id(slope / 1e3, 1)} rb paper per tahun",
-        transform=ax.transAxes, fontsize=9, color=CFG.INK_2, va="top")
-
-top_y = values.max() / 1e3 * 1.17
-ax.annotate("2020: " + f"{yoy.loc[2020]:.1f}".replace(".", ",") + "%\n(pandemi)", xy=(2020, per_year.loc[2020] / 1e3 + 12),
-            xytext=(2020, top_y), ha="center", fontsize=8.8, color=CFG.INK,
-            arrowprops=dict(arrowstyle="-", color=CFG.INK_2, lw=0.8))
-ax.annotate("2025: data\nbelum lengkap", xy=(2025, per_year.loc[2025] / 1e3 + 12),
-            xytext=(2025, top_y), ha="center", fontsize=8.8, color=CFG.INK,
-            arrowprops=dict(arrowstyle="-", color=CFG.INK_2, lw=0.8))
-
-yoy_bars = ax_yoy.bar(yoy.index, yoy.values, color=[CFG.BLUE if v >= 0 else CFG.ORANGE for v in yoy.values], width=0.7, zorder=2)
-yoy_bars[-1].set_hatch("///")
-yoy_bars[-1].set_alpha(0.55)
-yoy_bars[-1].set_edgecolor(CFG.ORANGE if yoy.iloc[-1] < 0 else CFG.BLUE)
-for x, v in zip(yoy.index, yoy.values):
-    ax_yoy.text(x, v + (0.8 if v >= 0 else -0.8), f"{v:+.1f}%".replace(".", ","), ha="center",
-                va="bottom" if v >= 0 else "top", fontsize=8.4, color=CFG.INK_2)
-ax_yoy.axhline(0, color=CFG.BASELINE, lw=1)
-ax_yoy.set_ylim(yoy.min() - 6, yoy.max() + 7)
-ax_yoy.set_ylabel("Perubahan\ntahunan (%)")
-ax_yoy.set_xticks(years)
-
-fig.legend(handles=[Patch(color=CFG.BLUE, label="Tahun lengkap atau kenaikan"), Patch(color=CFG.ORANGE, label="Penurunan"),
-                    Patch(facecolor=CFG.BLUE_LIGHT, hatch="///", edgecolor=CFG.BLUE, label="2025 (belum lengkap)"),
-                    Line2D([], [], color=CFG.INK, ls="--", label="Tren linear 2015-2024")],
-           loc="lower center", ncol=4, bbox_to_anchor=(0.5, -0.02), fontsize=8.8)
-save_fig(fig, "t1_publikasi_per_tahun.png")
+        transform=ax.transAxes, fontsize=10.5, fontweight="bold", color=CFG.BLUE, va="top")
+ax.legend(handles=[Patch(color=CFG.BLUE, label="Tahun lengkap"),
+                   Patch(facecolor=CFG.BLUE_LIGHT, hatch="///", edgecolor=CFG.BLUE, label="2025"),
+                   Line2D([], [], color=CFG.INK, ls="--", label="Tren linear 2015-2024")],
+          loc="lower center", ncol=3, bbox_to_anchor=(0.5, -0.24), fontsize=8.8)
+save_fig(fig, "t1_publikasi_per_tahun.png",
+         insight=f"Naik {pct_id(cagr * 100, 1)} per tahun sampai 2024 (2020 turun {pct_id(abs(yoy.loc[2020]), 1)}, dugaan efek pandemi). Penurunan 2025 adalah efek data belum lengkap, bukan aktivitas.")
 """))
 
 cells.append(md(r"""
@@ -1191,7 +1167,7 @@ cells.append(md(r"""
 cells.append(md(r"""
 ## 5.3 Distribusi Publikasi per Konferensi
 
-Distribusi per konferensi dibaca dari tiga sisi. Bar chart memperlihatkan 20 konferensi terbesar beserta porsinya, kurva kumulatif memperlihatkan seberapa terkonsentrasi publikasi pada sedikit konferensi, dan histogram berskala logaritmik memperlihatkan bentuk seluruh distribusi ukuran konferensi. Nama lengkap konferensi dicantumkan pada tabel dari judul prosiding terbaru di dump.
+Distribusi per konferensi dibaca dari tiga sisi. Bar chart memperlihatkan 10 konferensi terbesar, kurva kumulatif memperlihatkan seberapa terkonsentrasi publikasi pada sedikit konferensi, dan histogram berskala logaritmik memperlihatkan bentuk seluruh distribusi ukuran konferensi. Nama lengkap konferensi dicantumkan pada tabel dari judul prosiding terbaru di dump.
 """))
 
 cells.append(code(r"""
@@ -1220,47 +1196,43 @@ top20
 """))
 
 cells.append(code(r"""
-fig, (ax_bar, ax_cum) = plt.subplots(1, 2, figsize=(13.2, 5.8), gridspec_kw={"width_ratios": [1.2, 1]})
+fig, (ax_bar, ax_cum) = plt.subplots(1, 2, figsize=(10.4, 4.4), gridspec_kw={"width_ratios": [1.1, 1]})
 
-t = top20.iloc[::-1].reset_index(drop=True)
-bar_colors = [CFG.BLUE if i >= 10 else CFG.BLUE_LIGHT for i in range(len(t))]
-ax_bar.barh(np.arange(len(t)), t["publikasi"] / 1e3, color=bar_colors, height=0.68, zorder=2)
+t = top20.head(10).iloc[::-1].reset_index(drop=True)
+ax_bar.barh(np.arange(len(t)), t["publikasi"] / 1e3, color=CFG.BLUE, height=0.66, zorder=2)
 for y, row in t.iterrows():
-    ax_bar.text(row["publikasi"] / 1e3 + 0.35, y, f"{fmt_id(row['publikasi'])}  ({pct_id(row['porsi_%'], 2)})",
-                va="center", fontsize=8.4, color=CFG.INK_2)
+    ax_bar.text(row["publikasi"] / 1e3 + 0.35, y, fmt_id(row["publikasi"]), va="center", fontsize=9, color=CFG.INK_2)
 ax_bar.set_yticks(np.arange(len(t)))
-ax_bar.set_yticklabels([f"#{len(t) - i}  {name}" for i, name in enumerate(t["nama"])], fontsize=9)
-ax_bar.set_xlim(0, t["publikasi"].max() / 1e3 * 1.42)
+ax_bar.set_yticklabels(t["nama"], fontsize=9.4)
+ax_bar.set_xlim(0, t["publikasi"].max() / 1e3 * 1.2)
 ax_bar.set_xlabel("Publikasi (ribu)")
 ax_bar.grid(axis="y", visible=False)
-ax_bar.set_title("20 konferensi dengan publikasi terbanyak")
-ax_bar.legend(handles=[Patch(color=CFG.BLUE, label="Peringkat 1-10"), Patch(color=CFG.BLUE_LIGHT, label="Peringkat 11-20")],
-              loc="lower right", fontsize=8.8)
+ax_bar.set_title("10 konferensi terbesar")
 
 ranks = np.arange(1, len(cum) + 1)
 ax_cum.fill_between(ranks, cum.values, color=CFG.BLUE_LIGHT, alpha=0.5, zorder=1)
 ax_cum.plot(ranks, cum.values, color=CFG.BLUE, lw=2.2, zorder=3)
-for rank in (10, 100, rank_50, rank_80):
+for rank in (10, rank_50, rank_80):
     ax_cum.scatter(rank, cum.iloc[rank - 1], s=42, color=CFG.INK, zorder=4)
-    ax_cum.annotate(f"{fmt_id(rank)} venue = {pct_id(cum.iloc[rank - 1], 1)}", xy=(rank, cum.iloc[rank - 1]),
-                    xytext=(rank * 1.35, max(cum.iloc[rank - 1] - 9, 4)), fontsize=8.8,
-                    bbox=dict(boxstyle="round,pad=0.2", fc=CFG.SURFACE, ec="none", alpha=0.9))
+    ax_cum.annotate(f"{fmt_id(rank)} venue = {pct_id(cum.iloc[rank - 1], 0)}", xy=(rank, cum.iloc[rank - 1]),
+                    xytext=(rank * 1.4, max(cum.iloc[rank - 1] - 10, 4)), fontsize=9)
 ax_cum.set_xscale("log")
 ax_cum.set_xticks([1, 10, 100, 1000])
 ax_cum.set_xticklabels(["1", "10", "100", "1.000"])
 ax_cum.set_ylim(0, 102)
 ax_cum.set_xlabel("Jumlah venue terbesar (skala logaritmik)")
 ax_cum.set_ylabel("Porsi kumulatif publikasi (%)")
-ax_cum.set_title(f"{fmt_id(rank_50)} dari {fmt_id(len(cum))} venue menghasilkan separuh publikasi")
+ax_cum.set_title("Porsi kumulatif publikasi")
 fig.tight_layout()
-save_fig(fig, "t1_publikasi_per_konferensi.png")
+save_fig(fig, "t1_publikasi_per_konferensi.png",
+         insight=f"{fmt_id(rank_50)} dari {fmt_id(len(cum))} venue ({pct_id(rank_50 / len(cum) * 100, 1)}) sudah menghasilkan separuh publikasi: aktivitas sangat terkonsentrasi.")
 """))
 
 cells.append(code(r"""
 bins = np.logspace(0, np.log10(pub_venue.max() * 1.05), 28)
 counts, edges = np.histogram(pub_venue.values, bins=bins)
 
-fig, ax = plt.subplots(figsize=(9.6, 4.4))
+fig, ax = plt.subplots(figsize=(6.8, 4.9))
 ax.axvspan(1, 50, color=CFG.GRAY, alpha=0.18, zorder=0)
 ax.bar(edges[:-1], counts, width=np.diff(edges), align="edge", color=CFG.BLUE, edgecolor=CFG.SURFACE, linewidth=0.6, zorder=2)
 ax.set_xscale("log")
@@ -1278,7 +1250,7 @@ ax.text(1.15, counts.max() * 1.07, f"{fmt_id(n_small)} venue ({pct_id(n_small / 
 ax.set_xlabel("Jumlah publikasi per venue, 2015-2025 (skala logaritmik)")
 ax.set_ylabel("Jumlah venue")
 ax.set_title("Ukuran konferensi: banyak venue kecil, sedikit venue sangat besar")
-save_fig(fig, "t1_distribusi_ukuran_venue.png")
+save_fig(fig, "t1_distribusi_ukuran_venue.png", insight=f"Banyak venue kecil, sedikit venue besar: median {fmt_id(pub_venue.median())} paper, jauh di bawah rata-rata {fmt_id(pub_venue.mean())}.")
 """))
 
 cells.append(md(r"""
@@ -1294,7 +1266,7 @@ cells.append(md(r"""
 cells.append(md(r"""
 ## 5.4 Distribusi Author
 
-Produktivitas author menentukan seberapa padat transaksi yang akan dibentuk pada task berikutnya. Karena perbandingannya berupa porsi dari keseluruhan, dipakai waffle chart yang dalam panduan Datawrapper adalah alternatif yang lebih mudah dibaca daripada pie chart. Dua waffle disandingkan dengan warna yang sama: porsi jumlah author dan porsi pasangan paper-author yang mereka tulis.
+Produktivitas author menentukan seberapa padat transaksi yang akan dibentuk pada task berikutnya. Karena perbandingannya berupa porsi dari keseluruhan, dipakai stacked bar 100% yang dalam panduan Datawrapper mudah dibandingkan antarkategori. Dua batang disandingkan dengan warna yang sama: porsi jumlah author dan porsi pasangan paper-author yang mereka tulis, dibagi menjadi tiga kelompok produktivitas.
 """))
 
 cells.append(code(r"""
@@ -1312,40 +1284,30 @@ tier_table.round(1)
 """))
 
 cells.append(code(r"""
-def waffle_counts(shares, total=100):
-    exact = np.asarray(shares, dtype=float) / np.sum(shares) * total
-    counts = np.floor(exact).astype(int)
-    for i in np.argsort(-(exact - counts))[: total - counts.sum()]:
-        counts[i] += 1
-    return counts
-
-def draw_waffle(ax, counts, colors):
-    index = 0
-    for tier, count in enumerate(counts):
-        for _ in range(count):
-            row, col = divmod(index, 10)
-            ax.add_patch(Rectangle((col, 9 - row), 0.88, 0.88, facecolor=colors[tier], edgecolor="none"))
-            index += 1
-    ax.set_xlim(-0.1, 10)
-    ax.set_ylim(-2.4, 10.4)
-    ax.set_aspect("equal")
-    ax.axis("off")
-
 heavy_author = tier_table["author_%"].iloc[3:].sum()
 heavy_pairs = tier_table["pasangan_%"].iloc[3:].sum()
+groups = {"1 paper": [0], "2-10 paper": [1, 2], "11+ paper": [3, 4]}
+tier_colors = [CFG.BLUE_LIGHT, "#5a9be6", "#104281"]
 
-fig, axes = plt.subplots(1, 2, figsize=(10.8, 5.6))
-draw_waffle(axes[0], waffle_counts(tier_table["author_%"]), CFG.ORDINAL)
-draw_waffle(axes[1], waffle_counts(tier_table["pasangan_%"]), CFG.ORDINAL)
-axes[0].set_title("Porsi author (1 kotak = 1%)")
-axes[1].set_title("Porsi pasangan paper-author (1 kotak = 1%)")
-axes[0].text(4.9, -1.0, f"{pct_id(tier_table['author_%'].iloc[0])} author hanya punya 1 paper", ha="center", fontsize=9.6, fontweight="bold", color=CFG.INK)
-axes[1].text(4.9, -1.0, f"{pct_id(heavy_author)} author (11+ paper) menulis {pct_id(heavy_pairs)} pasangan", ha="center",
-             fontsize=9.6, fontweight="bold", color=CFG.INK)
-fig.legend(handles=[Patch(color=c, label=f"{label}  ({fmt_id(n)} author)") for c, label, n in
-                    zip(CFG.ORDINAL, tier_table.index, tier_table["author"])],
-           loc="lower center", ncol=5, bbox_to_anchor=(0.5, 0.0), fontsize=8.6)
-save_fig(fig, "t1_produktivitas_author.png")
+fig, ax = plt.subplots(figsize=(6.4, 4.2))
+for row, (title, col) in enumerate((("Pasangan paper-author", "pasangan_%"), ("Author", "author_%"))):
+    left = 0.0
+    for color, (label, idx) in zip(tier_colors, groups.items()):
+        width = tier_table[col].iloc[idx].sum()
+        ax.barh(row, width, left=left, color=color, edgecolor=CFG.SURFACE, linewidth=1.8, height=0.62)
+        ax.text(left + width / 2, row, pct_id(width, 1), ha="center", va="center", fontsize=9.6, fontweight="bold",
+                color="#ffffff" if color != CFG.BLUE_LIGHT else CFG.INK)
+        left += width
+ax.set_yticks([0, 1])
+ax.set_yticklabels(["Pasangan\npaper-author", "Author"])
+ax.set_xlim(0, 100)
+ax.set_xlabel("Porsi (%)")
+ax.grid(axis="y", visible=False)
+ax.set_title("Siapa menyumbang aktivitas: author atau pasangan paper-author")
+ax.legend(handles=[Patch(color=c, label=l) for c, l in zip(tier_colors, groups)], loc="upper center",
+          bbox_to_anchor=(0.5, -0.38), ncol=3, fontsize=8.8, title="Jumlah paper per author", title_fontsize=8.8)
+save_fig(fig, "t1_produktivitas_author.png",
+         insight=f"{pct_id(heavy_author)} author (11+ paper) menyumbang {pct_id(heavy_pairs)} pasangan; {pct_id(tier_table['author_%'].iloc[0])} author hanya punya 1 paper.")
 """))
 
 cells.append(md(r"""
@@ -1371,7 +1333,7 @@ Popularitas konferensi pada tugas ini diukur dari aktivitas publikasi, dengan du
 cells.append(md(r"""
 ## 6.1 Sepuluh Konferensi dengan Publikasi Terbanyak (Task 2.1)
 
-Peringkat disusun dari jumlah paper per konferensi. Hasilnya ditampilkan sebagai bar chart horizontal, bentuk yang dalam panduan Datawrapper paling tepat untuk membandingkan angka absolut. Warna gelap menandai konferensi yang juga masuk 10 besar menurut jumlah author unik, dan angka di ujung batang menyebutkan peringkatnya pada ukuran lain, sehingga perbandingan pada Task 2.4 sudah terlihat sejak awal.
+Peringkat disusun dari jumlah paper per konferensi. Hasilnya ditampilkan sebagai bar chart horizontal, bentuk yang dalam panduan Datawrapper paling tepat untuk membandingkan angka absolut. Warna gelap menandai konferensi yang juga masuk 10 besar menurut jumlah author unik, dan angka di ujung batang adalah nilainya; perbandingan peringkat lengkap ada pada Task 2.4.
 """))
 
 cells.append(code(r"""
@@ -1397,28 +1359,27 @@ top_pub[["nama", "publikasi", "porsi_publikasi_%", "rank_author", "author_unik"]
 """))
 
 cells.append(code(r"""
-def rank_bar(ax, table, value_col, other_rank_col, other_label, xlabel, title):
+def rank_bar(ax, table, value_col, xlabel, title):
     t = table.iloc[::-1]
     colors = [CFG.BLUE if venue in shared else CFG.BLUE_LIGHT for venue in t.index]
     ax.barh(np.arange(len(t)), t[value_col] / 1e3, color=colors, height=0.68, zorder=2)
     offset = t[value_col].max() / 1e3 * 0.012
     for y, (venue, row) in enumerate(t.iterrows()):
-        ax.text(row[value_col] / 1e3 + offset, y, f"{fmt_id(row[value_col])}   |   {other_label} #{int(row[other_rank_col])}",
-                va="center", fontsize=8.8, color=CFG.INK_2)
+        ax.text(row[value_col] / 1e3 + offset, y, fmt_id(row[value_col]), va="center", fontsize=9, color=CFG.INK_2)
     ax.set_yticks(np.arange(len(t)))
-    ax.set_yticklabels([f"#{len(t) - i}  {name}" for i, name in enumerate(t["nama"])], fontsize=9.4)
-    ax.set_xlim(0, t[value_col].max() / 1e3 * 1.6)
+    ax.set_yticklabels(t["nama"], fontsize=9.6)
+    ax.set_xlim(0, t[value_col].max() / 1e3 * 1.18)
     ax.set_xlabel(xlabel)
     ax.grid(axis="y", visible=False)
     ax.set_title(title)
     ax.legend(handles=[Patch(color=CFG.BLUE, label="Juga masuk 10 besar ukuran lain"),
                        Patch(color=CFG.BLUE_LIGHT, label="Hanya masuk 10 besar ukuran ini")],
-              loc="lower right", fontsize=8.6)
+              loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=2, fontsize=8.4)
 
-fig, ax = plt.subplots(figsize=(9.8, 4.9))
-rank_bar(ax, top_pub, "publikasi", "rank_author", "peringkat author", "Publikasi (ribu)",
-         "10 konferensi dengan publikasi terbanyak, 2015-2025")
-save_fig(fig, "t2_top10_publikasi.png")
+fig, ax = plt.subplots(figsize=(6.4, 4.9))
+rank_bar(ax, top_pub, "publikasi", "Publikasi (ribu)", "10 konferensi dengan publikasi terbanyak")
+save_fig(fig, "t2_top10_publikasi.png",
+         insight=f"{top_pub['nama'].iloc[0]} teratas ({fmt_id(top_pub['publikasi'].iloc[0])} paper); {len(shared)} dari 10 konferensi ini juga masuk 10 besar author unik.")
 """))
 
 cells.append(md(r"""
@@ -1442,10 +1403,10 @@ top_auth[["nama", "author_unik", "rank_publikasi", "publikasi", "paper_per_autho
 """))
 
 cells.append(code(r"""
-fig, ax = plt.subplots(figsize=(9.8, 4.9))
-rank_bar(ax, top_auth, "author_unik", "rank_publikasi", "peringkat publikasi", "Author unik (ribu)",
-         "10 konferensi dengan author unik terbanyak, 2015-2025")
-save_fig(fig, "t2_top10_author.png")
+fig, ax = plt.subplots(figsize=(6.4, 4.9))
+rank_bar(ax, top_auth, "author_unik", "Author unik (ribu)", "10 konferensi dengan author unik terbanyak")
+save_fig(fig, "t2_top10_author.png",
+         insight=f"{top_auth['nama'].iloc[0]} juga teratas ({fmt_id(top_auth['author_unik'].iloc[0])} author unik); CHI dan ICC keluar dari 10 besar, digantikan ICML dan IROS.")
 """))
 
 cells.append(md(r"""
@@ -1459,7 +1420,7 @@ cells.append(md(r"""
 cells.append(md(r"""
 ## 6.3 Tren Publikasi per Tahun (Task 2.3)
 
-Tren dianalisis untuk 10 konferensi dengan publikasi terbanyak. Karena setiap konferensi berbeda skalanya, dipakai small multiples, yaitu satu panel per konferensi dengan sumbu vertikal yang sama sehingga ukuran dan kemiringannya dapat dibandingkan langsung. Setiap panel memuat garis jumlah paper, garis tren linear 2015-2024, dan titik berongga untuk 2025 yang indeksnya belum lengkap. Laju pertumbuhan diringkas dengan kelipatan 2015 ke 2024 dan CAGR.
+Tren dianalisis untuk 10 konferensi dengan publikasi terbanyak. Karena setiap konferensi berbeda skalanya, dipakai small multiples, yaitu satu panel per konferensi dengan sumbu vertikal yang sama sehingga ukuran dan kemiringannya dapat dibandingkan langsung. Setiap panel memuat garis jumlah paper, garis tren linear 2015-2024, dan titik berongga untuk 2025 yang indeksnya belum lengkap. Judul tiap panel memuat kelipatan 2015 ke 2024 (x), dan laju pertumbuhan (CAGR) ditampilkan pada grafik berikutnya.
 """))
 
 cells.append(code(r"""
@@ -1493,35 +1454,31 @@ growth.round(1)
 """))
 
 cells.append(code(r"""
-fig, axes = plt.subplots(2, 5, figsize=(13.6, 6.2), sharex=True, sharey=True)
+fig, axes = plt.subplots(2, 5, figsize=(10.6, 4.6), sharex=True, sharey=True)
 full_years = np.arange(CFG.YEAR_MIN, CFG.YEAR_INCOMPLETE)
 
 for ax, venue in zip(axes.flat, top_venues):
     row = trend_top.loc[venue]
     series = row.loc[CFG.YEAR_MIN:CFG.YEAR_INCOMPLETE - 1].values / 1e3
     slope_v, intercept_v = np.polyfit(full_years.astype(float), series, 1)
-    ax.fill_between(full_years, series, color=CFG.BLUE_LIGHT, alpha=0.45, zorder=1)
     ax.plot(full_years, slope_v * full_years + intercept_v, color=CFG.INK_2, ls="--", lw=1.0, zorder=2)
-    ax.plot(full_years, series, color=CFG.BLUE, lw=2.2, zorder=3)
-    ax.plot([CFG.YEAR_INCOMPLETE - 1, CFG.YEAR_INCOMPLETE], [series[-1], row.loc[CFG.YEAR_INCOMPLETE] / 1e3],
-            color=CFG.BLUE, lw=1.4, ls=":", zorder=3)
-    ax.scatter([CFG.YEAR_INCOMPLETE], [row.loc[CFG.YEAR_INCOMPLETE] / 1e3], s=34, facecolor=CFG.SURFACE,
+    ax.plot(full_years, series, color=CFG.BLUE, lw=2.4, zorder=3)
+    ax.scatter([CFG.YEAR_INCOMPLETE], [row.loc[CFG.YEAR_INCOMPLETE] / 1e3], s=30, facecolor=CFG.SURFACE,
                edgecolor=CFG.BLUE, lw=1.4, zorder=4)
     g = growth.loc[venue]
-    ax.set_title(display_name(venue), fontsize=10.5)
-    ax.text(0.05, 0.93, f"x{g['kali_lipat']:.1f}  |  CAGR {g['cagr_%']:+.1f}%".replace(".", ","),
-            transform=ax.transAxes, fontsize=8.4, va="top", color=CFG.INK_2)
+    ax.set_title(f"{display_name(venue)}  x{g['kali_lipat']:.1f}".replace(".", ","), fontsize=10.5)
     ax.set_xticks([2015, 2020, 2025])
+    ax.set_xticklabels(["15", "20", "25"])
 for ax in axes[:, 0]:
     ax.set_ylabel("Paper (ribu)")
-
-fig.suptitle("Tren publikasi 10 konferensi teratas, 2015-2025 (sumbu vertikal sama)", x=0.01, ha="left", fontweight="bold", fontsize=12, y=1.0)
-fig.legend(handles=[Line2D([], [], color=CFG.BLUE, lw=2.2, label="Jumlah paper 2015-2024"),
+fig.legend(handles=[Line2D([], [], color=CFG.BLUE, lw=2.4, label="Publikasi per tahun"),
                     Line2D([], [], color=CFG.INK_2, ls="--", lw=1.0, label="Tren linear 2015-2024"),
-                    Line2D([], [], color=CFG.BLUE, ls=":", marker="o", mfc=CFG.SURFACE, mec=CFG.BLUE, label="2025 (data belum lengkap)")],
-           loc="lower center", ncol=3, bbox_to_anchor=(0.5, -0.02), fontsize=9)
-fig.tight_layout(rect=(0, 0.03, 1, 0.97))
-save_fig(fig, "t2_tren_top10.png")
+                    Line2D([], [], color=CFG.BLUE, ls="", marker="o", mfc=CFG.SURFACE, mec=CFG.BLUE, label="2025 (belum lengkap)")],
+           loc="lower center", ncol=3, bbox_to_anchor=(0.5, -0.01), fontsize=9)
+fig.suptitle("Tren publikasi 10 konferensi teratas (x = kali lipat 2015 ke 2024)", x=0.01, ha="left", fontweight="bold", fontsize=11.5, y=1.0)
+fig.tight_layout(rect=(0, 0.04, 1, 0.97))
+save_fig(fig, "t2_tren_top10.png",
+         insight="NeurIPS, EMNLP, CVPR, dan AAAI tumbuh 3,6 sampai 10,2 kali; HCI datar; ICC dan EMBC menurun.")
 """))
 
 cells.append(md(r"""
@@ -1531,27 +1488,27 @@ Laju pertumbuhan 10 konferensi dibandingkan dalam satu chart. Garis putus-putus 
 cells.append(code(r"""
 order = growth.sort_values("cagr_%")
 
-fig, ax = plt.subplots(figsize=(9.2, 4.6))
+fig, ax = plt.subplots(figsize=(6.4, 4.7))
 ax.barh(np.arange(len(order)), order["cagr_%"], color=[CFG.BLUE if v >= 0 else CFG.ORANGE for v in order["cagr_%"]],
         height=0.66, zorder=2)
 ax.axvline(0, color=CFG.BASELINE, lw=1)
 ax.axvline(cagr * 100, color=CFG.INK, lw=1.2, ls="--", zorder=3)
-ax.text(cagr * 100 + 0.4, len(order) - 0.35, f"seluruh dataset +{cagr * 100:.1f}%".replace(".", ","), fontsize=8.8, fontweight="bold")
+ax.text(cagr * 100 + 0.5, len(order) - 0.35, f"seluruh dataset +{cagr * 100:.1f}%".replace(".", ","), fontsize=9, fontweight="bold")
 for y, (_, row) in enumerate(order.iterrows()):
     ha, dx = ("left", 0.5) if row["cagr_%"] >= 0 else ("right", -0.5)
-    ax.text(row["cagr_%"] + dx, y, f"{row['cagr_%']:+.1f}%  (x{row['kali_lipat']:.1f})".replace(".", ","),
-            va="center", ha=ha, fontsize=8.8, color=CFG.INK_2)
+    ax.text(row["cagr_%"] + dx, y, f"{row['cagr_%']:+.1f}%".replace(".", ","), va="center", ha=ha, fontsize=9, color=CFG.INK_2)
 ax.set_yticks(np.arange(len(order)))
-ax.set_yticklabels(order["nama"], fontsize=9.4)
-ax.set_xlim(order["cagr_%"].min() - 9, order["cagr_%"].max() + 15)
+ax.set_yticklabels(order["nama"], fontsize=9.6)
+ax.set_xlim(order["cagr_%"].min() - 6, order["cagr_%"].max() + 8)
 ax.set_xlabel("CAGR publikasi 2015-2024 (%)")
 ax.grid(axis="y", visible=False)
-ax.set_title("Laju pertumbuhan 10 konferensi teratas dibanding seluruh dataset")
-save_fig(fig, "t2_cagr_top10.png")
+ax.set_title("Laju pertumbuhan per tahun")
+save_fig(fig, "t2_cagr_top10.png",
+         insight="Empat konferensi AI/NLP tumbuh jauh di atas seluruh dataset (+3,2%); ICC dan EMBC justru menurun.")
 """))
 
 cells.append(md(r"""
-Untuk melihat pola yang sama pada 20 konferensi terbesar sekaligus, dipakai heatmap, yaitu chart yang dalam panduan Datawrapper cocok untuk menampilkan banyak kategori sepanjang waktu. Setiap sel adalah indeks jumlah paper terhadap rata-rata 2015-2017 konferensi itu sendiri (100 berarti sama dengan awal periode). Konferensi yang tidak tercatat pada salah satu tahun 2015-2017 dikeluarkan karena rata-rata awalnya tidak dapat dihitung secara adil, dan penggantinya diambil dari peringkat berikutnya. Biru berarti di atas awal periode, merah di bawahnya, dan kolom 2025 diberi arsiran karena belum lengkap.
+Untuk melihat pola yang sama pada banyak konferensi sekaligus (12 dari 20 konferensi terbesar: 8 dengan indeks 2024 tertinggi dan 4 terendah), dipakai heatmap, yaitu chart yang dalam panduan Datawrapper cocok untuk menampilkan banyak kategori sepanjang waktu. Setiap sel adalah indeks jumlah paper terhadap rata-rata 2015-2017 konferensi itu sendiri (100 berarti sama dengan awal periode). Konferensi yang tidak tercatat pada salah satu tahun 2015-2017 dikeluarkan karena rata-rata awalnya tidak dapat dihitung secara adil, dan penggantinya diambil dari peringkat berikutnya. Biru berarti di atas awal periode, merah di bawahnya, dan kolom 2025 diberi arsiran karena belum lengkap. Angka pada kolom 2024 menyebut indeksnya.
 """))
 
 cells.append(code(r"""
@@ -1563,29 +1520,31 @@ baseline = trend.loc[top20_venues, 2015:2017].mean(axis=1)
 heat = trend.loc[top20_venues].div(baseline, axis=0) * 100
 heat = heat.loc[heat[2024].sort_values(ascending=False).index]
 save_table(heat.round(1), "t2_indeks_tren_top20.csv")
+show = pd.concat([heat.head(8), heat.tail(4)])
 
 cmap = LinearSegmentedColormap.from_list("merah_netral_biru", ["#e34948", "#f0efec", "#2a78d6"])
-norm = TwoSlopeNorm(vcenter=100, vmin=40, vmax=300)
+norm = TwoSlopeNorm(vcenter=100, vmin=40, vmax=800)
 
-fig, ax = plt.subplots(figsize=(10.8, 7.0))
-image = ax.imshow(heat.values, cmap=cmap, norm=norm, aspect="auto")
-for i in range(heat.shape[0]):
-    for j in range(heat.shape[1]):
-        value = heat.values[i, j]
-        dark = value > 210 or value < 55
-        ax.text(j, i, f"{value:.0f}", ha="center", va="center", fontsize=7.8, color="#ffffff" if dark else CFG.INK, zorder=6)
-ax.add_patch(Rectangle((heat.shape[1] - 1.5, -0.5), 1, heat.shape[0], fill=False, hatch="///", edgecolor=CFG.MUTED, lw=0, zorder=2))
-ax.set_xticks(np.arange(heat.shape[1]))
-ax.set_xticklabels(heat.columns.astype(int))
-ax.set_yticks(np.arange(heat.shape[0]))
-ax.set_yticklabels([display_name(v) for v in heat.index], fontsize=9)
+fig, ax = plt.subplots(figsize=(6.4, 5.0))
+image = ax.imshow(show.values, cmap=cmap, norm=norm, aspect="auto")
+last = list(show.columns).index(2024)
+for i in range(show.shape[0]):
+    value = show.values[i, last]
+    ax.text(last, i, f"{value:.0f}", ha="center", va="center", fontsize=8.8, fontweight="bold",
+            color="#ffffff" if value > 330 or value < 55 else CFG.INK)
+ax.add_patch(Rectangle((show.shape[1] - 1.5, -0.5), 1, show.shape[0], fill=False, hatch="///", edgecolor=CFG.MUTED, lw=0, zorder=2))
+ax.set_xticks(np.arange(show.shape[1]))
+ax.set_xticklabels([str(int(c))[2:] for c in show.columns])
+ax.set_yticks(np.arange(show.shape[0]))
+ax.set_yticklabels([display_name(v) for v in show.index], fontsize=9.4)
 ax.grid(False)
 for spine in ax.spines.values():
     spine.set_visible(False)
-colorbar = fig.colorbar(image, ax=ax, fraction=0.03, pad=0.02, ticks=[50, 100, 200, 300])
+colorbar = fig.colorbar(image, ax=ax, fraction=0.035, pad=0.02, ticks=[50, 100, 200, 400, 800])
 colorbar.set_label("Indeks (100 = rata-rata 2015-2017)")
-ax.set_title("Indeks publikasi 20 konferensi teratas (data lengkap 2015-2017) terhadap rata-rata 2015-2017", pad=12, fontsize=10.5)
-save_fig(fig, "t2_heatmap_tren_top20.png")
+ax.set_title("Indeks publikasi terhadap awal periode (angka = tahun 2024)", pad=10, fontsize=10.5)
+save_fig(fig, "t2_heatmap_tren_top20.png",
+         insight="Konferensi machine learning dan NLP (NeurIPS, ICML, EMNLP, ACL) naik 5 sampai 8 kali dari level awal; ICC, EMBC, dan IECON di bawah level awal. Kolom 2025 diarsir (belum lengkap).")
 """))
 
 cells.append(md(r"""
@@ -1605,7 +1564,7 @@ cells.append(md(r"""
 cells.append(md(r"""
 ## 6.4 Perbandingan Peringkat Publikasi dan Author Unik (Task 2.4)
 
-Perbandingan dilakukan dalam tiga bentuk. Tabel memuat seluruh konferensi yang masuk 10 besar pada salah satu ukuran. Slope chart, jenis chart yang dalam panduan Datawrapper dipakai untuk melihat perubahan antara dua kondisi, menunjukkan bagaimana peringkat bergeser dari ukuran publikasi ke ukuran author unik. Scatter plot, jenis chart untuk hubungan dua ukuran, menunjukkan seluruh konferensi sekaligus beserta ukuran seberapa luas komunitas per paper.
+Perbandingan dilakukan dalam tiga bentuk. Tabel memuat seluruh konferensi yang masuk 10 besar pada salah satu ukuran. Slope chart, jenis chart yang dalam panduan Datawrapper dipakai untuk melihat perubahan antara dua kondisi, menunjukkan bagaimana peringkat bergeser dari ukuran publikasi ke ukuran author unik. Scatter plot, jenis chart untuk hubungan dua ukuran, menunjukkan seluruh konferensi sekaligus: area biru menandai rentang 1 sampai 4 author unik per paper dan konferensi 10 besar diberi warna biru tua.
 """))
 
 cells.append(code(r"""
@@ -1625,36 +1584,38 @@ compare.round(2)
 """))
 
 cells.append(code(r"""
-fig, ax = plt.subplots(figsize=(8.8, 7.0))
+fig, ax = plt.subplots(figsize=(6.0, 5.6))
 for venue, row in compare.iterrows():
     shift = row["selisih_rank"]
     color = CFG.BLUE if shift > 0 else (CFG.ORANGE if shift < 0 else CFG.GRAY)
-    ax.plot([0, 1], [row["rank_publikasi"], row["rank_author"]], color=color, lw=2.2, marker="o", ms=6, zorder=3)
-    ax.text(-0.04, row["rank_publikasi"], f"{row['nama']}  #{int(row['rank_publikasi'])}", ha="right", va="center", fontsize=9.2)
-    ax.text(1.04, row["rank_author"], f"#{int(row['rank_author'])}  {row['nama']}", ha="left", va="center", fontsize=9.2)
+    ax.plot([0, 1], [row["rank_publikasi"], row["rank_author"]], color=color, lw=2.4, marker="o", ms=6, zorder=3)
+    ax.text(-0.04, row["rank_publikasi"], f"{row['nama']}  #{int(row['rank_publikasi'])}", ha="right", va="center", fontsize=9.6)
+    ax.text(1.04, row["rank_author"], f"#{int(row['rank_author'])}  {row['nama']}", ha="left", va="center", fontsize=9.6)
 ax.set_xlim(-0.75, 1.75)
 ax.set_ylim(compare[["rank_publikasi", "rank_author"]].max().max() + 1, 0.2)
 ax.axis("off")
-ax.text(0, -0.2, "Peringkat jumlah\npublikasi", ha="center", va="bottom", fontsize=9.6, fontweight="bold", color=CFG.INK_2)
-ax.text(1, -0.2, "Peringkat jumlah\nauthor unik", ha="center", va="bottom", fontsize=9.6, fontweight="bold", color=CFG.INK_2)
-ax.set_title("Pergeseran peringkat: dari publikasi ke author unik", pad=34)
-ax.legend(handles=[Line2D([], [], color=CFG.BLUE, lw=2.2, label="Naik pada peringkat author unik"),
-                   Line2D([], [], color=CFG.ORANGE, lw=2.2, label="Turun pada peringkat author unik"),
-                   Line2D([], [], color=CFG.GRAY, lw=2.2, label="Peringkat sama")],
-          loc="lower center", bbox_to_anchor=(0.5, -0.06), ncol=3, fontsize=8.6)
-save_fig(fig, "t2_slope_peringkat.png")
+ax.text(0, -0.2, "Peringkat\npublikasi", ha="center", va="bottom", fontsize=10, fontweight="bold", color=CFG.INK_2)
+ax.text(1, -0.2, "Peringkat\nauthor unik", ha="center", va="bottom", fontsize=10, fontweight="bold", color=CFG.INK_2)
+ax.legend(handles=[Line2D([], [], color=CFG.BLUE, lw=2.4, label="Naik"),
+                   Line2D([], [], color=CFG.ORANGE, lw=2.4, label="Turun"),
+                   Line2D([], [], color=CFG.GRAY, lw=2.4, label="Sama")],
+          loc="lower center", bbox_to_anchor=(0.5, -0.04), ncol=3, fontsize=9)
+save_fig(fig, "t2_slope_peringkat.png",
+         insight=f"Dua peringkat sangat selaras (Spearman {str(round(rho, 3)).replace('.', ',')}): AAAI dan EMBC naik, CHI dan ICC turun.")
 """))
 
 cells.append(code(r"""
-fig, ax = plt.subplots(figsize=(9.4, 6.8))
-ax.scatter(venue_stats["publikasi"], venue_stats["author_unik"], s=9, color=CFG.GRAY, alpha=0.35, linewidths=0, zorder=2)
-highlight = venue_stats.loc[union]
-ax.scatter(highlight["publikasi"], highlight["author_unik"], s=40, color=CFG.BLUE, zorder=4)
-
+fig, ax = plt.subplots(figsize=(6.0, 5.4))
 guide_x = np.array([8, 7e4])
-for k, style in ((1, (0, (6, 3))), (2, (0, (2, 2))), (4, (0, (1, 1)))):
-    ax.plot(guide_x, k * guide_x, color=CFG.MUTED, lw=1.2, ls=style, zorder=1, label=f"{k} author unik per paper")
-
+ax.fill_between(guide_x, 1 * guide_x, 4 * guide_x, color=CFG.BLUE_LIGHT, alpha=0.25, zorder=0, linewidth=0)
+ax.plot(guide_x, 2 * guide_x, color=CFG.MUTED, lw=1.2, ls="--", zorder=1)
+ax.scatter(venue_stats["publikasi"], venue_stats["author_unik"], s=9, color=CFG.GRAY, alpha=0.4, linewidths=0, zorder=2)
+highlight = venue_stats.loc[union]
+ax.scatter(highlight["publikasi"], highlight["author_unik"], s=44, color=CFG.BLUE, zorder=4)
+for venue, offset in (("nips", (-10, 14)), ("icc", (-26, -22))):
+    row = highlight.loc[venue]
+    ax.annotate(row["nama"], (row["publikasi"], row["author_unik"]), xytext=offset, textcoords="offset points",
+                ha="right", fontsize=9.6, fontweight="bold", arrowprops=dict(arrowstyle="-", color=CFG.INK_2, lw=0.8))
 ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xlim(8, 7e4)
@@ -1662,29 +1623,10 @@ ax.set_ylim(8, 1.2e5)
 ax.set_xlabel("Jumlah publikasi (skala logaritmik)")
 ax.set_ylabel("Jumlah author unik (skala logaritmik)")
 ax.set_title("Publikasi dan author unik per konferensi")
-ax.legend(loc="lower right", bbox_to_anchor=(1.0, 0.13), fontsize=8.6, title="Garis panduan", title_fontsize=8.6)
-ax.text(0.98, 0.04, f"Korelasi peringkat Spearman = {rho:.2f}".replace(".", ",") + f"\n{fmt_id(len(venue_stats))} venue",
-        transform=ax.transAxes, ha="right", va="bottom", fontsize=9, fontweight="bold", color=CFG.INK_2)
-
-label_pos = {"nips": (7, 0, "left"), "cvpr": (7, 0, "left"), "aaai": (-7, 0, "right"), "icassp": (7, 0, "left"),
-             "embc": (-7, 0, "right"), "hci": (7, 3, "left"), "igarss": (7, -4, "left"), "emnlp": (-7, 0, "right"),
-             "icml": (7, 2, "left"), "iros": (-7, -5, "right"), "chi": (7, 0, "left"), "icc": (7, 0, "left")}
-inset = ax.inset_axes([0.13, 0.55, 0.40, 0.40])
-inset.scatter(highlight["publikasi"], highlight["author_unik"], s=44, color=CFG.BLUE, zorder=3)
-for venue, row in highlight.iterrows():
-    dx, dy, ha = label_pos.get(venue, (7, 0, "left"))
-    inset.annotate(row["nama"], (row["publikasi"], row["author_unik"]), xytext=(dx, dy), textcoords="offset points",
-                   ha=ha, va="center", fontsize=8.2)
-inset.set_xlim(8.5e3, 28e3)
-inset.set_ylim(23e3, 61e3)
-inset.set_xticks([10e3, 15e3, 20e3, 25e3])
-inset.set_yticks([25e3, 35e3, 45e3, 55e3])
-inset.tick_params(labelsize=7.5)
-inset.xaxis.set_major_formatter(FuncFormatter(lambda v, _: fmt_id(v)))
-inset.yaxis.set_major_formatter(FuncFormatter(lambda v, _: fmt_id(v)))
-inset.set_title("12 konferensi teratas (diperbesar)", fontsize=8.8, loc="left")
-ax.indicate_inset_zoom(inset, edgecolor=CFG.MUTED, alpha=0.8)
-save_fig(fig, "t2_scatter_publikasi_author.png")
+ax.text(0.97, 0.05, "area biru: 1 sampai 4 author unik per paper\ngaris putus-putus: 2 author unik per paper", transform=ax.transAxes,
+        ha="right", va="bottom", fontsize=8.8, color=CFG.INK_2)
+save_fig(fig, "t2_scatter_publikasi_author.png",
+         insight=f"Dari {fmt_id(len(venue_stats))} venue, hampir semuanya berada di sekitar 2 author unik per paper: publikasi besar berarti author unik besar.")
 """))
 
 cells.append(md(r"""
