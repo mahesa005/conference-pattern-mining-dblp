@@ -39,7 +39,7 @@ cells.append(md(f"""
 
 # Conference Popularity and Association Pattern Mining pada Dataset DBLP
 
-*Notebook 02: Task 3, Transactional Database Construction.*
+*Notebook 02: Transactional Database Construction.*
 """))
 
 cells.append(md(f"""
@@ -59,10 +59,10 @@ cells.append(md(f"""
 
 1. [**Introduction**](#1)
 2. [**Initialization**](#2)
-3. [**Pembentukan Transactional Database (Task 3.1)**](#3)
-4. [**Contoh Transaksi (Task 3.2)**](#4)
-5. [**Statistik Transactional Database (Task 3.3 dan 3.4)**](#5)
-6. [**Perbandingan dan Analisis (Task 3.5 dan 3.6)**](#6)
+3. [**Pembentukan Transactional Database**](#3)
+4. [**Contoh Transaksi**](#4)
+5. [**Statistik Transactional Database**](#5)
+6. [**Perbandingan Dua Representasi**](#6)
 7. [**Ringkasan dan Langkah Berikutnya**](#7)
 """))
 
@@ -74,27 +74,26 @@ cells.append(section("Introduction", "1"))
 cells.append(md("""
 ## Overview
 
-*Task 3 mengubah dataset DBLP yang sudah bersih menjadi transactional database, yaitu bentuk data yang dibutuhkan algoritma Frequent Pattern Mining. Dua representasi dibentuk dari tabel pasangan paper-author hasil Task 1. Pada representasi author-based, satu transaksi mewakili satu author. Pada representasi author-year-based, satu transaksi mewakili satu kombinasi author dan tahun. Item pada kedua representasi adalah venue, yaitu konferensi tempat author menerbitkan paper.*
+*Notebook ini mengubah dataset DBLP yang sudah bersih menjadi transactional database, yaitu bentuk data yang dibutuhkan algoritma Frequent Pattern Mining. Dua representasi dibentuk dari tabel pasangan paper-author hasil notebook `01_eda`. Pada representasi author-based, satu transaksi mewakili satu author. Pada representasi author-year-based, satu transaksi mewakili satu kombinasi author dan tahun. Item pada kedua representasi adalah venue, yaitu konferensi tempat author menerbitkan paper.*
 
-*Notebook ini adalah notebook ketiga pada alur proyek: `00_extract` untuk ekstraksi, `01_eda` untuk Task 1 dan Task 2, dan `02_transactions` untuk Task 3. Algoritma Apriori dan FP-Growth dikerjakan pada notebook terpisah agar setiap tahap mudah diperiksa dan diulang.*
+*Notebook ini adalah notebook ketiga pada alur proyek: `00_extract` untuk ekstraksi, `01_eda` untuk eksplorasi dan preprocessing, dan `02_transactions` untuk pembentukan transaksi. Algoritma Apriori dan FP-Growth dikerjakan pada notebook terpisah agar setiap tahap mudah diperiksa dan diulang.*
 """))
 
 cells.append(md("""
 ## Aim
 
-*Task 3.1: membentuk dua transactional database, yaitu author-based dan author-year-based.*
+*Notebook ini bertujuan untuk:*
 
-*Task 3.2 dan 3.3: menampilkan minimal 10 contoh transaksi dari setiap representasi dan menghitung jumlah transaksinya.*
-
-*Task 3.4: menghitung jumlah item unik dan distribusi jumlah item per transaksi.*
-
-*Task 3.5 dan 3.6: menganalisis perbedaan kedua representasi, lalu menjelaskan kelebihan dan keterbatasan masing-masing untuk Frequent Pattern Mining.*
+1. *membentuk dua transactional database, yaitu author-based dan author-year-based.*
+2. *menampilkan contoh transaksi dari setiap representasi dan menghitung jumlah transaksinya.*
+3. *menghitung jumlah item unik, distribusi jumlah item per transaksi, frekuensi item, dan beban kombinasi.*
+4. *membandingkan kedua representasi, lalu menjelaskan kelebihan dan keterbatasan masing-masing untuk Frequent Pattern Mining.*
 """))
 
 cells.append(md("""
 ## Metric
 
-***Support** sebuah itemset $X$ adalah proporsi transaksi yang memuat seluruh item pada $X$. Ukuran ini dipakai untuk menentukan item yang frequent pada bagian statistik, dan menjadi dasar Task 4.*
+***Support** sebuah itemset $X$ adalah proporsi transaksi yang memuat seluruh item pada $X$. Ukuran ini dipakai untuk menentukan item yang frequent pada bagian statistik, dan menjadi dasar pencarian itemset pada notebook Apriori dan FP-Growth.*
 
 $$\\text{support}(X) = \\frac{|\\{t \\in D : X \\subseteq t\\}|}{|D|}$$
 
@@ -123,7 +122,7 @@ Transaksi berupa himpunan venue. Satu transaksi adalah satu author (author-based
 """))
 
 cells.append(md("""
-## Approach: Satu Sumber, Dua Bentuk Penyimpanan
+## Approach: Struktur Data Satu Sumber, Dua Bentuk
 
 *Kedua database dibentuk dari satu tabel panjang berisi pasangan `tid` (id transaksi) dan `item` (kode venue). Tabel panjang inilah sumber kebenaran dan disimpan ke disk. Dari tabel itu dibentuk dua bentuk penyimpanan di memori. Bentuk horizontal berupa list of frozenset dipakai oleh Apriori dan FP-Growth. Bentuk sparse berupa matriks transaksi dan item dipakai untuk statistik dan validasi dengan `mlxtend`.*
 
@@ -298,12 +297,12 @@ print(f"Pasangan paper-author: {len(pa):,} | author unik: {pa['author'].nunique(
 """))
 
 # ---------------------------------------------------------------------------
-# 3. Pembentukan Transactional Database (Task 3.1)
+# 3. Pembentukan Transactional Database
 # ---------------------------------------------------------------------------
-cells.append(section("Pembentukan Transactional Database (Task 3.1)", "3"))
+cells.append(section("Pembentukan Transactional Database", "3"))
 
 cells.append(md("""
-Bagian ini menjawab Task 3.1. Kedua database dibentuk dari tabel `paper_author` dengan prosedur yang sama, dan hanya kunci pengelompokannya yang berbeda.
+Kedua database dibentuk dari tabel `paper_author` dengan prosedur yang sama, dan hanya kunci pengelompokannya yang berbeda.
 """))
 
 cells.append(md("""
@@ -428,18 +427,18 @@ checks
 cells.append(md("""
 #### Insights
 
-> Kedua database berhasil dibentuk dari tabel `paper_author` yang sama. Seluruh pemeriksaan kesetaraan lolos, sehingga bentuk horizontal dan sparse terbukti berisi informasi yang sama dan hanya berbeda cara penyimpanannya.
-
-> Tabel panjang disimpan ke disk sebagai sumber kebenaran, dan notebook Apriori dan FP-Growth cukup membacanya. Dengan cara ini tidak ada dua versi data yang dapat berbeda tanpa disadari.
+> 1. Kedua database berhasil dibentuk dari tabel `paper_author` yang sama.
+> 2. Seluruh pemeriksaan kesetaraan lolos, sehingga bentuk horizontal dan sparse berisi informasi yang sama dan hanya berbeda cara penyimpanannya.
+> 3. Tabel panjang disimpan ke disk sebagai sumber kebenaran, sehingga notebook Apriori dan FP-Growth cukup membacanya dan tidak ada dua versi data yang dapat berbeda tanpa disadari.
 """))
 
 # ---------------------------------------------------------------------------
-# 4. Contoh Transaksi (Task 3.2)
+# 4. Contoh Transaksi
 # ---------------------------------------------------------------------------
-cells.append(section("Contoh Transaksi (Task 3.2)", "4"))
+cells.append(section("Contoh Transaksi", "4"))
 
 cells.append(md(r"""
-Bagian ini menjawab Task 3.2. Satu author ditampilkan dahulu dalam kedua representasi supaya perbedaannya terlihat pada kasus nyata, lalu sepuluh contoh transaksi diambil dari masing-masing database.
+Satu author ditampilkan dahulu dalam kedua representasi supaya perbedaannya terlihat pada kasus nyata. Setelah itu sepuluh contoh transaksi diambil dari masing-masing database.
 """))
 
 cells.append(md(r"""
@@ -522,9 +521,10 @@ save_fig(fig, "t3_ilustrasi_satu_author.png")
 cells.append(md(r"""
 #### Insights
 
-> Author contoh memiliki 10 paper di 6 venue pada 2021-2024. Pada author-based seluruh paper menjadi satu transaksi berisi 6 item. Pada author-year-based paper yang sama menjadi empat transaksi, satu per tahun, dengan 3, 3, 1, dan 1 item.
-
-> Dua hal terlihat dari diagram. Pertama, dua paper pada venue yang sama dalam satu tahun (dua paper CCE pada 2023 dan dua paper ACC pada 2024) hanya menghasilkan satu item, sehingga jumlah paper tidak terbawa ke kedua representasi. Kedua, venue yang dipakai pada tahun berbeda (misalnya CCTA pada 2021 dan ACC pada 2024) hanya berada dalam satu transaksi pada author-based.
+> 1. Author contoh memiliki 10 paper di 6 venue pada 2021-2024.
+> 2. Pada author-based, seluruh paper menjadi satu transaksi berisi 6 item. Pada author-year-based, paper yang sama menjadi empat transaksi, satu per tahun, dengan 3, 3, 1, dan 1 item.
+> 3. Dua paper pada venue yang sama dalam satu tahun (dua paper CCE pada 2023 dan dua paper ACC pada 2024) hanya menghasilkan satu item, sehingga jumlah paper tidak terbawa ke kedua representasi.
+> 4. Venue yang dipakai pada tahun berbeda (misalnya CCTA pada 2021 dan ACC pada 2024) hanya berada dalam satu transaksi pada author-based.
 """))
 
 cells.append(md(r"""
@@ -569,9 +569,10 @@ examples_a
 cells.append(md(r"""
 #### Insights
 
-> Sepuluh contoh memperlihatkan rentang ukuran transaksi, dari satu item (seorang author yang hanya menerbitkan di ISSCC) sampai 25 item. Transaksi berukuran 4 sampai 8 item umumnya berisi venue dari bidang yang tampak berdekatan, sedangkan contoh 25 item mencampur banyak venue yang tidak seragam dan kemungkinan menggabungkan lebih dari satu orang yang bernama sama (`Haibo Zhang`).
-
-> Nama venue yang kecil dapat panjang karena nama tampilan diambil dari `booktitle` yang paling sering dipakai venue itu. Pada tabel nama yang melebihi 26 karakter dipotong, dan daftar item yang melebihi 10 venue diringkas.
+> 1. Sepuluh contoh mencakup ukuran transaksi dari satu item (seorang author yang hanya menerbitkan di ISSCC) sampai 25 item.
+> 2. Transaksi berukuran 4 sampai 8 item umumnya berisi venue dari bidang yang tampak berdekatan.
+> 3. Contoh 25 item mencampur banyak venue yang tidak seragam dan kemungkinan menggabungkan lebih dari satu orang yang bernama sama (`Haibo Zhang`).
+> 4. Nama venue yang kecil dapat panjang karena nama tampilan diambil dari `booktitle` yang paling sering dipakai venue itu. Pada tabel, nama yang melebihi 26 karakter dipotong dan daftar item yang melebihi 10 venue diringkas.
 """))
 
 cells.append(md(r"""
@@ -589,18 +590,19 @@ examples_ay
 cells.append(md(r"""
 #### Insights
 
-> Sepuluh contoh author-year-based berukuran 1 sampai 14 item. Author yang sama dapat muncul pada beberapa transaksi dengan tahun berbeda, sehingga kolom `tahun` menjadi bagian dari identitas transaksi.
-
-> Transaksi besar jauh lebih langka pada representasi ini. Seorang author harus menerbitkan di 14 venue berbeda dalam satu tahun untuk menghasilkan transaksi seperti contoh terakhir, dan hanya 1.261 transaksi (0,03%) yang berisi lebih dari 20 item, dibanding 17.533 transaksi (0,96%) pada author-based.
+> 1. Sepuluh contoh author-year-based berukuran 1 sampai 14 item.
+> 2. Author yang sama dapat muncul pada beberapa transaksi dengan tahun berbeda, sehingga kolom `tahun` menjadi bagian dari identitas transaksi.
+> 3. Transaksi besar jauh lebih langka pada representasi ini. Transaksi seperti contoh terakhir mengharuskan seorang author menerbitkan di 14 venue berbeda dalam satu tahun.
+> 4. Hanya 1.261 transaksi (0,03%) yang berisi lebih dari 20 item, dibanding 17.533 transaksi (0,96%) pada author-based.
 """))
 
 # ---------------------------------------------------------------------------
-# 5. Statistik Transactional Database (Task 3.3 dan 3.4)
+# 5. Statistik Transactional Database
 # ---------------------------------------------------------------------------
-cells.append(section("Statistik Transactional Database (Task 3.3 dan 3.4)", "5"))
+cells.append(section("Statistik Transactional Database", "5"))
 
 cells.append(md(r"""
-Bagian ini menjawab Task 3.3 dan 3.4: jumlah transaksi, jumlah item unik, dan distribusi jumlah item per transaksi. Dua ukuran tambahan dihitung karena langsung memengaruhi Task 4, yaitu frekuensi setiap item terhadap ambang min support dan beban kombinasi yang harus ditanggung algoritma.
+Bagian ini menghitung jumlah transaksi, jumlah item unik, dan distribusi jumlah item per transaksi. Dua ukuran tambahan dihitung karena langsung memengaruhi pencarian itemset, yaitu frekuensi setiap item terhadap ambang min support dan beban kombinasi yang harus ditanggung algoritma.
 """))
 
 cells.append(md(r"""
@@ -640,17 +642,16 @@ stats.round(2)
 cells.append(md(r"""
 #### Insights
 
-> Author-based memiliki 1.821.757 transaksi dan author-year-based 4.085.594, atau 2,24 kali lebih banyak, karena author yang aktif pada beberapa tahun menjadi beberapa transaksi. Kedua database memuat seluruh 4.373 venue sebagai item unik.
-
-> Jumlah pasangan transaksi-item hanya 1,34 kali lebih besar (4.853.675 dibanding 6.497.515) walaupun transaksinya 2,24 kali lebih banyak, sehingga transaksi author-year-based jauh lebih kecil: rata-rata 1,59 item dibanding 2,66, persentil 99 sebesar 7 dibanding 20, dan maksimum 85 dibanding 332. Median kedua database sama, yaitu 1 item.
-
-> Matriks transaksi dan item sangat jarang, dengan kepadatan 0,06% dan 0,04%. Transaksi terbesar pada kedua database berasal dari `Yang Liu` (332 item, dan 85 item pada 2024), yaitu nama umum yang kemungkinan menggabungkan banyak orang, sama seperti temuan pada Task 1.
+> 1. Author-based memiliki 1.821.757 transaksi dan author-year-based 4.085.594, atau 2,24 kali lebih banyak, karena author yang aktif pada beberapa tahun menjadi beberapa transaksi.
+> 2. Kedua database memuat seluruh 4.373 venue sebagai item unik. Matriks transaksi dan item sangat jarang, dengan kepadatan 0,06% dan 0,04%.
+> 3. Pasangan transaksi-item hanya 1,34 kali lebih besar (4.853.675 dibanding 6.497.515) walaupun transaksinya 2,24 kali lebih banyak. Transaksi author-year-based karena itu jauh lebih kecil, dengan rata-rata 1,59 item dibanding 2,66, persentil 99 sebesar 7 dibanding 20, dan maksimum 85 dibanding 332. Median kedua database sama, yaitu 1 item.
+> 4. Transaksi terbesar pada kedua database berasal dari `Yang Liu` (332 item, dan 85 item pada 2024). Ini nama umum yang kemungkinan menggabungkan banyak orang, sama seperti temuan pada notebook `01_eda`.
 """))
 
 cells.append(md(r"""
 ## 5.2 Distribusi Jumlah Item per Transaksi
 
-Distribusi ditampilkan sebagai stacked bar 100%, bentuk chart komposisi yang dalam panduan Datawrapper mudah dibandingkan antarkategori. Ekor distribusi dibaca dari persentil dan maksimum pada tabel di atas.
+Distribusi ditampilkan sebagai stacked bar 100%, sehingga komposisi ukuran transaksi pada kedua database dapat dibandingkan langsung. Ekor distribusi dibaca dari persentil dan maksimum pada tabel di atas.
 """))
 
 cells.append(code(r"""
@@ -697,17 +698,16 @@ save_fig(fig, "t3_distribusi_item_per_transaksi.png")
 cells.append(md(r"""
 #### Insights
 
-> Mayoritas transaksi hanya berisi satu item: 58,4% pada author-based dan 71,0% pada author-year-based. Transaksi satu item tidak dapat membentuk pasangan, sehingga tidak berkontribusi pada itemset berukuran dua ke atas, tetapi tetap masuk penyebut support. Transaksi yang berisi minimal dua item hanya 41,6% dan 29,0%, dan yang berisi minimal tiga item 25,6% dan 12,8%.
-
-> Ekor distribusinya panjang pada author-based: 17.533 transaksi (0,96%) berisi lebih dari 20 item dan yang terbesar 332 item. Pada author-year-based hanya 1.261 transaksi (0,03%) berisi lebih dari 20 item, dan 93,4% transaksi berukuran tiga item atau kurang.
-
-> Karena ekor itu, rata-rata (2,66 dan 1,59) jauh di atas median (1). Distribusi seperti ini memengaruhi pilihan ukuran yang dilaporkan: median menggambarkan transaksi tipikal, sedangkan rata-rata dan persentil atas menggambarkan beban yang ditanggung algoritma.
+> 1. Mayoritas transaksi hanya berisi satu item, yaitu 58,4% pada author-based dan 71,0% pada author-year-based.
+> 2. Transaksi satu item tidak membentuk pasangan sehingga tidak berkontribusi pada itemset berukuran dua ke atas, tetapi tetap masuk penyebut support. Transaksi berisi minimal dua item hanya 41,6% dan 29,0%, dan minimal tiga item 25,6% dan 12,8%.
+> 3. Ekor distribusi panjang pada author-based. Sebanyak 17.533 transaksi (0,96%) berisi lebih dari 20 item dan yang terbesar 332 item. Pada author-year-based hanya 1.261 transaksi (0,03%) berisi lebih dari 20 item, dan 93,4% transaksi berukuran tiga item atau kurang.
+> 4. Karena ekor itu, rata-rata (2,66 dan 1,59) jauh di atas median (1). Median menggambarkan transaksi tipikal, sedangkan rata-rata dan persentil atas menggambarkan beban yang ditanggung algoritma.
 """))
 
 cells.append(md(r"""
 ## 5.3 Frekuensi Item dan Ambang Min Support
 
-Support setiap item dihitung sebagai proporsi transaksi yang memuatnya. Dumbbell chart membandingkan support 10 venue teratas pada kedua database, jenis chart yang dalam panduan Datawrapper cocok untuk membandingkan dua nilai per kategori. Kurva tangga memperlihatkan berapa item yang lolos tiap ambang min support, termasuk empat ambang yang ditetapkan pada Task 4.
+Support setiap item dihitung sebagai proporsi transaksi yang memuatnya. Dumbbell chart membandingkan support 10 venue teratas pada kedua database, dengan satu titik per database pada setiap venue. Kurva tangga memperlihatkan berapa item yang lolos tiap ambang min support, termasuk empat ambang yang dipakai pada notebook Apriori dan FP-Growth.
 """))
 
 cells.append(code(r"""
@@ -777,11 +777,10 @@ save_fig(fig, "t3_item_frequent_per_min_support.png")
 cells.append(md(r"""
 #### Insights
 
-> Venue dengan support tertinggi adalah NeurIPS, sebesar 3,17% pada author-based dan 2,34% pada author-year-based, disusul CVPR (2,62% dan 2,07%) dan AAAI (2,55% dan 1,72%). Support setiap venue lebih rendah pada author-year-based, karena jumlah transaksi yang memuat venue itu naik jauh lebih sedikit daripada penyebutnya, yang naik 2,24 kali.
-
-> Akibatnya ambang yang sama meloloskan lebih sedikit item pada author-year-based: 574 dibanding 298 item pada 0,1%, 66 dibanding 42 pada 0,5%, 29 dibanding 17 pada 1%, dan 6 dibanding 2 pada 2%. Ambang absolutnya juga berbeda, yaitu 1.822 transaksi pada author-based dan 4.086 transaksi pada author-year-based untuk min support 0,1%.
-
-> Hanya 13,1% venue (574 dari 4.373) yang lolos min support 0,1% pada author-based, dan hanya 6 venue yang lolos 2%. Karena pasangan venue teratas pada pratinjau bagian 6.2 hanya memiliki support 1,02%, min support 2% diperkirakan tidak menghasilkan itemset berukuran dua pada Task 4.
+> 1. NeurIPS memiliki support tertinggi, yaitu 3,17% pada author-based dan 2,34% pada author-year-based, disusul CVPR (2,62% dan 2,07%) dan AAAI (2,55% dan 1,72%).
+> 2. Support setiap venue lebih rendah pada author-year-based, karena jumlah transaksi yang memuat venue itu naik jauh lebih sedikit daripada penyebutnya, yang naik 2,24 kali.
+> 3. Akibatnya ambang yang sama meloloskan lebih sedikit item pada author-year-based, yaitu 574 dibanding 298 item pada 0,1%, 66 dibanding 42 pada 0,5%, 29 dibanding 17 pada 1%, dan 6 dibanding 2 pada 2%. Ambang absolutnya juga berbeda, yaitu 1.822 transaksi pada author-based dan 4.086 transaksi pada author-year-based untuk min support 0,1%.
+> 4. Hanya 13,1% venue (574 dari 4.373) yang lolos min support 0,1% pada author-based, dan hanya 6 venue yang lolos 2%. Karena pasangan venue teratas pada pratinjau bagian 6.2 hanya memiliki support 1,02%, min support 2% diperkirakan tidak menghasilkan itemset berukuran dua.
 """))
 
 cells.append(md(r"""
@@ -858,17 +857,14 @@ save_fig(fig, "t3_konsentrasi_beban_kombinasi.png")
 cells.append(md(r"""
 #### Insights
 
-> Beban kombinasi sangat terkonsentrasi pada transaksi terbesar. Pada author-based, total beban 21,9 juta pasangan, dan 0,1% transaksi terbesar (sekitar 1.800 transaksi) menanggung 27,8% beban, 1% terbesar menanggung 56,5%, dan 10% terbesar menanggung 91,7%. Satu transaksi terbesar saja (332 item) menyumbang 54.946 pasangan.
-
-> Author-year-based memiliki beban total 5,9 juta pasangan, atau 3,7 kali lebih rendah, dengan konsentrasi yang lebih rendah (14,5% pada 0,1% transaksi terbesar dan 39,5% pada 1%). Transaksi terbesarnya hanya menyumbang 3.570 pasangan.
-
-> Pemangkasan item di bawah min support memotong beban dengan tajam. Pada author-based, beban turun dari 21,9 juta menjadi 10,2 juta pada 0,1%, 2,3 juta pada 0,5%, 1,0 juta pada 1%, dan 82.850 pada 2%. Pada 0,1% hanya 536.543 transaksi (29,5%) yang masih berisi minimal dua item frequent, dan pada 2% hanya 42.103 transaksi.
-
-> Angka ini adalah ukuran beban kasar, bukan waktu proses. Dugaan bahwa Apriori paling berat pada author-based dengan min support 0,1% (574 item dan 10,2 juta pasangan) perlu dibuktikan lewat pengukuran pada Task 6.
+> 1. Beban kombinasi sangat terkonsentrasi pada transaksi terbesar. Pada author-based, total beban 21,9 juta pasangan, dan 0,1% transaksi terbesar (sekitar 1.800 transaksi) menanggung 27,8% beban, 1% terbesar 56,5%, dan 10% terbesar 91,7%. Satu transaksi terbesar (332 item) menyumbang 54.946 pasangan.
+> 2. Author-year-based memiliki beban total 5,9 juta pasangan, atau 3,7 kali lebih rendah, dengan konsentrasi yang lebih rendah (14,5% pada 0,1% transaksi terbesar dan 39,5% pada 1%). Transaksi terbesarnya hanya menyumbang 3.570 pasangan.
+> 3. Pemangkasan item di bawah min support memotong beban dengan tajam. Pada author-based, beban turun dari 21,9 juta menjadi 10,2 juta pada 0,1%, 2,3 juta pada 0,5%, 1,0 juta pada 1%, dan 82.850 pada 2%. Pada 0,1% hanya 536.543 transaksi (29,5%) yang masih berisi minimal dua item frequent, dan pada 2% hanya 42.103 transaksi.
+> 4. Angka ini ukuran beban kasar, bukan waktu proses. Dugaan bahwa Apriori paling berat pada author-based dengan min support 0,1% (574 item dan 10,2 juta pasangan) perlu dibuktikan lewat pengukuran pada notebook `06_performance`.
 """))
 
 # ---------------------------------------------------------------------------
-# 6. Perbandingan dan Analisis (Task 3.5 dan 3.6)
+# 5.5 Jumlah Paper di Balik Satu Transaksi
 # ---------------------------------------------------------------------------
 cells.append(md(r"""
 ## 5.5 Jumlah Paper di Balik Satu Transaksi
@@ -899,17 +895,19 @@ paper_table.round(2)
 cells.append(md(r"""
 #### Insights
 
-> Jumlah paper di balik satu transaksi tidak sama dengan jumlah itemnya. Pada author-based, 48,6% transaksi dibentuk dari lebih dari satu paper (rata-rata 4,32 paper, maksimum 725), dan pada author-year-based 35,7% (rata-rata 1,93 paper, maksimum 122). Median kedua representasi tetap 1 paper.
-
-> Informasi yang tertelan oleh himpunan lebih besar pada author-based: 38,3% paper tidak menambah item baru karena venue-nya sudah ada pada transaksi, dibanding 17,4% pada author-year-based. Sekitar 7% transaksi pada kedua representasi dibentuk dari beberapa paper pada satu venue yang sama, sehingga hanya berisi satu item.
-
-> Konsekuensinya, support menghitung berapa author (atau pasangan author dan tahun) yang menerbitkan di sebuah venue, bukan berapa paper yang diterbitkan. Author dengan banyak paper di satu venue tidak mendapat bobot lebih pada support. Jumlah paper tetap dapat ditelusuri lewat kolom `n_paper` pada tabel indeks.
+> 1. Jumlah paper di balik satu transaksi tidak sama dengan jumlah itemnya. Pada author-based, 48,6% transaksi dibentuk dari lebih dari satu paper (rata-rata 4,32 paper, maksimum 725), dan pada author-year-based 35,7% (rata-rata 1,93 paper, maksimum 122). Median kedua representasi tetap 1 paper.
+> 2. Informasi yang tertelan oleh himpunan lebih besar pada author-based. Sebanyak 38,3% paper tidak menambah item baru karena venue-nya sudah ada pada transaksi, dibanding 17,4% pada author-year-based.
+> 3. Sekitar 7% transaksi pada kedua representasi dibentuk dari beberapa paper pada satu venue yang sama, sehingga hanya berisi satu item.
+> 4. Support menghitung berapa author (atau pasangan author dan tahun) yang menerbitkan di sebuah venue, bukan berapa paper yang diterbitkan, sehingga author dengan banyak paper di satu venue tidak mendapat bobot lebih. Jumlah paper tetap dapat ditelusuri lewat kolom `n_paper` pada tabel indeks.
 """))
 
-cells.append(section("Perbandingan dan Analisis (Task 3.5 dan 3.6)", "6"))
+# ---------------------------------------------------------------------------
+# 6. Perbandingan Dua Representasi
+# ---------------------------------------------------------------------------
+cells.append(section("Perbandingan Dua Representasi", "6"))
 
 cells.append(md(r"""
-Bagian ini menjawab Task 3.5 dan 3.6. Perbedaan kedua representasi dibahas pada tiga tingkat: satu author, ukuran database secara keseluruhan, dan perubahan support pasangan venue. Hasilnya dipakai untuk merumuskan kelebihan dan keterbatasan masing-masing representasi.
+Perbedaan kedua representasi dibahas pada tiga tingkat, yaitu satu author, ukuran database secara keseluruhan, dan perubahan support pasangan venue. Hasilnya dipakai untuk merumuskan kelebihan dan keterbatasan masing-masing representasi.
 """))
 
 cells.append(md(r"""
@@ -936,17 +934,16 @@ example_ay[["year", "n_paper", "jumlah_item", "pasangan_venue", "item"]].rename(
 cells.append(md(r"""
 #### Insights
 
-> Pada author contoh, author-based menyediakan 15 pasangan venue yang dapat muncul bersama, sedangkan author-year-based hanya 6. Selisih 9 pasangan adalah pasangan lintas tahun (misalnya CCTA pada 2021 dengan ACC pada 2024) yang tidak pernah berada dalam satu transaksi author-year-based.
-
-> Hal ini tidak berlaku sebagai aturan umum: pasangan yang berulang pada beberapa tahun dihitung berulang pada author-year-based, sehingga satu author dapat menyumbang lebih dari satu kali pada support pasangan yang sama. Besarnya kedua efek diukur pada seluruh database di bagian 6.2.
-
-> Tabel yang sama memperlihatkan nasib jumlah paper. Pada 2023 dan 2024, author contoh masing-masing menerbitkan 2 paper, tetapi transaksinya hanya berisi 1 item (CCE dan ACC) karena kedua paper berada pada venue yang sama. Setiap tahun selalu menjadi transaksi terpisah pada author-year-based, sedangkan pada author-based seluruh tahun digabung dan tahun tidak tersimpan pada transaksi.
+> 1. Pada author contoh, author-based menyediakan 15 pasangan venue yang dapat muncul bersama, sedangkan author-year-based hanya 6.
+> 2. Selisih 9 pasangan adalah pasangan lintas tahun (misalnya CCTA pada 2021 dengan ACC pada 2024) yang tidak pernah berada dalam satu transaksi author-year-based.
+> 3. Hal ini bukan aturan umum, karena pasangan yang berulang pada beberapa tahun dihitung berulang pada author-year-based sehingga satu author dapat menyumbang lebih dari satu kali pada support pasangan yang sama. Besarnya kedua efek diukur pada seluruh database di bagian 6.2.
+> 4. Pada 2023 dan 2024, author contoh masing-masing menerbitkan 2 paper, tetapi transaksinya hanya berisi 1 item (CCE dan ACC) karena kedua paper berada pada venue yang sama. Setiap tahun menjadi transaksi terpisah pada author-year-based, sedangkan pada author-based seluruh tahun digabung dan tahun tidak tersimpan.
 """))
 
 cells.append(md(r"""
 ## 6.2 Perbedaan pada Seluruh Database
 
-Perbandingan seluruh ukuran database sudah dihitung pada bagian 5. Di sini ditambahkan pengaruh representasi terhadap support pasangan venue. Pasangan dihitung hanya antar venue yang support-nya minimal 0,1% pada database author-based (574 item), lalu 10 pasangan teratas author-based dibandingkan dengan support pasangan yang sama pada author-year-based. Ini adalah pratinjau perbandingan, sedangkan pencarian pola sebenarnya dikerjakan pada Task 4.
+Ukuran kedua database sudah dibandingkan pada bagian 5, sehingga di sini ditambahkan pengaruh representasi terhadap support pasangan venue. Pasangan dihitung hanya antar venue yang support-nya minimal 0,1% pada database author-based (574 item), lalu 10 pasangan teratas author-based dibandingkan dengan support pasangan yang sama pada author-year-based. Ini hanya pratinjau, karena pencarian pola sebenarnya dikerjakan pada notebook `03_apriori` dan `04_fpgrowth`.
 """))
 
 cells.append(code(r"""
@@ -1033,19 +1030,15 @@ biennial_table
 cells.append(md(r"""
 #### Insights
 
-> Dari 164.451 pasangan venue di antara 574 venue yang support-nya minimal 0,1% pada author-based, 157.402 pasangan muncul sedikitnya sekali pada author-based dan 120.937 pada author-year-based. Author-year-based karena itu kehilangan sekitar 23% pasangan, yaitu pasangan yang hanya terjadi lintas tahun dan tidak pernah berada dalam satu transaksi.
-
-> Support pasangan teratas turun tajam: median 0,29 kali support author-based pada 100 pasangan teratas. Penurunan itu hampir seluruhnya berasal dari penyebut. Jumlah transaksi yang memuat pasangan hanya turun ke 0,65 kali, sedangkan jumlah transaksi database naik 2,24 kali (0,65 dibagi 2,24 menghasilkan sekitar 0,29). Ambang min support yang sama berarti ambang absolut yang lebih tinggi pada author-year-based.
-
-> Urutan pasangan relatif terjaga: 18 dari 20 pasangan teratas sama pada kedua database, dengan korelasi peringkat Spearman 0,892 pada pasangan yang muncul di keduanya. ICML dan NeurIPS tetap peringkat 1, dan ICLR dengan NeurIPS tetap peringkat 2.
-
-> Perubahan peringkat memperlihatkan efek representasi. ACL dengan EMNLP naik dari peringkat 6 ke 3, dan jumlah transaksinya bahkan 1,05 kali author-based, karena author yang konsisten menerbitkan di keduanya setiap tahun dihitung berulang. Hanya 4 dari 100 pasangan teratas yang mencapai rasio sekurangnya 1. Sebaliknya AAAI dengan NeurIPS turun dari peringkat 3 ke 6, dan ICRA dengan IROS bergeser dari peringkat 10 ke 11.
-
-> Kasus paling ekstrem adalah konferensi dua tahunan yang berselang tahun. ICCV (tahun ganjil) dan ECCV (tahun genap) dimuat bersama oleh 10.051 transaksi author-based, tetapi oleh nol transaksi author-year-based, karena keduanya tidak pernah diselenggarakan pada tahun yang sama. Asosiasi nyata antara dua komunitas ini tidak dapat terdeteksi sama sekali pada author-year-based.
+> 1. Dari 164.451 pasangan venue di antara 574 venue yang support-nya minimal 0,1% pada author-based, 157.402 pasangan muncul sedikitnya sekali pada author-based dan 120.937 pada author-year-based. Author-year-based kehilangan sekitar 23% pasangan, yaitu pasangan yang hanya terjadi lintas tahun.
+> 2. Support pasangan teratas turun tajam, dengan median 0,29 kali support author-based pada 100 pasangan teratas. Penurunan ini hampir seluruhnya berasal dari penyebut. Jumlah transaksi yang memuat pasangan hanya turun ke 0,65 kali, sedangkan jumlah transaksi database naik 2,24 kali (0,65 dibagi 2,24 menghasilkan sekitar 0,29).
+> 3. Ambang min support yang sama berarti ambang absolut yang lebih tinggi pada author-year-based. Urutan pasangan relatif terjaga, dengan 18 dari 20 pasangan teratas sama pada kedua database dan korelasi peringkat Spearman 0,892 pada pasangan yang muncul di keduanya. ICML dan NeurIPS tetap peringkat 1, dan ICLR dengan NeurIPS tetap peringkat 2.
+> 4. ACL dengan EMNLP naik dari peringkat 6 ke 3, dan jumlah transaksinya 1,05 kali author-based, karena author yang konsisten menerbitkan di keduanya setiap tahun dihitung berulang. Hanya 4 dari 100 pasangan teratas yang mencapai rasio sekurangnya 1. Sebaliknya AAAI dengan NeurIPS turun dari peringkat 3 ke 6, dan ICRA dengan IROS dari peringkat 10 ke 11.
+> 5. Kasus paling ekstrem adalah konferensi dua tahunan yang berselang tahun. ICCV (tahun ganjil) dan ECCV (tahun genap) dimuat bersama oleh 10.051 transaksi author-based, tetapi oleh nol transaksi author-year-based. Asosiasi antara dua komunitas ini tidak dapat terdeteksi sama sekali pada author-year-based.
 """))
 
 cells.append(md(r"""
-## 6.3 Kelebihan dan Keterbatasan untuk Frequent Pattern Mining (Task 3.6)
+## 6.3 Kelebihan dan Keterbatasan untuk Frequent Pattern Mining
 
 Kelebihan dan keterbatasan dirumuskan dari hasil pada bagian 3 sampai 6, bukan dari teori semata. Angka dalam tabel berasal dari output di atas.
 
@@ -1059,11 +1052,10 @@ Kelebihan dan keterbatasan dirumuskan dari hasil pada bagian 3 sampai 6, bukan d
 cells.append(md(r"""
 #### Insights
 
-> Kedua representasi menjawab pertanyaan yang berbeda. Author-based menjawab venue apa saja yang dipilih oleh author yang sama selama 11 tahun, sedangkan author-year-based menjawab venue apa yang dipilih bersamaan oleh author yang sama pada tahun yang sama. Keduanya valid, dan pilihan bergantung pada pertanyaan analisis.
-
-> Untuk pertanyaan Task 4, yaitu kombinasi konferensi yang sering muncul bersama dalam riwayat publikasi author, author-based lebih sesuai karena riwayat yang dimaksud mencakup seluruh periode. Author-year-based lebih sesuai untuk analisis temporal pada Bagian E, karena tahun menjadi bagian dari transaksi dan periode dapat dipisahkan.
-
-> Pada kedua representasi, mayoritas transaksi (58,4% dan 71,0%) hanya berisi satu item dan tidak membentuk pasangan, sedangkan sebagian kecil transaksi besar menanggung sebagian besar beban kombinasi. Dua hal ini menjadi catatan penting bagi Task 4: min support dihitung terhadap seluruh transaksi, dan waktu proses akan didominasi oleh transaksi besar.
+> 1. Kedua representasi menjawab pertanyaan yang berbeda. Author-based menjawab venue apa saja yang dipilih oleh author yang sama selama 11 tahun, sedangkan author-year-based menjawab venue apa yang dipilih bersamaan oleh author yang sama pada tahun yang sama. Keduanya valid, dan pilihan bergantung pada pertanyaan analisis.
+> 2. Untuk mencari kombinasi konferensi yang sering muncul bersama dalam riwayat publikasi author, author-based lebih sesuai karena riwayat mencakup seluruh periode. Author-year-based lebih sesuai untuk analisis temporal pada notebook `07_temporal`, karena tahun menjadi bagian dari transaksi dan periode dapat dipisahkan.
+> 3. Pada kedua representasi, mayoritas transaksi (58,4% dan 71,0%) hanya berisi satu item dan tidak membentuk pasangan.
+> 4. Sebagian kecil transaksi besar menanggung sebagian besar beban kombinasi, sehingga waktu proses akan didominasi oleh transaksi besar. Min support dihitung terhadap seluruh transaksi.
 """))
 
 # ---------------------------------------------------------------------------
@@ -1072,20 +1064,21 @@ cells.append(md(r"""
 cells.append(section("Ringkasan dan Langkah Berikutnya", "7"))
 
 cells.append(md(r"""
-Ringkasan berikut merangkum jawaban Task 3, berkas yang dihasilkan untuk notebook berikutnya, dan rencana notebook per tahap.
+Bagian ini merangkum temuan utama notebook, berkas yang dihasilkan untuk notebook berikutnya, dan alur seluruh notebook proyek.
 """))
 
 cells.append(md(r"""
-## 7.1 Ringkasan Hasil
+## 7.1 Ringkasan Temuan
 
-| Task | Pertanyaan | Hasil utama | Bukti |
-|---|---|---|---|
-| 3.1 | Membentuk dua database | Author-based dan author-year-based, dibentuk dari satu tabel panjang dan diverifikasi identik pada bentuk horizontal dan sparse | 3.1 sampai 3.3 |
-| 3.2 | Sepuluh contoh transaksi | Sepuluh contoh per database, ukuran 1 sampai 25 item (author-based) dan 1 sampai 14 item (author-year-based) | 4.2 dan 4.3 |
-| 3.3 | Jumlah transaksi | 1.821.757 (author-based) dan 4.085.594 (author-year-based) | 5.1 |
-| 3.4 | Item unik dan distribusi | 4.373 item unik pada keduanya. Median 1 item, rata-rata 2,66 dan 1,59, maksimum 332 dan 85. Transaksi satu item 58,4% dan 71,0% | 5.1 dan 5.2 |
-| 3.5 | Perbedaan kedua representasi | Author-year-based memiliki 2,24 kali lebih banyak transaksi yang lebih kecil, support pasangan median 0,29 kali, kehilangan sekitar 23% pasangan, dan tidak dapat memuat pasangan konferensi berselang tahun | 6.1 dan 6.2 |
-| 3.6 | Kelebihan dan keterbatasan | Tabel pada 6.3. Author-based sesuai untuk Task 4, author-year-based untuk analisis temporal | 6.3 |
+| Topik | Temuan utama | Bagian |
+|---|---|---|
+| Pembentukan database | Author-based dan author-year-based dibentuk dari satu tabel panjang, dan bentuk horizontal serta sparse terbukti identik | 3 |
+| Contoh transaksi | Sepuluh contoh per database, berukuran 1 sampai 25 item (author-based) dan 1 sampai 14 item (author-year-based) | 4.2 dan 4.3 |
+| Jumlah transaksi | 1.821.757 (author-based) dan 4.085.594 (author-year-based) | 5.1 |
+| Item unik dan distribusi | 4.373 item unik pada keduanya. Median 1 item, rata-rata 2,66 dan 1,59, maksimum 332 dan 85. Transaksi satu item 58,4% dan 71,0% | 5.1 dan 5.2 |
+| Jumlah paper per transaksi | Model himpunan tidak menyimpan jumlah paper. Transaksi dari lebih dari satu paper 48,6% dan 35,7%, dan jumlah paper tersimpan pada kolom `n_paper` | 5.5 |
+| Perbedaan kedua representasi | Author-year-based memiliki 2,24 kali lebih banyak transaksi yang lebih kecil, support pasangan median 0,29 kali, kehilangan sekitar 23% pasangan, dan tidak dapat memuat pasangan konferensi berselang tahun | 6.1 dan 6.2 |
+| Kelebihan dan keterbatasan | Author-based sesuai untuk pencarian kombinasi konferensi pada seluruh periode, author-year-based untuk analisis temporal. Data 2025 tidak lengkap | 6.3 |
 """))
 
 cells.append(md(r"""
@@ -1103,15 +1096,15 @@ Berkas berikut berada di `data/processed/` dan dibaca oleh notebook Apriori, FP-
 """))
 
 cells.append(md(r"""
-## 7.3 Rencana Notebook Berikutnya
+## 7.3 Alur Notebook Proyek
 
-Setiap tahap dikerjakan pada notebook tersendiri agar mudah diperiksa dan diulang.
+Setiap tahap dikerjakan pada notebook tersendiri agar mudah diperiksa dan diulang. Tabel berikut memuat peran dan masukan setiap notebook.
 
-| Notebook | Isi | Masukan |
+| Notebook | Peran | Masukan |
 |---|---|---|
 | `00_extract` | Ekstraksi XML | `dblp.xml.gz` |
-| `01_eda` | Task 1 dan Task 2 | `inproceedings_raw.parquet` |
-| `02_transactions` | Task 3 (notebook ini) | `paper_author.parquet` |
+| `01_eda` | Eksplorasi data dan preprocessing | `inproceedings_raw.parquet` |
+| `02_transactions` | Pembentukan dan perbandingan transactional database (notebook ini) | `paper_author.parquet` |
 | `03_apriori` | Apriori pada author-based, min support 0,1%, 0,5%, 1%, 2% | `tx_author.parquet` |
 | `04_fpgrowth` | FP-Growth pada database yang sama, validasi dengan `mlxtend` | `tx_author.parquet` |
 | `05_rules` | Association rules dengan min confidence 50% | itemset dari notebook 03 dan 04 |
