@@ -45,11 +45,16 @@ Proyek ini mengikuti \textit{Cross-Industry Standard Process for Data Mining} (C
 \end{figure}
 
 \section{\textit{Business Understanding}}
-Tujuan proyek adalah mengetahui konferensi yang paling aktif dan konferensi yang sering dipilih oleh peneliti yang sama. Popularitas konferensi diukur dari aktivitas publikasi, yaitu jumlah publikasi dan jumlah penulis unik, sedangkan keterkaitan antarkonferensi diukur dari kemunculan bersama pada riwayat publikasi penulis.
+Tahap ini menetapkan masalah yang dijawab proyek. Peneliti dan penyelenggara konferensi ilmu komputer membutuhkan gambaran konferensi mana yang paling aktif dan konferensi mana yang sering dipilih oleh peneliti yang sama, tetapi DBLP hanya menyediakan katalog publikasi tanpa analisis tersebut. Proyek ini menjawabnya dengan dua pendekatan.
+\begin{enumerate}
+\item Popularitas konferensi diukur dari aktivitas publikasi, yaitu jumlah publikasi dan jumlah penulis unik.
+\item Keterkaitan antarkonferensi diukur dari kemunculan bersama pada riwayat publikasi penulis, dengan penulis sebagai transaksi dan konferensi sebagai item, sehingga dapat dicari dengan \textit{frequent pattern mining} dan \textit{association rule mining}.
+\end{enumerate}
+Keberhasilan diukur dari kemampuan menemukan peringkat konferensi, kombinasi konferensi yang sering muncul bersama, dan perubahan pola antarperiode.
 
 \section{\textit{Data Understanding}}
 \label{sec:ekstraksi}
-Tahap ini terdiri atas tiga kegiatan.
+Tahap ini mengenali struktur dan kualitas data sebelum dipakai, sehingga keputusan pada tahap berikutnya didasarkan pada kondisi data yang sebenarnya. Tahap ini terdiri atas tiga kegiatan.
 \begin{enumerate}
 \item Ekstraksi: \textit{dump} dibaca secara \textit{streaming} dan hanya \textit{record} \texttt{inproceedings} 2015--2025 yang disimpan (2.004.202 \textit{record}).
 \item Seleksi: \textit{record} harus bertag \texttt{inproceedings}, ber\textit{key} \texttt{conf/}, dan terbit pada 2015--2025. Syarat \texttt{conf/} ditambahkan karena 3.161 \textit{record} bertag \texttt{inproceedings} berasal dari prosiding acara kecil pada seri jurnal (\texttt{journals/corr}, \texttt{journals/entcs}, dan \texttt{books/sp}) yang menyatu menjadi \textit{venue} palsu dan tidak mungkin mencapai \textit{min\_sup}.
@@ -59,7 +64,7 @@ Tahap ini terdiri atas tiga kegiatan.
 \section{\textit{Data Preparation}}
 \label{sec:preprocessing}
 \subsection{\textit{Preprocessing}}
-Tabel~\ref{tab:prepro} merangkum lima tahap \textit{preprocessing}, yang masing-masing dikerjakan pada salinan data mentah.
+\textit{Preprocessing} memastikan setiap makalah memiliki penulis, \textit{venue}, dan tahun yang konsisten serta tidak terhitung dua kali. Tabel~\ref{tab:prepro} merangkum lima tahap \textit{preprocessing}, yang masing-masing dikerjakan pada salinan data mentah.
 
 \begin{table}[!htb]
 \caption{Tahapan \textit{preprocessing}}
@@ -173,7 +178,18 @@ Pengulangan waktu & Tiga kali per kombinasi, dilaporkan median dan rentangnya \\
 \end{table}
 
 \section{\textit{Evaluation}}
-Evaluasi mencakup tiga hal. Pertama, validasi hasil kedua algoritma terhadap \texttt{mlxtend}. Kedua, perbandingan Apriori dan FP-Growth berdasarkan jumlah \textit{frequent itemsets}, jumlah \textit{rules}, dan waktu eksekusi pada setiap \textit{min\_sup}. Ketiga, perbandingan \textit{rules} antarperiode pada analisis temporal, yaitu yang bertahan, hilang, dan muncul.
+Tahap ini menilai apakah hasil \textit{mining} benar, seberapa baik kedua algoritma bekerja, dan apakah pola yang ditemukan bermakna. Evaluasi mencakup empat hal.
+\begin{enumerate}
+\item Validasi hasil: \textit{itemset} dan \textit{rules} kedua algoritma dibandingkan dengan \texttt{mlxtend}, dan keduanya harus identik.
+\item Perbandingan performa: Apriori dan FP-Growth dibandingkan berdasarkan jumlah \textit{frequent itemsets}, jumlah \textit{rules}, dan waktu eksekusi pada setiap \textit{min\_sup}.
+\item Perbandingan antarperiode: \textit{rules} pada empat periode dikelompokkan menjadi yang bertahan, hilang, muncul, dan berselang untuk melihat perubahan pola.
+\item Uji ketahanan dan sensitivitas: hasil diuji terhadap keputusan penggabungan \textit{workshop} dan terhadap transaksi bernama umum yang menggabungkan banyak orang, agar kesimpulan tidak bergantung pada satu asumsi.
+\end{enumerate}
 
 \section{\textit{Deployment}}
-Hasil disajikan dalam laporan ini dan presentasi. Seluruh kode dan \textit{notebook} dapat dijalankan ulang berurutan dari \textit{dump} DBLP.
+Tahap ini menyampaikan hasil kepada pembaca dan memastikan analisis dapat diulang oleh orang lain. Hasil dilaporkan dalam laporan ini dan presentasi, dengan setiap temuan disertai interpretasi dan keterbatasannya, bukan hanya keluaran algoritma.
+\begin{enumerate}
+\item Reproduksibilitas: kode disusun dalam delapan \textit{notebook} yang dijalankan berurutan dari \textit{dump} DBLP (Gambar~\ref{fig:alur-kerja}), dengan \textit{seed} tetap dan hasil antara disimpan sebagai berkas Parquet sehingga tahap berikutnya tidak perlu mengulang pembacaan XML.
+\item Pencatatan sumber data: tanggal unduh, ukuran berkas, dan SHA-256 \textit{dump} dicatat sehingga pembaca dapat memastikan memakai data yang sama.
+\item Dokumentasi: keterbatasan data dan asumsi analisis dirangkum pada Bab~\ref{chap:kesimpulan}.
+\end{enumerate}
