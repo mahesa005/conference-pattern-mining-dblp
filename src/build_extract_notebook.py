@@ -265,9 +265,9 @@ for line in CFG.DTD.read_text(encoding="iso-8859-1").splitlines():
 cells.append(md("""
 #### Insights
 
-> Berkas XML dibuka dengan deklarasi encoding ISO-8859-1 dan rujukan `<!DOCTYPE dblp SYSTEM "dblp.dtd">`. Karena itu `dblp.dtd` wajib berada di folder yang sama dengan `dblp.xml.gz`, dan parser harus dikonfigurasi untuk memuatnya.
-
-> Elemen akar `dblp` berisi daftar datar jenis record, sedangkan `inproceedings` hanya mensyaratkan atribut `key`. Seluruh field lain (`author`, `title`, `year`, `booktitle`) bersifat opsional menurut DTD, sehingga nilai kosong perlu diperiksa pada tahap preprocessing.
+> 1. Berkas XML dibuka dengan encoding ISO-8859-1 dan rujukan ke `dblp.dtd`, sehingga DTD harus berada di folder yang sama dengan `dblp.xml.gz` dan dimuat oleh parser.
+> 2. Elemen akar `dblp` berisi daftar datar jenis record, dan `inproceedings` hanya mewajibkan atribut `key`.
+> 3. Field lain (`author`, `title`, `year`, `booktitle`) opsional menurut DTD, sehingga nilai kosong diperiksa pada preprocessing.
 """))
 
 # ---------------------------------------------------------------------------
@@ -335,9 +335,8 @@ print(f"Total record: {sum(counts_all.values()):,} | inproceedings 2015-2025: {l
 cells.append(md("""
 #### Insights
 
-> Parser membaca seluruh record DBLP dalam satu kali lintasan. Karena record dibuang dari memori setelah diproses, memori yang dipakai tetap kecil walaupun berkas berukuran besar.
-
-> Jumlah `inproceedings` yang dikumpulkan (baris tabel) harus sama dengan hitungan `inproceedings` pada rentang tahun. Kesesuaian ini diperiksa secara eksplisit pada bagian berikutnya.
+> 1. Parser membaca seluruh record dalam satu lintasan, dan record dibuang dari memori setelah diproses sehingga memori tetap kecil.
+> 2. Jumlah baris tabel `inproceedings` harus sama dengan hitungan `inproceedings` pada rentang tahun, dan kesesuaian ini diperiksa pada bagian berikutnya.
 """))
 
 # ---------------------------------------------------------------------------
@@ -348,7 +347,7 @@ cells.append(section("Validasi dan Penyimpanan", "5"))
 cells.append(md("""
 ## 5.1 Validasi Hasil Parsing
 
-Sebelum disimpan, jumlah baris dicocokkan dengan hitungan jenis record, lalu kondisi kolom diperiksa. Tabel jenis publikasi di bawah ini adalah jawaban awal untuk Task 1.1 dan dipakai ulang di notebook EDA.
+Sebelum disimpan, jumlah baris dicocokkan dengan hitungan jenis record, lalu kondisi kolom diperiksa. Tabel jenis publikasi di bawah ini dipakai ulang di notebook EDA.
 """))
 
 cells.append(code("""
@@ -410,11 +409,10 @@ print(f"Venue dengan judul prosiding: {len(venue_proceedings):,}")
 cells.append(md("""
 #### Insights
 
-> Dump berisi 13.127.979 record dari sembilan jenis publikasi. `inproceedings` berjumlah 4.004.309 secara keseluruhan, dan 2.004.202 di antaranya berada pada rentang 2015-2025. Jumlah ini menjadi data mentah untuk notebook berikutnya.
-
-> Jenis `www` hanya memiliki satu record pada rentang tahun, karena record tersebut adalah halaman profil author yang umumnya tidak memiliki tahun. Hal ini wajar dan tidak memengaruhi analisis.
-
-> Kolom `year` tersimpan sebagai teks karena XML tidak memiliki tipe data. Konversi ke bilangan bulat dilakukan pada tahap preprocessing di notebook EDA.
+> 1. Dump berisi 13.127.979 record dari sembilan jenis publikasi, dengan 4.004.309 `inproceedings` di antaranya.
+> 2. Sebanyak 2.004.202 `inproceedings` berada pada 2015-2025 dan menjadi data mentah untuk notebook berikutnya.
+> 3. Jenis `www` hanya satu record pada rentang tahun karena berupa halaman profil author yang umumnya tidak bertahun.
+> 4. Kolom `year` tersimpan sebagai teks karena XML tidak bertipe data, dan dikonversi ke bilangan bulat pada preprocessing.
 """))
 
 # ---------------------------------------------------------------------------
