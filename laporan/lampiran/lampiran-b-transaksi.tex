@@ -31,7 +31,7 @@ Tabel~\ref{tab:cuplikan-items} sampai Tabel~\ref{tab:cuplikan-index} menampilkan
 \caption{Lima baris pertama \texttt{tx\_items.csv}}
 \label{tab:cuplikan-items}
 \small
-\begin{tabular}{@{}lp{7.2cm}r@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}@{}lp{7.2cm}r@{}}
 \toprule
 \textbf{\texttt{venue}} (segmen \textit{key}) & \textbf{\texttt{nama}} & \textbf{\texttt{item\_id}} \\
 \midrule
@@ -41,14 +41,14 @@ Tabel~\ref{tab:cuplikan-items} sampai Tabel~\ref{tab:cuplikan-index} menampilkan
 \texttt{3dor} & 3DOR@Eurographics & 3 \\
 \texttt{3dtv} & 3DTV-Conference & 4 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 
 \begin{table}[ht]
 \caption{Cuplikan \texttt{tx\_author.parquet} (tabel panjang \textit{author-based}, \texttt{tid} 0 dan 1)}
 \label{tab:cuplikan-a}
 \small
-\begin{tabular}{@{}rrl@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}@{}rrl@{}}
 \toprule
 \textbf{\texttt{tid}} & \textbf{\texttt{item}} & \textbf{Nama \textit{venue}} \\
 \midrule
@@ -60,28 +60,28 @@ Tabel~\ref{tab:cuplikan-items} sampai Tabel~\ref{tab:cuplikan-index} menampilkan
 1 & 2486 & IOLTS \\
 1 & \multicolumn{1}{c}{\ldots} & \multicolumn{1}{c}{\ldots} \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 
 \begin{table}[ht]
 \caption{Cuplikan \texttt{tx\_author\_index.parquet} (tabel indeks \textit{author-based}, \texttt{tid} 0 dan 1)}
 \label{tab:cuplikan-a-index}
 \small
-\begin{tabular}{@{}rlr@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}@{}rlr@{}}
 \toprule
 \textbf{\texttt{tid}} & \textbf{\texttt{author}} & \textbf{\texttt{n\_paper}} \\
 \midrule
 0 & Lucas Roquet & 1 \\
 1 & Fernando Fernandes dos Santos & 24 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 
 \begin{table}[ht]
 \caption{Cuplikan tabel indeks \textit{author-year-based} (\texttt{tid} 0 sampai 5)}
 \label{tab:cuplikan-index}
 \small
-\begin{tabular}{@{}rlrr@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}@{}rlrr@{}}
 \toprule
 \textbf{\texttt{tid}} & \textbf{\texttt{author}} & \textbf{\texttt{year}} & \textbf{\texttt{n\_paper}} \\
 \midrule
@@ -92,7 +92,7 @@ Tabel~\ref{tab:cuplikan-items} sampai Tabel~\ref{tab:cuplikan-index} menampilkan
 4 & Olivier Sentieys & 2024 & 8 \\
 5 & Angeliki Kritikakou & 2024 & 9 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 
 \section{\textit{Instance} nyata 1: penulis dengan 10 makalah}
@@ -103,7 +103,7 @@ Penulis pada Gambar~\ref{fig:ilustrasi} adalah \textit{Brian Camilo Gómez-León
 \caption{Sepuluh makalah \textit{Brian Camilo Gómez-León} pada \texttt{paper\_author.parquet}}
 \label{tab:instance-paper}
 \footnotesize
-\begin{tabular}{@{}llrl@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}@{}llrl@{}}
 \toprule
 \textbf{\textit{Key}} & \textbf{\texttt{venue}} & \textbf{Tahun} & \textbf{Nama tampilan} \\
 \midrule
@@ -118,7 +118,7 @@ Penulis pada Gambar~\ref{fig:ilustrasi} adalah \textit{Brian Camilo Gómez-León
 \texttt{conf/amcc/GomezLeonASG24} & \texttt{amcc} & 2024 & ACC \\
 \texttt{conf/amcc/SiraRamirezGA24} & \texttt{amcc} & 2024 & ACC \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 
 \begin{table}[ht]

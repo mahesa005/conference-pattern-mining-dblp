@@ -1,37 +1,28 @@
 \chapter{ANALISIS DAN INTERPRETASI}
 \label{chap:analisis}
 
-Bab ini menafsirkan temuan seluruh \textit{task} dengan merangkum maknanya, bukan mengulang angka pada bab hasil. Angka rinci ada pada bab yang dirujuk.
+Bab ini merangkum makna temuan seluruh \textit{task}. Angka rinci ada pada bab yang dirujuk.
 
-\section{Makna Hasil Pemahaman Data}
-Tiga temuan pada Bab~\ref{chap:prepro} menentukan cara membaca seluruh hasil berikutnya.
+\section{Makna Hasil Pemahaman Data dan Popularitas}
 \begin{enumerate}
-\item \textbf{Venue adalah seri, dan batasnya bergantung pada \textit{key}.} \textit{Booktitle} memecah satu konferensi dan menyatukan konferensi berbeda, sehingga \textit{key} dipakai. Konsekuensinya, \textit{workshop} yang berbagi \textit{key} ikut terhitung sebagai konferensi induknya (7,2\% makalah). Setiap pernyataan peringkat pada laporan ini berlaku untuk definisi tersebut.
-\item \textbf{Data bersih secara struktural, tetapi identitas penulis tidak pasti.} Normalisasi nama tidak mengubah apa pun karena DBLP sudah menyajikan nama yang bersih. Risiko yang tersisa bukan pada penulisan nama, melainkan pada nama umum yang mewakili banyak orang (\textit{Yang Liu} pada 332 \textit{venue}).
-\item \textbf{Aktivitas sangat terkonsentrasi.} Separuh publikasi berasal dari 5,3\% \textit{venue}, dan 8,3\% penulis menyumbang 52,6\% pasangan makalah-penulis. Pola konferensi yang muncul bersama kemungkinan dibentuk oleh kelompok kecil penulis yang menerbitkan di banyak konferensi.
+\item \textit{Venue} adalah seri yang batasnya ditentukan \textit{key}, sehingga \textit{workshop} yang berbagi \textit{key} ikut konferensi induk (7,2\% makalah). Peringkat berlaku untuk definisi ini, dan NeurIPS tetap nomor satu pada definisi lain (Bab~\ref{chap:popularitas}).
+\item Data bersih secara struktural, tetapi identitas penulis tidak pasti: nama umum yang menggabungkan banyak orang (\textit{Yang Liu} pada 332 \textit{venue}) menjadi risiko utama pada seluruh hasil \textit{mining}.
+\item Aktivitas sangat terkonsentrasi: separuh publikasi berasal dari 5,3\% \textit{venue}, dan 8,3\% penulis menyumbang 52,6\% pasangan makalah-penulis. Porsi sepuluh konferensi teratas naik dari 7,0\% menjadi 11,7\%, karena konferensi kecerdasan buatan dan pemrosesan bahasa alami tumbuh 3,6 sampai 10,2 kali sedangkan konferensi komunikasi dan biomedis menurun. Data tidak memuat penyebabnya.
 \end{enumerate}
 
-\section{Makna Hasil Popularitas Konferensi}
-NeurIPS adalah konferensi paling populer pada kedua ukuran (jumlah publikasi dan penulis unik), dan peringkatnya tidak berubah ketika acara satelit dikeluarkan. Dua ukuran tersebut sangat selaras (Spearman 0,987), sehingga jumlah publikasi cukup mewakili popularitas pada tingkat konferensi. Perbedaan peringkat tengah dijelaskan oleh luas komunitas per makalah: AAAI dan EMBC menarik lebih banyak penulis berbeda per makalah daripada CHI dan ICC.
-
-Pertumbuhan tidak merata. Konferensi kecerdasan buatan dan pemrosesan bahasa alami tumbuh 3,6 sampai 10,2 kali, sedangkan konferensi komunikasi dan biomedis menurun, sehingga porsi sepuluh konferensi teratas naik dari 7,0\% menjadi 11,7\%. Hal ini menunjukkan perhatian peneliti berpindah ke bidang tertentu, tetapi data DBLP tidak memuat penyebabnya.
-
 \section{Makna Pilihan Representasi Transaksi}
-Dua representasi menjawab pertanyaan berbeda, dan perbedaannya terukur. \textit{Author-based} menangkap riwayat penulis selama sebelas tahun, sedangkan \textit{author-year-based} hanya menangkap kemunculan pada tahun yang sama. Akibatnya \textit{support} pasangan pada \textit{author-year-based} median 0,29 kali, sekitar 23\% pasangan tidak pernah muncul, dan konferensi dua tahunan berselang seperti ICCV dan ECCV tidak dapat berpasangan sama sekali. Pratinjau pasangan menunjukkan kandidat keterkaitan terkuat berada di antara konferensi kecerdasan buatan (ICML, NeurIPS, ICLR, CVPR), tetapi kandidat tersebut baru dapat disimpulkan setelah \textit{Task} 4 dan \textit{Task} 5.
+\textit{Author-based} menangkap riwayat penulis selama sebelas tahun, sedangkan \textit{author-year-based} hanya menangkap kemunculan pada tahun yang sama. Akibatnya \textit{support} pasangan pada \textit{author-year-based} median 0,29 kali, sekitar 23\% pasangan tidak pernah muncul, dan konferensi dua tahunan berselang seperti ICCV dan ECCV tidak dapat berpasangan. Pilihan representasi karena itu menentukan pola yang dapat ditemukan (Bab~\ref{chap:transaksi}).
 
-\section{Makna Hasil \textit{Frequent Pattern Mining} dan \textit{Association Rules}}
-Bab~\ref{chap:fpm} dan Bab~\ref{chap:rules} memperlihatkan bahwa keterkaitan konferensi mengelompok per bidang. Kombinasi yang paling sering muncul bersama adalah ICML dan NeurIPS, dan \textit{itemset} terpanjang berisi enam konferensi kecerdasan buatan dan \textit{computer vision}. Popularitas tidak sama dengan keterkaitan kuat: konferensi terpopuler memiliki paling banyak asosiasi, tetapi \textit{lift} \textit{rules} yang menuju kepadanya rendah karena \textit{lift} dibagi dengan \textit{support} konferensi tujuan. Hubungan satu-ke-satu terkuat justru dimiliki pasangan konferensi yang lebih kecil dalam satu bidang, misalnya ECOC dan OFC. \textit{Lift} yang sangat tinggi pada \textit{rule} berisi banyak konferensi perlu dibaca bersama \textit{support}-nya, karena sebagian bergantung pada nama umum yang menggabungkan banyak orang.
-
-\section{Makna Perbandingan Performa}
-Pada Bab~\ref{chap:performa}, kedua algoritma menghasilkan \textit{itemset} dan \textit{rules} yang identik dengan waktu yang setara. Transaksi DBLP pendek dan polanya dangkal, sehingga keunggulan FP-Growth yang tidak membangkitkan kandidat belum terlihat pada waktu. Keunggulan itu tampak pada jumlah kandidat Apriori, yang tumbuh kuadratik terhadap jumlah item \textit{frequent}. Dengan demikian pemilihan algoritma pada \textit{dataset} ini lebih ditentukan oleh skalabilitas bila ambang diturunkan, bukan oleh waktu pada empat \textit{min\_sup} yang diuji.
-
-\section{Makna Analisis Temporal}
-Bab~\ref{chap:temporal} menunjukkan bahwa kelompok konferensi yang ditemukan tetap sama antarperiode, tetapi pusat perhatiannya bergeser dari konferensi komunikasi (GLOBECOM dan ICC) ke konferensi kecerdasan buatan (ICLR dan NeurIPS). Sebagian perubahan ditentukan oleh data, bukan oleh perilaku penulis: konferensi yang tidak diadakan setiap tahun dan tahun yang tidak tercatat di DBLP membuat sebagian \textit{rules} muncul atau hilang.
+\section{Makna Hasil \textit{Mining}}
+\begin{enumerate}
+\item \textbf{Keterkaitan konferensi mengelompok per bidang.} Kombinasi teratas adalah ICML dan NeurIPS, dan \textit{itemset} terpanjang berisi enam konferensi kecerdasan buatan dan \textit{computer vision} (Bab~\ref{chap:fpm}). Popularitas tidak sama dengan keterkaitan: NeurIPS memiliki \textit{rules} terbanyak, tetapi \textit{lift} \textit{rules} yang menuju kepadanya rendah karena \textit{lift} dibagi \textit{support} konferensi tujuan. Hubungan satu-ke-satu terkuat justru dimiliki pasangan yang lebih kecil dalam satu bidang, misalnya ECOC dan OFC (Bab~\ref{chap:rules}).
+\item \textbf{Performa kedua algoritma setara pada data ini.} Transaksi DBLP pendek dan polanya dangkal, sehingga keunggulan FP-Growth yang tidak membangkitkan kandidat belum terlihat pada waktu, tetapi terlihat pada jumlah kandidat Apriori yang tumbuh kuadratik (Bab~\ref{chap:performa}).
+\item \textbf{Perhatian bergeser ke kecerdasan buatan.} Kelompok konferensi yang ditemukan tetap sama antarperiode, tetapi pusatnya bergeser dari GLOBECOM dan ICC ke ICLR dan NeurIPS. Sebagian perubahan ditentukan oleh data, yaitu konferensi yang tidak diadakan setiap tahun dan tahun yang tidak tercatat di DBLP (Bab~\ref{chap:temporal}).
+\end{enumerate}
 
 \section{Penafsiran yang Perlu Hati-hati}
 \begin{enumerate}
-\item Seluruh peringkat dan asosiasi berlaku untuk definisi \textit{venue} berbasis \textit{key}, yaitu \textit{workshop} ikut konferensi induk.
-\item Nama penulis umum yang menggabungkan banyak orang memengaruhi sebagian \textit{itemset} dan \textit{rules} yang besar, sehingga hasil dibaca bersama keterbatasan pada Bab~\ref{chap:kesimpulan}.
+\item Nama penulis umum memengaruhi sebagian \textit{itemset} dan \textit{rules} besar, sehingga hasil dibaca bersama keterbatasan pada Bab~\ref{chap:kesimpulan}.
 \item \textit{Lift} dipakai untuk membandingkan \textit{rules}, bukan sebagai ukuran mutlak, karena \textit{min\_conf} 50\% dan \textit{support} konferensi yang rendah menjadikan \textit{lift} minimum cukup tinggi.
 \item Data 2025 tidak lengkap sehingga periode 2024--2025 pada Bagian E bias.
 \end{enumerate}
