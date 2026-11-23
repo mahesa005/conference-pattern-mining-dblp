@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Penanggung jawab | Mahesa Andre (13523140): harness pengukuran, sisi FP-Growth, report ini. Harfhan Ikhtiar: Apriori, eksekusi notebook 06, jawaban bagian 8, subbab LaTeX Task 6. |
+| Penanggung jawab | Bersama. Mahesa Andre (13523140): rancangan dan harness pengukuran, pertanyaan 1 sisi FP-Growth dan kesimpulannya, pertanyaan 3, report ini. Harfhan Ikhtiar (18223123): Apriori, eksekusi notebook 06, jumlah frequent itemsets dan rules, tabel waktu, pertanyaan 1 sisi Apriori, pertanyaan 2, keterbatasan pengukuran. Pembagian per poin spesifikasi ada di Tabel `tab:pembagian-t6` (`laporan/lampiran/lampiran-a-pembagian-kerja.tex`). |
 | Tanggal selesai | 23 November 2026 |
 | Status | Selesai dan sudah di `main` (sampai commit `42075ea`). Report ini belum di-commit saat ditulis. |
 | Notebook | `notebooks/06_performance.ipynb`, dibangkitkan oleh `src/build_performance_notebook.py` |
