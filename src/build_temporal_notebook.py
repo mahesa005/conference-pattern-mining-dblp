@@ -39,7 +39,7 @@ cells.append(md(f"""
 
 # Conference Popularity and Association Pattern Mining pada Dataset DBLP
 
-*Notebook 07: Bagian E, Temporal Association Analysis.*
+*Notebook 07: Temporal Association Analysis.*
 """))
 
 cells.append(md(f"""
@@ -60,12 +60,11 @@ cells.append(md(f"""
 1. [**Introduction**](#1)
 2. [**Initialization**](#2)
 3. [**Transaksi per Periode**](#3)
-4. [**Frequent Itemsets per Periode (E.1, E.2)**](#4)
-5. [**Association Rules per Periode (E.3)**](#5)
+4. [**Frequent Itemsets per Periode**](#4)
+5. [**Association Rules per Periode**](#5)
 6. [**Uji Ketahanan dan Pemilihan Min Support Utama**](#6)
-7. [**Perbandingan Rules Antarperiode (E.4, E.5)**](#7)
-8. [**Perubahan Tren Publikasi (E.6)**](#8)
-9. [**Ringkasan dan Keterbatasan**](#9)
+7. [**Perbandingan Rules Antarperiode**](#7)
+8. [**Perubahan Tren Publikasi**](#8)
 """))
 
 # ---------------------------------------------------------------------------
@@ -76,31 +75,30 @@ cells.append(section("Introduction", "1"))
 cells.append(md("""
 ## Overview
 
-*Bagian E melihat bagaimana pola asosiasi konferensi berubah dari waktu ke waktu. Berbeda dengan Task 4 dan 5 yang memakai author-based database (satu transaksi per author untuk seluruh 2015-2025), bagian ini memakai author-year-based database dari notebook `02_transactions`: satu transaksi per pasangan (author, tahun), berisi konferensi tempat author itu publish pada tahun tersebut. Karena tahun menjadi bagian dari transaksi, database dapat dipotong menjadi empat periode.*
+*Notebook ini melihat bagaimana pola asosiasi venue berubah dari waktu ke waktu. Berbeda dengan `04_fpgrowth` dan `05_rules` yang memakai author-based database (satu transaksi per author untuk seluruh 2015-2025), notebook ini memakai author-year-based database dari `02_transactions`: satu transaksi per pasangan (author, tahun), berisi venue tempat author itu publish pada tahun tersebut. Karena tahun menjadi bagian dari transaksi, database dapat dipotong menjadi empat periode.*
 """))
 
 cells.append(md("""
 ## Aim
 
-*E.1 dan E.2: menjalankan frequent pattern mining dan mengidentifikasi frequent itemsets pada setiap periode (2015-2017, 2018-2020, 2021-2023, 2024-2025).*
+*Notebook ini bertujuan untuk:*
 
-*E.3: membangkitkan association rules untuk setiap periode.*
-
-*E.4 dan E.5: membandingkan rules antarperiode serta mengidentifikasi pola yang bertahan dan pola yang berubah.*
-
-*E.6: menjelaskan kemungkinan perubahan tren publikasi berdasarkan hasil eksperimen.*
+1. *menjalankan frequent pattern mining dan mengidentifikasi frequent itemsets pada setiap periode (2015-2017, 2018-2020, 2021-2023, 2024-2025).*
+2. *membangkitkan association rules untuk setiap periode.*
+3. *membandingkan rules antarperiode, lalu mengidentifikasi pola yang bertahan dan pola yang berubah.*
+4. *menjelaskan kemungkinan perubahan tren publikasi berdasarkan hasil eksperimen.*
 """))
 
 cells.append(md("""
 ## Approach
 
-*Algoritma yang dipakai hanya FP-Growth (`src/fpgrowth.py`). FP-Growth sudah divalidasi terhadap `mlxtend` pada notebook 04, dan notebook 06 menunjukkan Apriori menghasilkan itemset yang sama. Rules dibangkitkan dengan `src/rules.py` dan min confidence 50%, sama dengan Task 5. Fungsi khusus bagian ini (pemotongan periode, penghitungan support langsung dari transaksi, kategori rule, dan pemilihan min support utama) ada di `src/temporal.py` dan diuji di `tests/test_temporal.py`.*
+*Algoritma yang dipakai hanya FP-Growth. FP-Growth sudah divalidasi terhadap `mlxtend` pada `04_fpgrowth`, dan `06_performance` menunjukkan Apriori menghasilkan itemset yang sama. Rules dibangkitkan dengan min confidence 50%, sama dengan `05_rules`. Fungsi khusus notebook ini (pemotongan periode, penghitungan support langsung dari transaksi, kategori rule, dan pemilihan min support utama) berada di modul `temporal` pada `src/`.*
 
 *Langkahnya:*
 
-1. *Memotong author-year-based database per periode. Penyebut support adalah seluruh transaksi pada periode itu, termasuk transaksi berisi satu konferensi.*
-2. *Menjalankan FP-Growth dan membangkitkan rules pada tiga min support: 0,01%, 0,02%, dan 0,05%. Ambang ini 10 sampai 100 kali lebih rendah daripada Task 4 karena transaksi author-year jauh lebih jarang berisi kombinasi (71,0% hanya berisi satu konferensi, notebook 02). Pada min support 0,1% seperti Task 4, periode awal hanya menghasilkan 0 sampai 1 rule.*
-3. *Menguji ketahanan: mining diulang setelah transaksi berisi 20 konferensi atau lebih dalam satu tahun dikosongkan (tetap dihitung pada penyebut).*
+1. *Memotong author-year-based database per periode. Penyebut support adalah seluruh transaksi pada periode itu, termasuk transaksi berisi satu venue.*
+2. *Menjalankan FP-Growth dan membangkitkan rules pada tiga min support: 0,01%, 0,02%, dan 0,05%. Ambang ini 10 sampai 100 kali lebih rendah daripada `04_fpgrowth` karena transaksi author-year jauh lebih jarang berisi kombinasi (71,0% hanya berisi satu venue, `02_transactions`). Pada min support 0,1% seperti `04_fpgrowth`, periode awal hanya menghasilkan 0 sampai 1 rule.*
+3. *Menguji ketahanan: mining diulang setelah transaksi berisi 20 venue atau lebih dalam satu tahun dikosongkan (tetap dihitung pada penyebut).*
 4. *Memilih satu min support utama dengan kriteria yang ditetapkan sebelum melihat polanya: setiap periode memiliki minimal 15 rules, dan minimal 80% rules setiap periode lolos uji ketahanan. Dari yang lolos, dipilih ambang terkecil. Jika tidak ada yang lolos, jumlah rules tetap menjadi syarat dan dipilih ambang dengan ketahanan terbaik di antara yang memenuhinya.*
 5. *Membandingkan rules antarperiode pada min support utama dengan empat kategori, lalu menghitung support, confidence, dan lift setiap rule di semua periode, termasuk periode tempat rule itu tidak lolos ambang.*
 """))
@@ -275,7 +273,7 @@ PERIOD_NAMES = list(PERIODS)
 cells.append(md("""
 ## Load Dataset
 
-Tabel panjang `(tid, item)` dan indeks `(tid, author, year)` author-year-based dimuat sekali. Nama konferensi diambil dari `tx_items.csv`.
+Tabel panjang `(tid, item)` dan indeks `(tid, author, year)` author-year-based dimuat sekali. Nama venue diambil dari `tx_items.csv`.
 """))
 
 cells.append(code("""
@@ -312,13 +310,18 @@ profile.style.format({"transaksi": "{:,}", "pct_min_2_item": "{:.1%}", "rata_ite
 """))
 
 cells.append(md("""
-Keempat periode memiliki ukuran yang sebanding (sekitar 0,9 sampai 1,2 juta transaksi) dan porsi transaksi dengan minimal dua konferensi yang mirip (28 sampai 31%). Periode 2024-2025 hanya dua tahun dan data 2025 belum lengkap, tetapi karena support dihitung relatif terhadap jumlah transaksi periode itu sendiri, perbedaan ukuran tidak langsung mengubah support. Kolom `tx_besar` adalah transaksi berisi 20 konferensi atau lebih dalam satu tahun, yang dipakai pada uji ketahanan di bagian 6.
+#### Insights
+
+> 1. Keempat periode berukuran sebanding, sekitar 0,9 sampai 1,2 juta transaksi, dengan porsi transaksi berisi minimal dua venue yang mirip (28 sampai 31%).
+> 2. Periode 2024-2025 hanya dua tahun dan data 2025 belum lengkap. Support dihitung relatif terhadap jumlah transaksi periode itu sendiri, sehingga perbedaan ukuran tidak langsung mengubah support, tetapi edisi 2025 yang belum tercatat tidak terkoreksi.
+> 3. Kolom `tx_besar` adalah transaksi berisi 20 venue atau lebih dalam satu tahun, yang dipakai pada uji ketahanan di bagian 6.
+> 4. Transaksi tidak saling bebas. Author yang aktif setiap tahun muncul di banyak transaksi dan mendapat bobot lebih besar (keterbatasan author-year-based dari `02_transactions`).
 """))
 
 # ---------------------------------------------------------------------------
 # 4. Frequent itemsets
 # ---------------------------------------------------------------------------
-cells.append(section("Frequent Itemsets per Periode (E.1, E.2)", "4"))
+cells.append(section("Frequent Itemsets per Periode", "4"))
 
 cells.append(md("""
 FP-Growth dijalankan pada setiap kombinasi periode dan min support (12 run). Frequent itemsets disimpan di `outputs/temporal/itemsets_<periode>_<tag>.parquet`.
@@ -344,7 +347,12 @@ item_table.style.format({"min_support": "{:.2%}", "detik": "{:.1f}"})
 """))
 
 cells.append(md("""
-Pada ketiga ambang, 2024-2025 memiliki itemset kombinasi paling banyak meskipun jumlah transaksinya paling sedikit. Pada 0,02%, itemset berukuran dua atau lebih berjumlah 279, 376, 662, dan 2.380 dari periode pertama sampai terakhir, dan itemset berukuran empat atau lebih naik dari 1 menjadi 710. Sebaliknya, jumlah konferensi tunggal yang frequent turun (1.600, 1.559, 1.468, 1.266), padahal ambang count 2024-2025 paling rendah (178). Artinya author makin terkumpul pada konferensi yang sama, dan konferensi itu makin sering muncul bersama dalam satu tahun.
+#### Insights
+
+> 1. Pada ketiga ambang, 2024-2025 memiliki itemset kombinasi paling banyak meskipun jumlah transaksinya paling sedikit.
+> 2. Pada 0,02%, itemset berukuran dua atau lebih berjumlah 279, 376, 662, dan 2.380 dari periode pertama sampai terakhir. Itemset berukuran empat atau lebih naik dari 1 menjadi 710.
+> 3. Jumlah venue tunggal yang frequent justru turun (1.600, 1.559, 1.468, 1.266), padahal ambang count 2024-2025 paling rendah (178).
+> 4. Artinya author makin terkumpul pada venue yang sama, dan venue itu makin sering muncul bersama dalam satu tahun.
 """))
 
 cells.append(md("""
@@ -365,13 +373,17 @@ top_itemsets.pivot(index="peringkat", columns="periode", values="itemset")
 """))
 
 cells.append(md("""
-Susunan pasangan teratas berubah. Pada 2015-2017, pasangan teratas adalah GLOBECOM + ICC, ACC + CDC, ICRA + IROS, dan ECOC + OFC, dan hanya satu dari sepuluh (AAAI + IJCAI) yang memuat AAAI, NeurIPS, ICML, ICLR, ACL, atau EMNLP. Pada 2024-2025, sembilan dari sepuluh pasangan teratas memuat salah satu konferensi itu, dan satu-satunya pengecualian adalah CVPR + ICCV. Support ICLR + NeurIPS naik dari 0,18% pada 2018-2020 menjadi 1,04% pada 2024-2025, sedangkan GLOBECOM + ICC turun dari peringkat 1 ke luar sepuluh besar.
+#### Insights
+
+> 1. Pada 2015-2017, pasangan teratas adalah GLOBECOM + ICC, ACC + CDC, ICRA + IROS, dan ECOC + OFC. Hanya satu dari sepuluh (AAAI + IJCAI) yang memuat AAAI, NeurIPS, ICML, ICLR, ACL, atau EMNLP.
+> 2. Pada 2024-2025, sembilan dari sepuluh pasangan teratas memuat salah satu venue itu. Satu-satunya pengecualian adalah CVPR + ICCV.
+> 3. Support ICLR + NeurIPS naik dari 0,18% pada 2018-2020 menjadi 1,04% pada 2024-2025, sedangkan GLOBECOM + ICC turun dari peringkat 1 ke luar sepuluh besar.
 """))
 
 # ---------------------------------------------------------------------------
 # 5. Rules
 # ---------------------------------------------------------------------------
-cells.append(section("Association Rules per Periode (E.3)", "5"))
+cells.append(section("Association Rules per Periode", "5"))
 
 cells.append(md("""
 Rules dibangkitkan dari itemset setiap run dengan min confidence 50% dan disimpan di `outputs/temporal/rules_<periode>_<tag>.parquet`.
@@ -395,7 +407,10 @@ rule_table.pivot(index="periode", columns="min_support", values="rules")
 """))
 
 cells.append(md("""
-Jumlah rules naik tajam menuju 2024-2025 pada ketiga ambang. Pada 0,02%, jumlahnya 17, 32, 113, dan 1.874. Pada 0,1% seperti Task 4, periode 2015-2017 sampai 2021-2023 hanya menghasilkan 1, 0, dan 3 rules (diuji saat merancang analisis ini), sehingga ambang yang lebih rendah memang diperlukan.
+#### Insights
+
+> 1. Jumlah rules naik tajam menuju 2024-2025 pada ketiga ambang. Pada 0,02%, jumlahnya 17, 32, 113, dan 1.874.
+> 2. Pada 0,1% seperti `04_fpgrowth`, periode 2015-2017 sampai 2021-2023 hanya menghasilkan 1, 0, dan 3 rules (diuji saat merancang analisis ini), sehingga ambang yang lebih rendah memang diperlukan.
 """))
 
 cells.append(code("""
@@ -417,7 +432,11 @@ save_fig(fig, "t7_rules_per_periode.png")
 """))
 
 cells.append(md("""
-Median lift rules turun dari periode ke periode (pada 0,02%: 49,1; 49,2; 28,0; 20,2). Rules baru berpusat pada konferensi besar, dan sesuai temuan Task 5, rule yang menuju konferensi besar memiliki lift lebih rendah karena support konferensi tujuannya tinggi. Rule satu-ke-satu hampir tidak ada (2, 1, 1, dan 0 pada 0,02%): dalam satu tahun, publish di satu konferensi jarang cukup untuk memprediksi konferensi lain dengan confidence 50%.
+#### Insights
+
+> 1. Median lift rules turun dari 49,1 dan 49,2 pada dua periode awal menjadi 28,0 dan 20,2 pada dua periode berikutnya (min support 0,02%).
+> 2. Rules baru berpusat pada venue besar. Sesuai temuan `05_rules`, rule yang menuju venue besar memiliki lift lebih rendah karena support venue tujuannya tinggi.
+> 3. Rule satu-ke-satu hampir tidak ada (2, 1, 1, dan 0 pada 0,02%). Dalam satu tahun, publish di satu venue jarang cukup untuk memprediksi venue lain dengan confidence 50%.
 """))
 
 cells.append(md("""
@@ -437,7 +456,11 @@ top_rules.style.format({"support": "{:.3%}", "confidence": "{:.1%}", "lift": "{:
 """))
 
 cells.append(md("""
-Sepuluh lift tertinggi 2015-2017 tersebar di banyak kelompok konferensi, antara lain AISTATS + ICML → NeurIPS, ASRU → INTERSPEECH, ECOC → OFC, ACC + ECC → CDC, dan rules GLOBECOM/ICC. Pada 2024-2025, seluruh sepuluh lift tertinggi adalah rule empat atau tiga konferensi menuju dua konferensi, semuanya memuat ACL atau EMNLP bersama ICLR atau ICML, dengan count hanya 184 sampai 279. Bagian 6 menunjukkan sebagian rule ini tidak tahan uji ketahanan.
+#### Insights
+
+> 1. Sepuluh lift tertinggi 2015-2017 tersebar di banyak kelompok venue, antara lain AISTATS + ICML → NeurIPS, ASRU → INTERSPEECH, ECOC → OFC, ACC + ECC → CDC, dan rules GLOBECOM/ICC.
+> 2. Pada 2024-2025, seluruh sepuluh lift tertinggi adalah rule empat atau tiga venue menuju dua venue, semuanya memuat ACL atau EMNLP bersama ICLR atau ICML, dengan count hanya 184 sampai 279.
+> 3. Bagian 6 menunjukkan sebagian rule ini tidak tahan uji ketahanan.
 """))
 
 # ---------------------------------------------------------------------------
@@ -446,7 +469,7 @@ Sepuluh lift tertinggi 2015-2017 tersebar di banyak kelompok konferensi, antara 
 cells.append(section("Uji Ketahanan dan Pemilihan Min Support Utama", "6"))
 
 cells.append(md("""
-Sebagian kecil author publish di sangat banyak konferensi dalam satu tahun, misalnya karena nama umum yang menggabungkan beberapa orang di DBLP (keterbatasan yang sama dengan Task 4). Transaksi seperti ini dapat membuat kombinasi panjang lolos ambang sendirian. Mining diulang setelah transaksi berisi 20 konferensi atau lebih dikosongkan, dengan penyebut tetap. Kolom `survival` adalah porsi rules asli yang tetap ditemukan.
+Sebagian kecil author publish di sangat banyak venue dalam satu tahun, misalnya karena nama umum yang menggabungkan beberapa orang di DBLP (seperti pada `04_fpgrowth`). Transaksi seperti ini dapat membuat kombinasi panjang lolos ambang sendirian. Mining diulang setelah transaksi berisi 20 venue atau lebih dikosongkan, dengan penyebut tetap, dan kolom `survival` adalah porsi rules asli yang tetap ditemukan.
 """))
 
 cells.append(code("""
@@ -487,13 +510,18 @@ top24[["rule", "count", "confidence", "lift", "tahan"]].style \\
 """))
 
 cells.append(md("""
-**Pemilihan min support utama.** Tidak ada ambang yang memenuhi kedua kriteria karena survival 2024-2025 hanya 64%, 67%, dan 78% pada 0,01%, 0,02%, dan 0,05%. Ambang 0,05% juga tidak memenuhi syarat jumlah rules (2 dan 4 rules pada dua periode awal). Sesuai aturan cadangan, dipilih **0,02%**, ambang dengan ketahanan terbaik di antara yang memiliki minimal 15 rules di setiap periode. Pada 2015-2017 sampai 2021-2023, ketahanannya 94% sampai 100%. Hanya 2024-2025 (67%) yang di bawah 80%, sehingga rules yang hanya ada pada 2024-2025 dibaca dengan hati-hati. Dari sepuluh lift tertinggi 2024-2025 di atas, hanya empat yang tetap ditemukan tanpa transaksi besar, dan keempat rule yang memuat ACM Multimedia tidak tahan.
+#### Insights
+
+> 1. Tidak ada ambang yang memenuhi kedua kriteria, karena survival 2024-2025 hanya 64%, 67%, dan 78% pada 0,01%, 0,02%, dan 0,05%. Ambang 0,05% juga tidak memenuhi syarat jumlah rules (2 dan 4 rules pada dua periode awal).
+> 2. Sesuai aturan cadangan, dipilih **0,02%**, ambang dengan ketahanan terbaik di antara yang memiliki minimal 15 rules di setiap periode.
+> 3. Pada 2015-2017 sampai 2021-2023, ketahanannya 94% sampai 100%. Hanya 2024-2025 (67%) yang di bawah 80% tanpa 582 transaksi berisi 20 venue atau lebih, sehingga rules yang hanya ada pada 2024-2025 dibaca dengan hati-hati.
+> 4. Dari sepuluh lift tertinggi 2024-2025 di atas, hanya empat yang tetap ditemukan tanpa transaksi besar, dan keempat rule yang memuat ACM Multimedia tidak tahan.
 """))
 
 # ---------------------------------------------------------------------------
 # 7. Comparison
 # ---------------------------------------------------------------------------
-cells.append(section("Perbandingan Rules Antarperiode (E.4, E.5)", "7"))
+cells.append(section("Perbandingan Rules Antarperiode", "7"))
 
 cells.append(md("""
 Setiap rule pada min support utama diberi tanda kemunculan di keempat periode, lalu diberi kategori. Untuk setiap rule, support, confidence, dan lift juga dihitung langsung dari transaksi di keempat periode, sehingga rule yang tidak lolos dapat dibedakan antara melemah dan sekadar di bawah ambang.
@@ -528,7 +556,11 @@ counts.sort_values("kategori", key=lambda s: s.map(order))
 """))
 
 cells.append(md("""
-Pada 0,02% terdapat 1.904 rules berbeda dari keempat periode. Hampir semuanya muncul (1.865 rules, 98%), dan 1.770 di antaranya hanya lolos pada 2024-2025. Hanya satu rule yang bertahan, 11 hilang, dan 27 berselang.
+#### Insights
+
+> 1. Pada 0,02% terdapat 1.904 rules berbeda dari keempat periode.
+> 2. Hampir semuanya muncul (1.865 rules, 98%), dan 1.770 di antaranya hanya lolos pada 2024-2025.
+> 3. Hanya satu rule yang bertahan, 11 hilang, dan 27 berselang.
 """))
 
 cells.append(md("""
@@ -543,7 +575,10 @@ sens
 """))
 
 cells.append(md("""
-Gambaran yang sama terlihat pada ketiga ambang: rules muncul mencakup 97% sampai 98% dari seluruh rules, sedangkan rules bertahan hanya 13, 1, dan 0. Jumlah rules bertahan bergantung kuat pada ambang, sehingga yang dapat disimpulkan adalah polanya (sangat sedikit rule yang lolos di semua periode), bukan angka pastinya.
+#### Insights
+
+> 1. Gambaran yang sama terlihat pada ketiga ambang. Rules muncul mencakup 97% sampai 98% dari seluruh rules, sedangkan rules bertahan hanya 13, 1, dan 0.
+> 2. Jumlah rules bertahan bergantung kuat pada ambang, dan banyak rule memiliki confidence di sekitar 50%. Yang dapat disimpulkan adalah polanya (sangat sedikit rule yang lolos di semua periode), bukan angka pastinya.
 """))
 
 cells.append(md("""
@@ -557,13 +592,15 @@ show.style.format({c: "{:.0%}" for c in CONF}).hide(axis="index")
 """))
 
 cells.append(md("""
-Satu-satunya rule yang bertahan adalah AISTATS + ICML → NeurIPS, dengan confidence yang hampir tetap (60%, 61%, 61%, 58%). Dari author-tahun yang publish di AISTATS dan ICML, sekitar 60% juga publish di NeurIPS pada tahun yang sama di setiap periode, sementara count-nya naik dari 204 menjadi 716 (2021-2023).
+#### Insights
 
-Confidence rule yang hilang umumnya tidak jatuh jauh. Setelah tidak lolos, confidence-nya berada di kisaran 40% sampai 64%, sehingga hilangnya lebih tepat dibaca sebagai turun di bawah ambang daripada hubungan yang berhenti.
+> 1. Satu-satunya rule yang bertahan adalah AISTATS + ICML → NeurIPS, dengan confidence yang hampir tetap (60%, 61%, 61%, 58%).
+> 2. Dari author-tahun yang publish di AISTATS dan ICML, sekitar 60% juga publish di NeurIPS pada tahun yang sama di setiap periode, sementara count-nya naik dari 204 menjadi 716 (2021-2023).
+> 3. Confidence rule yang hilang umumnya tidak jatuh jauh. Setelah tidak lolos, confidence-nya berada di kisaran 40% sampai 64%, sehingga hilangnya lebih tepat dibaca sebagai turun di bawah ambang daripada hubungan yang berhenti.
 """))
 
 cells.append(md("""
-Rule yang tidak lolos pada suatu periode dapat disebabkan tiga hal: salah satu konferensinya tidak tercatat di DBLP pada periode itu, count kombinasinya di bawah ambang support, atau confidence-nya di bawah 50%. Beberapa konferensi tidak diadakan atau tidak tercatat setiap tahun (misalnya ICCV pada tahun ganjil dan ECCV pada tahun genap), sehingga kolom `tahun_lengkap` menghitung berapa tahun dalam periode itu yang mencatat semua konferensi dalam rule.
+Rule yang tidak lolos pada suatu periode dapat disebabkan tiga hal: salah satu venue-nya tidak tercatat di DBLP pada periode itu, count kombinasinya di bawah ambang support, atau confidence-nya di bawah 50%. Beberapa venue tidak diadakan atau tidak tercatat setiap tahun (misalnya ICCV pada tahun ganjil dan ECCV pada tahun genap), sehingga kolom `tahun_lengkap` menghitung berapa tahun dalam periode itu yang mencatat semua venue dalam rule.
 """))
 
 cells.append(code("""
@@ -599,7 +636,11 @@ pd.crosstab(reasons.loc[reasons["alasan"] != "lolos", "kategori"], reasons.loc[r
 """))
 
 cells.append(md("""
-Pada rule yang hilang, 28 kombinasi (rule, periode) tidak lolos: 13 karena support, 12 karena confidence, dan 3 karena konferensinya tidak tercatat pada periode itu. Pada rule yang muncul, hampir semua periode awal tidak lolos karena support (5.223 dari 5.484): kombinasinya sudah ada, tetapi belum cukup sering.
+#### Insights
+
+> 1. Pada rule yang hilang, 28 kombinasi (rule, periode) tidak lolos: 13 karena support, 12 karena confidence, dan 3 karena venue-nya tidak tercatat pada periode itu.
+> 2. Pada rule yang muncul, hampir semua periode awal tidak lolos karena support (5.223 dari 5.484). Kombinasinya sudah ada, tetapi belum cukup sering.
+> 3. Cakupan DBLP per tahun tidak lengkap untuk sebagian venue (ICCC pada 2024-2025, ECOC pada beberapa tahun, ICTON pada 2021-2022, WCSP dan workshop ICCV pada 2025, ICLR sebelum 2017), sehingga rule yang memuat venue ini dapat hilang atau muncul karena data.
 """))
 
 cells.append(md("""
@@ -613,17 +654,16 @@ lost.pivot(index="rule", columns="periode", values="tahun_lengkap").join(
 """))
 
 cells.append(md("""
-Rincian ini memisahkan tiga penyebab hilangnya rule:
+#### Insights
 
-1. **Data tidak tercatat.** DBLP tidak mencatat ICCC pada 2024-2025, sehingga dua rule ICC + ICCC dan GLOBECOM + ICCC hilang karena data, bukan karena tren. ECOC + ICTON → OFC juga hanya memiliki 0 dan 1 tahun lengkap pada dua periode terakhir.
-2. **Count tetap, database bertambah.** Rules GLOBECOM/ICC dengan SPAWC, WCSP, dan WCNC memiliki count yang relatif datar (misalnya GLOBECOM + WCNC → ICC: 475, 521, 496, 533), sedangkan ambang count naik dari 185 ke 240 pada 2021-2023. Kombinasi ini tidak menghilang, tetapi porsinya di antara seluruh author-tahun mengecil.
-3. **Confidence di sekitar 50%.** ECOC → OFC, ASRU → INTERSPEECH, dan GLOBECOM + WCNC → ICC berada di kisaran 44% sampai 52%, sehingga lolos atau tidaknya ditentukan selisih kecil.
-
-Hanya ACC + ECC → CDC yang count-nya juga turun secara absolut (259, 276, 170, 140).
+> 1. **Data tidak tercatat.** DBLP tidak mencatat ICCC pada 2024-2025, sehingga dua rule ICC + ICCC dan GLOBECOM + ICCC hilang karena data, bukan karena tren. ECOC + ICTON → OFC juga hanya memiliki 0 dan 1 tahun lengkap pada dua periode terakhir.
+> 2. **Count tetap, database bertambah.** Rules GLOBECOM/ICC dengan SPAWC, WCSP, dan WCNC memiliki count yang relatif datar (misalnya GLOBECOM + WCNC → ICC: 475, 521, 496, 533), sedangkan ambang count naik dari 185 ke 240 pada 2021-2023. Kombinasi ini tidak menghilang, tetapi porsinya di antara seluruh author-tahun mengecil.
+> 3. **Confidence di sekitar 50%.** ECOC → OFC, ASRU → INTERSPEECH, dan GLOBECOM + WCNC → ICC berada di kisaran 44% sampai 52%, sehingga lolos atau tidaknya ditentukan selisih kecil.
+> 4. Hanya ACC + ECC → CDC yang count-nya juga turun secara absolut (259, 276, 170, 140).
 """))
 
 cells.append(md("""
-Untuk rule berselang, kolom berikut menandai rule yang jumlah tahun lengkapnya berbeda antarperiode tiga tahun (2015-2017, 2018-2020, 2021-2023), yaitu rule yang memuat konferensi yang tidak diadakan atau tidak tercatat setiap tahun.
+Untuk rule berselang, kolom berikut menandai rule yang jumlah tahun lengkapnya berbeda antarperiode tiga tahun (2015-2017, 2018-2020, 2021-2023), yaitu rule yang memuat venue yang tidak diadakan atau tidak tercatat setiap tahun.
 """))
 
 cells.append(code("""
@@ -636,7 +676,13 @@ inter.sort_values(["edisi_berubah", "pola"], ascending=[False, True])
 """))
 
 cells.append(md("""
-Sebanyak 15 dari 27 rule berselang memuat konferensi yang jumlah edisinya berbeda antarperiode, dan sebagian besar lolos pada periode dengan edisi lebih banyak. Keenam rule ICCV hanya lolos pada 2021-2023, salah satu dari dua periode dengan dua edisi ICCV (pada 2015-2017 count-nya masih di bawah ambang). Tiga rule ACCV/BMVC dengan ECCV hanya lolos pada 2018-2020, satu-satunya periode tiga tahun dengan dua edisi ECCV. SLT → INTERSPEECH, Odyssey → INTERSPEECH, dan AAAI + COLING → EMNLP juga lolos tepat pada periode dengan edisi terbanyak. Pengecualiannya adalah dua rule ASRU dan ECCV + WACV → CVPR, yang juga lolos pada 2024-2025 dengan satu edisi. Pada author-year-based database, konferensi yang tidak diadakan setiap tahun hanya dapat berpasangan pada tahun penyelenggaraannya, sehingga perbandingan antarperiode untuk konferensi ini terutama mencerminkan jadwal, bukan perubahan minat. Sisanya, 12 rule (NLP, AAAI, dan GLOBECOM/ICC), memiliki edisi lengkap di setiap periode dan berselang karena confidence atau support-nya berada di sekitar ambang.
+#### Insights
+
+> 1. Sebanyak 15 dari 27 rule berselang memuat venue yang jumlah edisinya berbeda antarperiode, dan sebagian besar lolos pada periode dengan edisi lebih banyak.
+> 2. Keenam rule ICCV hanya lolos pada 2021-2023, salah satu dari dua periode dengan dua edisi ICCV (pada 2015-2017 count-nya masih di bawah ambang). Tiga rule ACCV/BMVC dengan ECCV hanya lolos pada 2018-2020, satu-satunya periode tiga tahun dengan dua edisi ECCV.
+> 3. SLT → INTERSPEECH, Odyssey → INTERSPEECH, dan AAAI + COLING → EMNLP juga lolos tepat pada periode dengan edisi terbanyak. Pengecualiannya adalah dua rule ASRU dan ECCV + WACV → CVPR, yang juga lolos pada 2024-2025 dengan satu edisi.
+> 4. Pada author-year-based database, venue yang tidak diadakan setiap tahun hanya dapat berpasangan pada tahun penyelenggaraannya, sehingga perbandingan antarperiode untuk venue ini terutama mencerminkan jadwal, bukan perubahan minat.
+> 5. Sisanya, 12 rule (NLP, AAAI, dan GLOBECOM/ICC), memiliki edisi lengkap di setiap periode dan berselang karena confidence atau support-nya berada di sekitar ambang.
 """))
 
 cells.append(code("""
@@ -658,10 +704,10 @@ save_fig(fig, "t7_rules_bertahan_hilang.png")
 # ---------------------------------------------------------------------------
 # 8. Trends
 # ---------------------------------------------------------------------------
-cells.append(section("Perubahan Tren Publikasi (E.6)", "8"))
+cells.append(section("Perubahan Tren Publikasi", "8"))
 
 cells.append(md("""
-Untuk melihat konferensi mana yang mendorong perubahan, setiap rule dihitung sekali untuk setiap konferensi yang ada di antecedent atau consequent-nya. Tabel berikut menunjukkan konferensi yang paling sering terlibat di setiap kategori.
+Untuk melihat venue mana yang mendorong perubahan, setiap rule dihitung sekali untuk setiap venue yang ada di antecedent atau consequent-nya. Tabel berikut menunjukkan venue yang paling sering terlibat di setiap kategori.
 """))
 
 cells.append(code("""
@@ -677,7 +723,11 @@ inv.groupby("kategori").head(8).style.format({"porsi": "{:.0%}"}).hide(axis="ind
 """))
 
 cells.append(md("""
-Rules yang muncul didominasi konferensi yang tumbuh paling cepat pada Task 2 (NeurIPS, ICML, EMNLP, ACL, CVPR, dan ICLR) ditambah AAAI: NeurIPS terlibat pada 67% rules muncul, ICLR 47%, ACL 45%, AAAI 43%, EMNLP 42%, ICML 40%, dan CVPR 35%. Rules yang hilang didominasi GLOBECOM dan ICC (masing-masing 64%).
+#### Insights
+
+> 1. Rules yang muncul didominasi venue yang tumbuh paling cepat pada `01_eda` (NeurIPS, ICML, EMNLP, ACL, CVPR, dan ICLR) ditambah AAAI.
+> 2. NeurIPS terlibat pada 67% rules muncul, ICLR 47%, ACL 45%, AAAI 43%, EMNLP 42%, ICML 40%, dan CVPR 35%.
+> 3. Rules yang hilang didominasi GLOBECOM dan ICC (masing-masing 64%).
 """))
 
 cells.append(md("""
@@ -691,11 +741,15 @@ emerge.style.format({"tahan_2024_2025": "{:.0%}"}).hide(axis="index")
 """))
 
 cells.append(md("""
-Rules yang muncul sejak 2018-2020 (16 rules) atau 2021-2023 (79 rules) bertahan sampai 2024-2025 dan 94% sampai 95% di antaranya tahan uji ketahanan. Ini adalah bagian tren yang paling dapat dipercaya. Rules yang hanya ada pada 2024-2025 (1.770) jauh lebih rapuh: hanya 65% yang tahan, dan data 2025 belum lengkap.
+#### Insights
+
+> 1. Rules yang muncul sejak 2018-2020 (16 rules) atau 2021-2023 (79 rules) bertahan sampai 2024-2025, dan 94% sampai 95% di antaranya tahan uji ketahanan. Ini adalah bagian tren yang paling dapat dipercaya.
+> 2. Rules yang hanya ada pada 2024-2025 (1.770) jauh lebih rapuh. Hanya 65% yang tahan, dan data 2025 belum lengkap.
+> 3. Secara keseluruhan, kombinasi venue dalam satu tahun makin terpusat pada NeurIPS, ICLR, ICML, ACL, EMNLP, AAAI, dan CVPR. Tren yang tahan uji adalah 95 rules yang muncul sejak 2018-2023.
 """))
 
 cells.append(md("""
-Konferensi computer vision ICCV dan ECCV diadakan bergantian, sehingga jumlah edisinya per periode berbeda. Jumlah author unik per tahun berikut dipakai untuk membaca rules computer vision yang berselang.
+Venue computer vision ICCV dan ECCV diadakan bergantian, sehingga jumlah edisinya per periode berbeda. Jumlah author unik per tahun berikut dipakai untuk membaca rules computer vision yang berselang.
 """))
 
 cells.append(code("""
@@ -708,33 +762,11 @@ yearly
 """))
 
 cells.append(md("""
-Tabel ini menjelaskan pola rules computer vision yang berselang. ICCV hanya tercatat pada tahun ganjil dan ECCV pada tahun genap, sehingga 2015-2017 dan 2021-2023 memiliki dua edisi ICCV dan satu edisi ECCV, sedangkan 2018-2020 sebaliknya. CVPR tercatat setiap tahun.
-"""))
+#### Insights
 
-# ---------------------------------------------------------------------------
-# 9. Summary
-# ---------------------------------------------------------------------------
-cells.append(section("Ringkasan dan Keterbatasan", "9"))
-
-cells.append(md("""
-## Jawaban Bagian E
-
-| Poin | Hasil | Bagian |
-|---|---|---|
-| E.1, E.2 | FP-Growth pada empat periode dan tiga ambang. Pada 0,02%, itemset kombinasi berjumlah 279, 376, 662, dan 2.380; pasangan teratas bergeser dari GLOBECOM + ICC (2015-2017) ke ICLR + NeurIPS (2024-2025) | 4 |
-| E.3 | Rules pada 0,02%: 17, 32, 113, dan 1.874; median lift turun dari 49,1 ke 20,2 | 5 |
-| E.4 | 1.904 rules berbeda; 98% muncul, 1 bertahan, 11 hilang, 27 berselang. Polanya sama pada 0,01% dan 0,05% | 7 |
-| E.5 | Bertahan: AISTATS + ICML → NeurIPS (confidence sekitar 60% di setiap periode). Hilang: terutama rules GLOBECOM/ICC, karena count datar sementara database bertambah, ditambah data yang tidak tercatat. Berselang: 15 dari 27 mengikuti jadwal konferensi yang tidak diadakan setiap tahun | 7 |
-| E.6 | Kombinasi konferensi dalam satu tahun makin terpusat pada NeurIPS, ICLR, ICML, ACL, EMNLP, AAAI, dan CVPR. Tren yang tahan uji adalah 95 rules yang muncul sejak 2018-2023; rules yang hanya ada pada 2024-2025 sebagian dipengaruhi transaksi besar | 8 |
-
-## Keterbatasan
-
-1. **Data 2025 belum lengkap dan periode terakhir hanya dua tahun.** Support relatif terhadap jumlah transaksi periode, tetapi tidak mengoreksi edisi 2025 yang belum tercatat.
-2. **Cakupan DBLP per tahun tidak lengkap untuk sebagian konferensi** (ICCC pada 2024-2025, ECOC pada beberapa tahun, ICTON pada 2021-2022, WCSP dan workshop ICCV pada 2025, ICLR sebelum 2017). Rule yang memuat konferensi ini dapat hilang atau muncul karena data.
-3. **Konferensi yang tidak diadakan setiap tahun** (ICCV, ECCV, ASRU, SLT, COLING, Odyssey) membuat jumlah edisi per periode berbeda.
-4. **Rules 2024-2025 kurang tahan uji.** Hanya 67% rules 2024-2025 pada 0,02% yang tetap ditemukan tanpa 582 transaksi berisi 20 konferensi atau lebih.
-5. **Kategori peka terhadap ambang.** Banyak rule memiliki confidence di sekitar 50%, dan jumlah rule bertahan berubah dari 13 ke 0 di antara 0,01% dan 0,05%.
-6. **Transaksi tidak saling bebas.** Author yang aktif setiap tahun muncul di banyak transaksi dan mendapat bobot lebih besar (keterbatasan author-year-based dari notebook 02).
+> 1. ICCV hanya tercatat pada tahun ganjil dan ECCV pada tahun genap.
+> 2. Akibatnya 2015-2017 dan 2021-2023 memiliki dua edisi ICCV dan satu edisi ECCV, sedangkan 2018-2020 sebaliknya, sehingga pola ini menjelaskan rules computer vision yang berselang.
+> 3. CVPR tercatat setiap tahun.
 """))
 
 # @@APPEND@@
