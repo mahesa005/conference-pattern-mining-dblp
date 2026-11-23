@@ -11,17 +11,25 @@
 }
 
 \cleardoublepage
-\renewcommand{\listfigurename}{DAFTAR GAMBAR}
-\renewcommand{\cftloftitlefont}{\hfill\large\bfseries}
-\renewcommand{\cftafterloftitle}{\hfill}
 \phantomsection
 \addcontentsline{toc}{chapter}{DAFTAR GAMBAR}
-\listoffigures
+\begin{center}
+      {\fontsize{14}{16.8}\selectfont\textbf{DAFTAR GAMBAR}}\\[1em]
+\end{center}
+{\singlespacing\setlength{\parskip}{0pt}
+      \makeatletter
+      \@starttoc{lof}
+      \makeatother
+}
 
 \cleardoublepage
-\renewcommand{\listtablename}{DAFTAR TABEL}
-\renewcommand{\cftlottitlefont}{\hfill\large\bfseries}
-\renewcommand{\cftafterlottitle}{\hfill}
 \phantomsection
 \addcontentsline{toc}{chapter}{DAFTAR TABEL}
-\listoftables
+\begin{center}
+      {\fontsize{14}{16.8}\selectfont\textbf{DAFTAR TABEL}}\\[1em]
+\end{center}
+{\singlespacing\setlength{\parskip}{0pt}
+      \makeatletter
+      \@starttoc{lot}
+      \makeatother
+}
