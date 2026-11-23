@@ -1,5 +1,5 @@
-\section{Analisis Popularitas Konferensi (\textit{Task} 2)}
-\label{sec:hasil-t2}
+\chapter{HASIL \textit{CONFERENCE POPULARITY ANALYSIS}}
+\label{chap:popularitas}\label{sec:hasil-t2}
 Popularitas diukur dengan jumlah publikasi dan jumlah penulis unik (Subbab~\ref{sec:met-popularitas}). Nama lengkap konferensi yang disebut pada subbab ini diambil dari judul prosiding edisi utama terbaru pada \textit{dump} dan tercantum pada Tabel~\ref{tab:nama}.
 
 \begin{table}[ht]
@@ -26,7 +26,7 @@ IROS & \textit{IEEE/RSJ International Conference on Intelligent Robots and Syste
 \end{tabularx}
 \end{table}
 
-\subsection{Sepuluh konferensi dengan publikasi terbanyak}
+\section{Sepuluh konferensi dengan publikasi terbanyak}
 \label{sec:hasil-top-pub}
 Tabel~\ref{tab:top-pub} dan Gambar~\ref{fig:top-pub} menunjukkan sepuluh konferensi dengan publikasi terbanyak. NeurIPS berada di peringkat pertama dengan 25.455 makalah (1,27\% dari seluruh \textit{dataset}), disusul CVPR (22.751) dan ICASSP (21.606).
 
@@ -61,7 +61,7 @@ Tabel~\ref{tab:top-pub} dan Gambar~\ref{fig:top-pub} menunjukkan sepuluh konfere
 
 Sepuluh konferensi teratas menghasilkan 9,4\% seluruh publikasi. Daftar ini terbagi menjadi dua kelompok: enam konferensi pertama berada di atas 19.000 makalah, dan peringkat 7 sampai 10 berada rapat pada 14.300 sampai 14.800 makalah. Batas sepuluh besar sangat tipis karena ICC (14.329) hanya unggul 86 makalah dari GLOBECOM (14.243, peringkat 11). Daftar ini lintas bidang. Empat dari sepuluh tempat ditempati konferensi kecerdasan buatan dan pemrosesan bahasa alami (NeurIPS, CVPR, AAAI, EMNLP). Sisanya mencakup sinyal dan penginderaan jauh (ICASSP, IGARSS), interaksi manusia dan komputer (HCI, CHI), serta biomedis dan komunikasi (EMBC, ICC). Pengelompokan bidang ini adalah pengetahuan umum, bukan atribut dari data DBLP. Daftar ini bergantung pada keputusan menggabungkan \textit{workshop} ke konferensi induk (Subbab~\ref{sec:hasil-sensitivitas}).
 
-\subsection{Sepuluh konferensi dengan penulis unik terbanyak}
+\section{Sepuluh konferensi dengan penulis unik terbanyak}
 \label{sec:hasil-top-author}
 Tabel~\ref{tab:top-author} dan Gambar~\ref{fig:top-author} menunjukkan sepuluh konferensi dengan penulis unik terbanyak.
 
@@ -96,7 +96,7 @@ Tabel~\ref{tab:top-author} dan Gambar~\ref{fig:top-author} menunjukkan sepuluh k
 
 Pada seluruh konferensi di daftar ini, penulis unik lebih banyak daripada jumlah makalah karena satu makalah ditulis beberapa orang. Ukuran makalah per penulis menunjukkan seberapa sering penulis kembali. IGARSS (2,64) dan CVPR (2,50) tertinggi, artinya rata-rata penulis menerbitkan dua sampai tiga makalah di sana. AAAI, HCI, IROS, dan EMBC terendah (sekitar 1,83), artinya komunitasnya lebih luas dan lebih banyak penulis yang hanya muncul satu kali. Dua konferensi baru muncul dibanding daftar publikasi, yaitu ICML dan IROS, sedangkan CHI dan ICC keluar dari daftar.
 
-\subsection{Tren publikasi per tahun}
+\section{Tren publikasi per tahun}
 \label{sec:hasil-tren}
 Tren seluruh \textit{dataset} telah dibahas pada Subbab~\ref{sec:hasil-tahun}. Gambar~\ref{fig:tren-top10} memperlihatkan tren sepuluh konferensi teratas dan Tabel~\ref{tab:pertumbuhan} merangkum pertumbuhannya dari 2015 ke 2024.
 
@@ -140,14 +140,14 @@ Empat konferensi kecerdasan buatan dan pemrosesan bahasa alami (NeurIPS, EMNLP, 
 
 Konsentrasi publikasi meningkat. Porsi sepuluh konferensi teratas terhadap seluruh publikasi sebesar 7,0\% pada 2015, turun ke titik terendah 6,5\% pada 2017, lalu naik menjadi 8,2\% (2019), 10,0\% (2021), dan 11,7\% (2024). Kenaikan berlangsung sejak 2017 sehingga bukan semata akibat data 2025 yang tidak lengkap. Gambar~\ref{fig:heatmap} memperluas pengamatan ke dua belas konferensi (delapan dengan indeks 2024 tertinggi dan empat terendah, dari dua puluh konferensi terbesar) dengan indeks terhadap rata-rata 2015--2017 konferensi itu sendiri (100 berarti sama dengan awal periode). Pada 2024, NeurIPS mencapai indeks 788, ICML 731, EMNLP 727, ACL 524, dan CVPR 402, sedangkan ICC (91), EMBC (88), dan IECON (86) berada di bawah level awal. ICLR dikeluarkan dari \textit{heatmap} karena DBLP tidak mencatatnya pada 2015 dan 2016 sehingga rata-rata awalnya tidak adil. Sejak 2017, ICLR tumbuh dari 309 menjadi 2.454 makalah pada 2024 sehingga termasuk konferensi dengan pertumbuhan tercepat.
 
-\begin{sidewaysfigure}
+\begin{figure}[ht]
 \centering
-\includegraphics[width=\textheight,height=0.66\textwidth,keepaspectratio]{images/hasil/t2_heatmap_tren_top20.png}
+\includegraphics[width=0.78\textwidth]{images/hasil/t2_heatmap_tren_top20.png}
 \caption{Indeks publikasi dua belas konferensi terhadap rata-rata 2015--2017 (\textit{heatmap}); angka pada kolom 2024 adalah indeksnya}
 \label{fig:heatmap}
-\end{sidewaysfigure}
+\end{figure}
 
-\subsection{Perbandingan peringkat publikasi dan penulis unik}
+\section{Perbandingan peringkat publikasi dan penulis unik}
 \label{sec:hasil-banding}
 Tabel~\ref{tab:banding} dan Gambar~\ref{fig:slope} membandingkan peringkat kedua ukuran. Selisih adalah peringkat publikasi dikurangi peringkat penulis sehingga nilai positif berarti naik pada peringkat penulis unik.
 
@@ -194,7 +194,7 @@ Gambar~\ref{fig:scatter} menunjukkan hubungan kedua ukuran pada seluruh \textit{
 \label{fig:scatter}
 \end{figure}
 
-\subsection{Uji sensitivitas terhadap keputusan \textit{venue}}
+\section{Uji sensitivitas terhadap keputusan \textit{venue}}
 \label{sec:hasil-sensitivitas}
 Karena \textit{venue} diambil dari \textit{key}, \textit{workshop} dan acara pendamping ikut terhitung sebagai konferensi induknya. Untuk menguji apakah kesimpulan bergantung pada keputusan itu, peringkat dihitung ulang tanpa acara satelit yang dikenali dari kata kunci \textit{booktitle} (Subbab~\ref{sec:satelit}). Pengenalan ini adalah pendekatan, bukan definisi pasti. Hasilnya ditunjukkan pada Tabel~\ref{tab:sensitivitas}.
 
@@ -223,7 +223,7 @@ ICML & 13.778 & 13.701 & 0,6\% & 12 & 9 \\
 
 Peringkat teratas relatif kuat. Delapan dari sepuluh konferensi teratas tetap sama dan NeurIPS tetap nomor satu, sedangkan ICML dan IROS masuk sepuluh besar dan CHI serta ICC keluar. Konferensi dengan banyak acara pendamping paling terpengaruh: CVPR (2 ke 6, karena \textit{CVPR Workshops}), ICC (10 ke 18, karena \textit{ICC Workshops}), dan CHI (7 ke 29, karena \textit{CHI Extended Abstracts} yang mencapai 44\%). Pernyataan bahwa CVPR adalah konferensi paling populer kedua bergantung pada definisi. Pernyataan itu benar jika \textit{workshop} dihitung bagian konferensi, sesuai pengelompokan DBLP, dan tidak benar jika hanya acara utama yang dihitung. Jawaban \textit{Task} 2 memakai definisi berbasis \textit{key}.
 
-\subsection{Jawaban pertanyaan \textit{Task} 2}
+\section{Jawaban pertanyaan \textit{Task} 2}
 \label{sec:jawab-t2}
 \textbf{Konferensi paling populer berdasarkan jumlah publikasi.} Dari 1.997.244 publikasi pada 2015--2025, NeurIPS memiliki publikasi terbanyak dengan 25.455 makalah (1,27\% dari seluruh \textit{dataset}), disusul CVPR (22.751) dan ICASSP (21.606). NeurIPS tetap berada di peringkat pertama ketika \textit{workshop} dan acara satelit dikeluarkan.
 

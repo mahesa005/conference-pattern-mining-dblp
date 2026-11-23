@@ -1,0 +1,28 @@
+\chapter{ANALISIS DAN INTERPRETASI}
+\label{chap:analisis}
+
+Bab ini menafsirkan temuan \textit{Task} 1 sampai \textit{Task} 3 sebagai dasar eksperimen \textit{mining}. Interpretasi hasil \textit{frequent pattern mining}, \textit{association rules}, performa, dan analisis temporal ditambahkan setelah eksperimen tersebut selesai.
+
+\section{Makna Hasil Pemahaman Data}
+Tiga temuan pada Bab~\ref{chap:prepro} menentukan cara membaca seluruh hasil berikutnya.
+\begin{enumerate}
+\item \textbf{Venue adalah seri, dan batasnya bergantung pada \textit{key}.} \textit{Booktitle} memecah satu konferensi dan menyatukan konferensi berbeda, sehingga \textit{key} dipakai. Konsekuensinya, \textit{workshop} yang berbagi \textit{key} ikut terhitung sebagai konferensi induknya (7,2\% makalah). Setiap pernyataan peringkat pada laporan ini berlaku untuk definisi tersebut.
+\item \textbf{Data bersih secara struktural, tetapi identitas penulis tidak pasti.} Normalisasi nama tidak mengubah apa pun karena DBLP sudah menyajikan nama yang bersih. Risiko yang tersisa bukan pada penulisan nama, melainkan pada nama umum yang mewakili banyak orang (\textit{Yang Liu} pada 332 \textit{venue}).
+\item \textbf{Aktivitas sangat terkonsentrasi.} Separuh publikasi berasal dari 5,3\% \textit{venue}, dan 8,3\% penulis menyumbang 52,6\% pasangan makalah-penulis. Pola konferensi yang muncul bersama kemungkinan dibentuk oleh kelompok kecil penulis yang menerbitkan di banyak konferensi.
+\end{enumerate}
+
+\section{Makna Hasil Popularitas Konferensi}
+NeurIPS adalah konferensi paling populer pada kedua ukuran (jumlah publikasi dan penulis unik), dan peringkatnya tidak berubah ketika acara satelit dikeluarkan. Dua ukuran tersebut sangat selaras (Spearman 0,987), sehingga jumlah publikasi cukup mewakili popularitas pada tingkat konferensi. Perbedaan peringkat tengah dijelaskan oleh luas komunitas per makalah: AAAI dan EMBC menarik lebih banyak penulis berbeda per makalah daripada CHI dan ICC.
+
+Pertumbuhan tidak merata. Konferensi kecerdasan buatan dan pemrosesan bahasa alami tumbuh 3,6 sampai 10,2 kali, sedangkan konferensi komunikasi dan biomedis menurun, sehingga porsi sepuluh konferensi teratas naik dari 7,0\% menjadi 11,7\%. Hal ini menunjukkan perhatian peneliti berpindah ke bidang tertentu, tetapi data DBLP tidak memuat penyebabnya.
+
+\section{Makna Pilihan Representasi Transaksi}
+Dua representasi menjawab pertanyaan berbeda, dan perbedaannya terukur. \textit{Author-based} menangkap riwayat penulis selama sebelas tahun, sedangkan \textit{author-year-based} hanya menangkap kemunculan pada tahun yang sama. Akibatnya \textit{support} pasangan pada \textit{author-year-based} median 0,29 kali, sekitar 23\% pasangan tidak pernah muncul, dan konferensi dua tahunan berselang seperti ICCV dan ECCV tidak dapat berpasangan sama sekali. Pratinjau pasangan menunjukkan kandidat keterkaitan terkuat berada di antara konferensi kecerdasan buatan (ICML, NeurIPS, ICLR, CVPR), tetapi kandidat tersebut baru dapat disimpulkan setelah \textit{Task} 4 dan \textit{Task} 5.
+
+\section{Implikasi untuk Eksperimen Berikutnya}
+\begin{enumerate}
+\item \textit{Min support} 2\% diperkirakan tidak menghasilkan \textit{itemset} berukuran dua karena pasangan teratas hanya memiliki \textit{support} 1,02\%.
+\item Beban kombinasi terkonsentrasi pada transaksi terbesar (0,1\% transaksi menanggung 27,8\%), sehingga waktu proses kemungkinan ditentukan oleh sedikit transaksi.
+\item \textit{Lift} perlu dibaca bersama \textit{support}, karena \textit{venue} kecil dapat menghasilkan \textit{lift} besar secara kebetulan.
+\item Analisis temporal perlu memperlakukan 2025 dengan hati-hati karena datanya tidak lengkap.
+\end{enumerate}

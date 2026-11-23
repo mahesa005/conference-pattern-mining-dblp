@@ -1,7 +1,9 @@
-\section{Pemahaman Data dan \textit{Preprocessing} (\textit{Task} 1)}
-\label{sec:hasil-t1}
+\chapter{HASIL PREPROCESSING}
+\label{chap:prepro}
 
-\subsection{Jenis publikasi}
+Bab ini memuat jenis publikasi pada \textit{dump}, hasil tiap tahap \textit{preprocessing}, dan statistik \textit{dataset} bersih (\textit{Task} 1).
+
+\section{Jenis publikasi}
 \label{sec:hasil-jenis}
 Tabel~\ref{tab:jenis} menunjukkan jumlah \textit{record} per jenis publikasi pada seluruh \textit{dump} dan pada periode 2015--2025, dan Gambar~\ref{fig:jenis} menggambarkannya pada skala logaritmik.
 
@@ -37,7 +39,7 @@ Tabel~\ref{tab:jenis} menunjukkan jumlah \textit{record} per jenis publikasi pad
 
 Jenis \texttt{article} dan \texttt{www} menyumbang sekitar 67\% isi \textit{dump}, sedangkan \texttt{inproceedings} hanya 30,5\%. Separuh \texttt{inproceedings} (50,1\%) terbit pada 2015--2025. Jenis \texttt{www} hanya memiliki satu \textit{record} pada periode ini karena itu adalah halaman profil penulis yang umumnya tidak bertahun. Jenis \texttt{proceedings} adalah buku prosiding induk yang dirujuk lewat \texttt{crossref}, bukan makalah.
 
-\subsection{Hasil preprocessing}
+\section{Hasil preprocessing}
 \label{sec:hasil-prepro}
 Data berkurang dari 2.004.202 menjadi 1.997.244 makalah, yaitu 6.958 makalah (0,35\%) dibuang dan 99,65\% dipertahankan. Tabel~\ref{tab:dampak} merinci dampak tiap tahap dan Gambar~\ref{fig:alur-seleksi} memperlihatkan alurnya dari seluruh \textit{dump}.
 
@@ -100,7 +102,7 @@ Daftar penulis berbeda & 273 (19,9\%) & 421 \\
 \item Masalah sebaliknya lebih berpengaruh: nama umum tanpa sufiks mewakili banyak orang. \textit{Yang Liu} tercatat pada 332 \textit{venue} dan 725 makalah, dan \textit{Wei Wang} pada 280 \textit{venue}.
 \end{enumerate}
 
-\subsection{Statistik dataset bersih}
+\section{Statistik dataset bersih}
 \label{sec:hasil-statistik}
 Tabel~\ref{tab:statistik} merangkum statistik \textit{dataset} setelah \textit{preprocessing}. Seluruh angka dihitung dari tabel Parquet hasil \textit{preprocessing}. Pasangan makalah-penulis hampir empat kali jumlah makalah karena satu makalah memiliki beberapa penulis.
 
@@ -122,7 +124,7 @@ Penulis dengan satu makalah & 51,4\% \\
 \end{tabular}
 \end{table}
 
-\subsubsection{Distribusi per tahun}
+\subsection{Distribusi per tahun}
 \label{sec:hasil-tahun}
 Gambar~\ref{fig:per-tahun} menunjukkan jumlah publikasi per tahun. Jumlah publikasi naik dari 160.800 pada 2015 ke puncak 213.328 pada 2024, yaitu kenaikan 32,7\% atau CAGR 3,2\% per tahun. Garis tren linear menambah rata-rata 4.796 makalah per tahun. Pada 2020, jumlah turun 8,8\% dan tetap di bawah garis tren sampai 2022, lalu kembali di atasnya pada 2023 (naik 13,1\%). Kaitan penurunan ini dengan pandemi hanya dugaan karena data tidak memuat penyebabnya.
 
@@ -141,7 +143,7 @@ Penurunan 6,5\% pada 2025 bukan penurunan aktivitas. Sebanyak 789 konferensi akt
 \end{enumerate}
 Sebaliknya, 322 konferensi kosong pada 2024 tetapi aktif pada 2025 (17.785 makalah), umumnya konferensi dua tahunan ganjil. Jika 789 konferensi yang kosong dikeluarkan, jumlah makalah 2025 berada 21,7\% di atas 2024. Angka ini bukan ukuran pertumbuhan yang adil karena 322 konferensi yang hanya aktif pada 2025 tetap terhitung. Meskipun demikian, angka tersebut cukup untuk menunjukkan bahwa penurunan 6,5\% adalah efek komposisi. Karena itu 2025 digambar dengan arsiran dan tidak dipakai menghitung CAGR maupun garis tren.
 
-\subsubsection{Distribusi per konferensi}
+\subsection{Distribusi per konferensi}
 \label{sec:hasil-konferensi}
 Sepuluh konferensi teratas menghasilkan 9,4\% publikasi dan dua puluh teratas 15,6\%. Sebanyak 231 dari 4.373 \textit{venue} (5,3\%) menghasilkan separuh publikasi, dan 1.011 \textit{venue} (23,1\%) menghasilkan 80\%. Median \textit{venue} hanya memiliki 134 makalah selama sebelas tahun, dengan rata-rata 457 dan maksimum 25.455 (NeurIPS). Sebanyak 1.358 \textit{venue} (31,1\%) memiliki kurang dari 50 makalah. Distribusi ini sangat condong ke kanan: sedikit konferensi sangat besar dan banyak konferensi kecil (Gambar~\ref{fig:ukuran-venue}). Sepuluh konferensi terbesar dibahas pada Subbab~\ref{sec:hasil-t2}.
 
@@ -152,7 +154,7 @@ Sepuluh konferensi teratas menghasilkan 9,4\% publikasi dan dua puluh teratas 15
 \label{fig:ukuran-venue}
 \end{figure}
 
-\subsubsection{Distribusi penulis}
+\subsection{Distribusi penulis}
 \label{sec:hasil-penulis}
 Gambar~\ref{fig:waffle} membandingkan porsi penulis dan porsi pasangan makalah-penulis menurut jumlah makalah yang ditulis. Sebanyak 51,4\% penulis hanya menulis satu makalah, tetapi hanya menyumbang 11,9\% pasangan. Sebaliknya, 8,3\% penulis (11 makalah ke atas, 150.894 orang) menyumbang 52,6\% pasangan. Implikasinya, pola konferensi yang muncul bersama kemungkinan lebih banyak dibentuk oleh kelompok kecil penulis yang menerbitkan di banyak konferensi.
 
