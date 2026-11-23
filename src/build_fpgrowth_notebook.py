@@ -39,7 +39,7 @@ cells.append(md(f"""
 
 # Conference Popularity and Association Pattern Mining pada Dataset DBLP
 
-*Notebook 04: Task 4, Frequent Pattern Mining dengan FP-Growth.*
+*Notebook 04: Frequent Pattern Mining dengan FP-Growth.*
 """))
 
 cells.append(md(f"""
@@ -60,11 +60,10 @@ cells.append(md(f"""
 1. [**Introduction**](#1)
 2. [**Initialization**](#2)
 3. [**Implementasi FP-Growth**](#3)
-4. [**Eksperimen Empat Min Support (Task 4.1)**](#4)
+4. [**Eksperimen Empat Min Support**](#4)
 5. [**Validasi dengan mlxtend**](#5)
-6. [**Analisis Frequent Itemsets (Task 4.2 sampai 4.5)**](#6)
-7. [**Interpretasi (Task 4.6)**](#7)
-8. [**Ringkasan dan Langkah Berikutnya**](#8)
+6. [**Analisis Frequent Itemsets**](#6)
+7. [**Interpretasi Pola**](#7)
 """))
 
 # ---------------------------------------------------------------------------
@@ -75,19 +74,18 @@ cells.append(section("Introduction", "1"))
 cells.append(md("""
 ## Overview
 
-*Task 4 mencari kombinasi konferensi yang sering muncul bersama dalam riwayat publikasi author. Notebook ini mengerjakan sisi FP-Growth pada author-based transactional database dari notebook `02_transactions`. Sisi Apriori dikerjakan pada notebook `03_apriori`, dan perbandingan keduanya pada notebook `06_performance`.*
+*Notebook ini mencari kombinasi konferensi yang sering muncul bersama dalam riwayat publikasi author. FP-Growth dijalankan pada author-based transactional database dari notebook `02_transactions`. Algoritma Apriori dikerjakan pada notebook `03_apriori`, dan perbandingan keduanya pada notebook `06_performance`.*
 """))
 
 cells.append(md("""
 ## Aim
 
-*Task 4.1: menemukan frequent itemsets pada min support 0,1%, 0,5%, 1%, dan 2%.*
+*Notebook ini bertujuan untuk:*
 
-*Task 4.2 dan 4.3: memisahkan 1-, 2-, dan 3-itemsets, lalu menampilkan 10 itemsets dengan support tertinggi.*
-
-*Task 4.4 dan 4.5: menganalisis pengaruh min support terhadap jumlah itemsets dan mengidentifikasi kombinasi konferensi yang paling sering muncul bersama.*
-
-*Task 4.6: menginterpretasikan pola yang ditemukan.*
+1. *menemukan frequent itemsets pada min support 0,1%, 0,5%, 1%, dan 2%.*
+2. *memisahkan 1-, 2-, dan 3-itemsets, lalu menampilkan 10 itemsets dengan support tertinggi.*
+3. *menganalisis pengaruh min support terhadap jumlah itemsets dan mengidentifikasi kombinasi konferensi yang paling sering muncul bersama.*
+4. *menginterpretasikan pola yang ditemukan.*
 """))
 
 cells.append(md(r"""
@@ -103,9 +101,9 @@ $$\text{support}(X) = \frac{|\{t \in D : X \subseteq t\}|}{|D|}$$
 cells.append(md("""
 ## Approach
 
-*FP-Growth memadatkan database menjadi FP-tree dalam dua pemindaian, lalu menambang pola secara rekursif dari conditional pattern base tanpa membangkitkan kandidat. Implementasi mengikuti aturan bab metodologi: item yang tidak frequent dipangkas lebih dulu, transaksi dengan kurang dari dua item frequent tidak dimasukkan ke pohon (support 1-itemset tetap dari pemindaian pertama), dan waktu pembentukan pohon dilaporkan terpisah dari waktu penambangan.*
+*FP-Growth memadatkan database menjadi FP-tree dalam dua pemindaian, lalu menambang pola secara rekursif dari conditional pattern base tanpa membangkitkan kandidat. Item yang tidak frequent dipangkas lebih dulu, transaksi dengan kurang dari dua item frequent tidak dimasukkan ke pohon (support 1-itemset tetap dari pemindaian pertama), dan waktu pembentukan pohon dilaporkan terpisah dari waktu penambangan.*
 
-*Kode algoritma berada di `src/fpgrowth.py` agar dapat dipakai ulang oleh notebook 05, 06, dan 07, dan sudah diuji dengan `pytest` (contoh buku teks, brute force, dan `mlxtend`). Isi modul ditampilkan pada bagian 3.*
+*Kode algoritma berada di modul `fpgrowth.py` agar dapat dipakai ulang oleh notebook berikutnya, dan sudah diuji dengan `pytest` (contoh buku teks, brute force, dan `mlxtend`). Isi modul ditampilkan pada bagian 3.*
 """))
 
 # ---------------------------------------------------------------------------
@@ -253,7 +251,7 @@ def tag(ms):
 cells.append(md("""
 ## Load Dataset
 
-Tabel panjang author-based diubah ke bentuk horizontal, yaitu list frozenset kode item per transaksi. Bentuk ini sama dengan masukan Apriori pada notebook 03. Waktu pemuatan tidak termasuk pengukuran.
+Tabel panjang author-based diubah ke bentuk horizontal, yaitu list frozenset kode item per transaksi. Bentuk ini sama dengan masukan Apriori pada notebook `03_apriori`. Waktu pemuatan tidak termasuk pengukuran.
 """))
 
 cells.append(code("""
@@ -271,7 +269,7 @@ cells.append(section("Implementasi FP-Growth", "3"))
 cells.append(md("""
 ## 3.1 Kode
 
-Seluruh isi `src/fpgrowth.py` ditampilkan di bawah. Setiap node FP-tree menyimpan `item`, `count`, `parent`, dan `children`, dan header table memetakan item ke daftar node-nya.
+Seluruh isi modul `fpgrowth.py` ditampilkan di bawah. Setiap node FP-tree menyimpan `item`, `count`, `parent`, dan `children`, dan header table memetakan item ke daftar node-nya.
 """))
 
 cells.append(code("""
@@ -295,10 +293,10 @@ to_frame(toy_result, toy_names)[["names", "length", "count", "support"]]
 # ---------------------------------------------------------------------------
 # 4. Eksperimen
 # ---------------------------------------------------------------------------
-cells.append(section("Eksperimen Empat Min Support (Task 4.1)", "4"))
+cells.append(section("Eksperimen Empat Min Support", "4"))
 
 cells.append(md("""
-FP-Growth dijalankan sekali untuk setiap min support. Waktu pembentukan pohon (`t_build`) dan waktu penambangan (`t_mine`) dicatat terpisah. Pengukuran berulang untuk perbandingan performa dilakukan pada notebook 06. FP-tree tidak disimpan setelah penambangan (`keep_tree=False`) agar memori cukup untuk validasi.
+FP-Growth dijalankan sekali untuk setiap min support. Waktu pembentukan pohon (`t_build`) dan waktu penambangan (`t_mine`) dicatat terpisah. Pengukuran berulang untuk perbandingan performa dilakukan pada notebook `06_performance`. FP-tree tidak disimpan setelah penambangan (`keep_tree=False`) agar memori cukup untuk validasi.
 """))
 
 cells.append(code("""
@@ -336,10 +334,10 @@ checks
 # ---------------------------------------------------------------------------
 # 6. Analisis
 # ---------------------------------------------------------------------------
-cells.append(section("Analisis Frequent Itemsets (Task 4.2 sampai 4.5)", "6"))
+cells.append(section("Analisis Frequent Itemsets", "6"))
 
 cells.append(md("""
-## 6.1 Jumlah Itemset per Ukuran (Task 4.2)
+## 6.1 Jumlah Itemset per Ukuran
 
 Itemset dikelompokkan menurut ukurannya. Kolom `k4+` menampung itemset berisi empat item atau lebih.
 """))
@@ -360,11 +358,16 @@ summary
 """))
 
 cells.append(md("""
-> Pada min support 0,1% ditemukan 1.514 frequent itemsets: 574 1-itemset, 393 pasangan, 348 triple, dan 199 itemset berukuran empat sampai enam. Pada 0,5% tersisa 88 itemset dengan hanya satu triple, pada 1% tersisa 30 itemset dengan hanya satu pasangan, dan pada 2% hanya enam konferensi tunggal tanpa satu pun pasangan. Jadi 3-itemset hanya ada pada 0,1% dan 0,5%, dan tidak ada sama sekali pada 1% dan 2%.
+#### Insights
+
+> 1. Pada min support 0,1% ditemukan 1.514 frequent itemsets: 574 1-itemset, 393 pasangan, 348 triple, dan 199 itemset berukuran empat sampai enam.
+> 2. Pada 0,5% tersisa 88 itemset dengan hanya satu triple, dan pada 1% tersisa 30 itemset dengan hanya satu pasangan.
+> 3. Pada 2% hanya ada enam konferensi tunggal tanpa satu pun pasangan.
+> 4. Jadi 3-itemset hanya ada pada 0,1% dan 0,5%, dan tidak ada sama sekali pada 1% dan 2%.
 """))
 
 cells.append(md("""
-## 6.2 Sepuluh Itemset dengan Support Tertinggi (Task 4.3)
+## 6.2 Sepuluh Itemset dengan Support Tertinggi
 
 Sepuluh teratas secara keseluruhan hampir pasti berisi 1-itemset, karena support sebuah itemset tidak pernah melebihi support item penyusunnya. Karena itu ditampilkan juga sepuluh teratas untuk itemset berukuran dua atau lebih.
 """))
@@ -383,11 +386,15 @@ for ms, df in frames.items():
 """))
 
 cells.append(md("""
-> Sepuluh itemset teratas pada setiap min support selalu berupa konferensi tunggal, dipimpin NeurIPS (57.800 author, support 3,17%), CVPR (47.664), dan AAAI (46.437). Tidak ada kombinasi yang masuk sepuluh besar karena pasangan teratas, ICML + NeurIPS, hanya memiliki 18.503 author (support 1,02%), lebih kecil dari konferensi ke-10, IROS (31.249 author). Support pasangan itu sekitar sepertiga support NeurIPS sendiri.
+#### Insights
+
+> 1. Sepuluh itemset teratas pada setiap min support selalu berupa konferensi tunggal, dipimpin NeurIPS (57.800 author, support 3,17%), CVPR (47.664), dan AAAI (46.437).
+> 2. Tidak ada kombinasi yang masuk sepuluh besar. Pasangan teratas, ICML + NeurIPS, hanya memiliki 18.503 author (support 1,02%), lebih kecil dari konferensi ke-10, IROS (31.249 author).
+> 3. Support pasangan itu sekitar sepertiga support NeurIPS sendiri.
 """))
 
 cells.append(md("""
-## 6.3 Pengaruh Min Support (Task 4.4)
+## 6.3 Pengaruh Min Support
 
 Sumbu y memakai skala symlog agar jumlah nol tetap terlihat dan rentang ratusan sampai ribuan dapat dibandingkan.
 """))
@@ -412,13 +419,17 @@ save_fig(fig, "t4_fpgrowth_jumlah_itemset.png")
 """))
 
 cells.append(md("""
-> Dari 0,1% ke 0,5% jumlah itemset berkurang 17,2 kali (1.514 menjadi 88), dan dari 0,1% ke 2% berkurang 252 kali (1.514 menjadi 6). Itemset berukuran besar hilang lebih dulu: ukuran empat ke atas hanya ada pada 0,1%, triple hilang setelah 0,5%, dan pasangan hilang setelah 1%. Penyebabnya adalah ekor panjang data. Notebook 02 menunjukkan 58,4% transaksi author-based hanya berisi satu venue, sehingga hanya sebagian kecil transaksi yang dapat memuat kombinasi dan support kombinasi jauh di bawah support item penyusunnya.
->
-> Akibatnya, min support 0,1% adalah satu-satunya ambang yang menghasilkan pola kombinasi yang cukup kaya untuk dianalisis. Pada 1% dan 2% hasilnya praktis hanya mengulang peringkat popularitas Task 2.
+#### Insights
+
+> 1. Dari 0,1% ke 0,5% jumlah itemset berkurang 17,2 kali (1.514 menjadi 88), dan dari 0,1% ke 2% berkurang 252 kali (1.514 menjadi 6).
+> 2. Itemset berukuran besar hilang lebih dulu: ukuran empat ke atas hanya ada pada 0,1%, triple hilang setelah 0,5%, dan pasangan hilang setelah 1%.
+> 3. Penyebabnya adalah ekor panjang data. Notebook `02_transactions` menunjukkan 58,4% transaksi author-based hanya berisi satu venue, sehingga hanya sebagian kecil transaksi yang dapat memuat kombinasi dan support kombinasi jauh di bawah support item penyusunnya.
+> 4. Min support 0,1% adalah satu-satunya ambang yang menghasilkan pola kombinasi yang cukup kaya untuk dianalisis.
+> 5. Pada 1% dan 2% hasilnya praktis hanya mengulang peringkat popularitas konferensi.
 """))
 
 cells.append(md("""
-## 6.4 Kombinasi Konferensi yang Paling Sering Muncul Bersama (Task 4.5)
+## 6.4 Kombinasi Konferensi yang Paling Sering Muncul Bersama
 
 Hasil pada min support 0,1% memuat seluruh hasil pada min support yang lebih tinggi, sehingga pasangan dan triple teratas diambil dari sana. Kolom `bertahan_sampai` menunjukkan min support tertinggi tempat kombinasi tersebut masih frequent.
 """))
@@ -451,15 +462,18 @@ save_fig(fig, "t4_fpgrowth_pasangan_teratas.png")
 """))
 
 cells.append(md("""
-> Sepuluh pasangan teratas membentuk kelompok bidang yang jelas. Machine learning diwakili ICML + NeurIPS (18.503 author), ICLR + NeurIPS (17.852), dan ICLR + ICML (12.947). Computer vision diwakili CVPR + ICCV (15.441) dan CVPR + ECCV (13.752). NLP diwakili ACL + EMNLP (14.557), dan robotika diwakili ICRA + IROS (11.860). NeurIPS muncul pada empat dari sepuluh pasangan teratas dan delapan dari sepuluh triple teratas, sehingga menjadi penghubung antara machine learning, computer vision, dan AI umum (AAAI).
->
-> ICML + NeurIPS adalah satu-satunya pasangan yang masih frequent pada 1%, dan ICLR + ICML + NeurIPS (10.413 author) adalah satu-satunya triple yang masih frequent pada 0,5%. Sisanya hanya frequent sampai 0,5% (pasangan) atau 0,1% (triple selain yang pertama).
+#### Insights
+
+> 1. Sepuluh pasangan teratas membentuk kelompok bidang yang jelas. Machine learning diwakili ICML + NeurIPS (18.503 author), ICLR + NeurIPS (17.852), dan ICLR + ICML (12.947). Computer vision diwakili CVPR + ICCV (15.441) dan CVPR + ECCV (13.752). NLP diwakili ACL + EMNLP (14.557), dan robotika diwakili ICRA + IROS (11.860).
+> 2. NeurIPS muncul pada empat dari sepuluh pasangan teratas dan delapan dari sepuluh triple teratas, sehingga menjadi penghubung antara machine learning, computer vision, dan AI umum (AAAI).
+> 3. ICML + NeurIPS adalah satu-satunya pasangan yang masih frequent pada 1%, dan ICLR + ICML + NeurIPS (10.413 author) adalah satu-satunya triple yang masih frequent pada 0,5%.
+> 4. Pasangan lainnya hanya frequent sampai 0,5%, dan triple lainnya hanya sampai 0,1%.
 """))
 
 cells.append(md("""
-## 6.5 Keterhubungan dan Itemset Terpanjang (Task 4.5)
+## 6.5 Keterhubungan dan Itemset Terpanjang
 
-Konferensi yang populer belum tentu sering muncul bersama konferensi lain. Tabel pertama menghitung, untuk sepuluh konferensi dengan support tertinggi, berapa banyak pasangan frequent pada min support 0,1% yang memuatnya, berapa persen author-nya yang hanya publish di konferensi itu, dan median jumlah konferensi per author-nya. Tabel kedua menampilkan itemset terpanjang yang ditemukan.
+Konferensi yang populer belum tentu sering muncul bersama konferensi lain. Tabel pertama menghitung, untuk sepuluh konferensi dengan support tertinggi, jumlah pasangan frequent pada min support 0,1% yang memuatnya, persentase author yang hanya publish di konferensi itu, dan median jumlah konferensi per author. Tabel kedua menampilkan itemset terpanjang yang ditemukan.
 """))
 
 cells.append(code("""
@@ -488,49 +502,34 @@ display(longest[longest["length"] == 5].head(CFG.TOP_K // 2).style.format({"supp
 """))
 
 cells.append(md("""
-> Hanya 105 dari 574 konferensi frequent yang muncul pada minimal satu pasangan frequent. Popularitas tidak sama dengan keterhubungan. AAAI (44 pasangan), NeurIPS (42), ICASSP (41), dan CVPR (34) terhubung luas. Sebaliknya, EMBC dan IGARSS, yang termasuk sepuluh konferensi terbesar, masing-masing hanya muncul pada empat pasangan, dan HCI hanya pada satu pasangan. Penyebabnya terlihat pada dua kolom terakhir. Author EMBC, HCI, dan IGARSS biasanya hanya publish di satu atau dua konferensi (median 2, 2, dan 1), dan 37,4%, 40,8%, serta 54,2% di antaranya tidak pernah publish di konferensi lain. Author NeurIPS dan ICASSP biasanya publish di enam konferensi, dan hanya 11,6% serta 10,6% yang publish di satu konferensi saja. Author EMBC, HCI, dan IGARSS yang publish di tempat lain tersebar ke banyak konferensi berbeda, sehingga tidak ada pasangan yang mencapai 1.822 author.
->
-> Itemset terpanjang berisi enam konferensi, yaitu AAAI + CVPR + ECCV + ICCV + ICLR + NeurIPS (2.005 author) dan dua itemset lain dengan count di atas 1.800. Seluruh 40 itemset berukuran lima atau enam hanya melibatkan 14 konferensi, dan NeurIPS ada pada 35 di antaranya. Pola panjang hanya muncul di inti AI, machine learning, dan computer vision.
+#### Insights
+
+> 1. Hanya 105 dari 574 konferensi frequent yang muncul pada minimal satu pasangan frequent, sehingga popularitas tidak sama dengan keterhubungan.
+> 2. AAAI (44 pasangan), NeurIPS (42), ICASSP (41), dan CVPR (34) terhubung luas. Sebaliknya, EMBC dan IGARSS, yang termasuk sepuluh konferensi terbesar, masing-masing hanya muncul pada empat pasangan, dan HCI hanya pada satu pasangan.
+> 3. Author EMBC, HCI, dan IGARSS biasanya hanya publish di satu atau dua konferensi (median 2, 2, dan 1), dan 37,4%, 40,8%, serta 54,2% di antaranya tidak pernah publish di konferensi lain. Yang publish di tempat lain tersebar ke banyak konferensi berbeda, sehingga tidak ada pasangan yang mencapai 1.822 author.
+> 4. Author NeurIPS dan ICASSP biasanya publish di enam konferensi, dan hanya 11,6% serta 10,6% yang publish di satu konferensi saja.
+> 5. Itemset terpanjang berisi enam konferensi, yaitu AAAI + CVPR + ECCV + ICCV + ICLR + NeurIPS (2.005 author) dan dua itemset lain dengan count di atas 1.800. Seluruh 40 itemset berukuran lima atau enam hanya melibatkan 14 konferensi, dan NeurIPS ada pada 35 di antaranya, sehingga pola panjang hanya muncul di inti AI, machine learning, dan computer vision.
 """))
 
 # ---------------------------------------------------------------------------
 # 7. Interpretasi
 # ---------------------------------------------------------------------------
-cells.append(section("Interpretasi (Task 4.6)", "7"))
+cells.append(section("Interpretasi Pola", "7"))
 
 cells.append(md("""
-**Pola publikasi.** Kombinasi konferensi yang frequent hampir seluruhnya terjadi di dalam satu bidang (machine learning, computer vision, NLP, robotika) atau di antara bidang yang bertetangga dekat, yaitu machine learning dengan computer vision dan AI umum. Artinya, di antara kombinasi yang cukup besar untuk melewati ambang, author biasanya publish di beberapa konferensi dalam bidang yang sama. Hasil ini tidak membuktikan bahwa author jarang berpindah bidang, karena kombinasi lintas bidang dapat saja banyak secara total tetapi tersebar ke banyak pasangan kecil yang tidak lolos ambang.
+#### Insights
 
-**Inti AI, machine learning, dan computer vision.** NeurIPS, ICML, ICLR, AAAI, CVPR, ICCV, dan ECCV adalah satu-satunya kelompok yang menghasilkan itemset berukuran lima dan enam. Banyak author di kelompok ini menerbitkan di banyak konferensi besar sekaligus, dan NeurIPS menjadi titik temu kelompok tersebut.
-
-**Popularitas dan keterhubungan berbeda.** Konferensi besar seperti EMBC, IGARSS, dan HCI hampir tidak membentuk pasangan frequent, sedangkan ICASSP terhubung dengan 41 konferensi lain. Pertanyaan apakah konferensi terpopuler juga memiliki asosiasi terkuat dijawab dengan lift pada Task 5, karena support pasangan yang tinggi juga dapat muncul hanya karena kedua konferensinya besar.
-
-**Pemilihan min support.** Hanya 0,1% yang menghasilkan pola kombinasi yang cukup kaya. Pada 1% dan 2% hasilnya hampir seluruhnya konferensi tunggal, sehingga Task 5 akan memakai hasil 0,1% sebagai dasar utama.
-
-**Keterbatasan.**
-
-1. Item adalah seri konferensi berdasarkan key DBLP. Beberapa acara dipecah DBLP menjadi konferensi utama dan workshop dengan key berbeda, misalnya `iccv` (ICCV) dan `iccvw` (ICCV Workshops), sehingga author yang hanya publish di workshop tidak terhitung pada konferensi utamanya. Key dengan singkatan sama, misalnya `icis`, `ACISicis`, dan `icis2`, adalah konferensi yang memang berbeda dan benar dipisah.
-2. Identitas author mengikuti disambiguasi DBLP. Dua orang dengan nama sama dapat tergabung, dan satu orang dapat tercatat dengan dua nama.
-3. Support menghitung author, bukan paper. Author yang menerbitkan satu paper dan author yang menerbitkan puluhan paper di konferensi yang sama dihitung sama.
-4. Transaksi author-based menggabungkan seluruh 2015-2025, sehingga dua konferensi dapat muncul bersama walaupun dipakai pada tahun yang berbeda. Pengaruh waktu dianalisis pada Bagian E dengan author-year-based database.
-"""))
-
-# ---------------------------------------------------------------------------
-# 8. Ringkasan
-# ---------------------------------------------------------------------------
-cells.append(section("Ringkasan dan Langkah Berikutnya", "8"))
-
-cells.append(md("""
-| Task | Hasil | Bagian |
-|---|---|---|
-| 4.1 | FP-Growth pada empat min support menghasilkan 1.514, 88, 30, dan 6 frequent itemsets, identik dengan `mlxtend` | 4, 5 |
-| 4.2 | 1-, 2-, dan 3-itemset: 574, 393, 348 (0,1%); 66, 21, 1 (0,5%); 29, 1, 0 (1%); 6, 0, 0 (2%) | 6.1 |
-| 4.3 | Sepuluh teratas selalu konferensi tunggal (NeurIPS, CVPR, AAAI); pasangan teratas ICML + NeurIPS dengan support 1,02% | 6.2 |
-| 4.4 | Jumlah itemset turun 17,2 kali dari 0,1% ke 0,5% dan 252 kali dari 0,1% ke 2%; itemset besar hilang lebih dulu | 6.3 |
-| 4.5 | Pasangan teratas ICML + NeurIPS, ICLR + NeurIPS, AAAI + NeurIPS; triple teratas ICLR + ICML + NeurIPS; hanya 105 dari 574 konferensi frequent yang membentuk pasangan frequent | 6.4, 6.5 |
-| 4.6 | Pola terbentuk per bidang, NeurIPS menjadi penghubung, dan popularitas berbeda dengan keterhubungan | 7 |
-
-Frequent itemsets setiap min support disimpan di `outputs/fpgrowth/itemsets_<tag>.parquet` (kolom `itemset`, `length`, `count`, `support`, `names`). Notebook `05_rules` membangkitkan association rules dari berkas ini, dan notebook `06_performance` membandingkan FP-Growth dengan Apriori dari notebook `03_apriori`.
+> 1. Kombinasi konferensi yang frequent hampir seluruhnya terjadi di dalam satu bidang (machine learning, computer vision, NLP, robotika) atau di antara bidang yang bertetangga dekat, yaitu machine learning dengan computer vision dan AI umum. Hasil ini tidak membuktikan bahwa author jarang berpindah bidang, karena kombinasi lintas bidang dapat banyak secara total tetapi tersebar ke banyak pasangan kecil yang tidak lolos ambang.
+> 2. NeurIPS, ICML, ICLR, AAAI, CVPR, ICCV, dan ECCV adalah satu-satunya kelompok yang menghasilkan itemset berukuran lima dan enam, dan NeurIPS menjadi titik temu kelompok tersebut.
+> 3. Konferensi besar seperti EMBC, IGARSS, dan HCI hampir tidak membentuk pasangan frequent, sedangkan ICASSP terhubung dengan 41 konferensi lain. Support pasangan yang tinggi juga dapat muncul hanya karena kedua konferensinya besar, sehingga kekuatan asosiasi diukur dengan lift pada notebook `05_rules`.
+> 4. Hanya min support 0,1% yang menghasilkan pola kombinasi yang cukup kaya, sehingga notebook `05_rules` memakai hasil 0,1% sebagai dasar utama.
+>
+> **Keterbatasan**
+>
+> 1. Item adalah seri konferensi berdasarkan key DBLP. Beberapa acara dipecah DBLP menjadi konferensi utama dan workshop dengan key berbeda, misalnya `iccv` (ICCV) dan `iccvw` (ICCV Workshops), sehingga author yang hanya publish di workshop tidak terhitung pada konferensi utamanya. Key dengan singkatan sama, misalnya `icis`, `ACISicis`, dan `icis2`, adalah konferensi yang memang berbeda dan benar dipisah.
+> 2. Identitas author mengikuti disambiguasi DBLP. Dua orang dengan nama sama dapat tergabung, dan satu orang dapat tercatat dengan dua nama.
+> 3. Support menghitung author, bukan paper. Author yang menerbitkan satu paper dan author yang menerbitkan puluhan paper di konferensi yang sama dihitung sama.
+> 4. Transaksi author-based menggabungkan seluruh 2015-2025, sehingga dua konferensi dapat muncul bersama walaupun dipakai pada tahun yang berbeda. Pengaruh waktu dapat dianalisis dengan author-year-based database.
 """))
 
 # @@APPEND@@
