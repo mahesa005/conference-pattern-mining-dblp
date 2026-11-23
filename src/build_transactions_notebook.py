@@ -264,13 +264,7 @@ def pct_id(value, digits=1):
     return f"{value:.{digits}f}".replace(".", ",") + "%"
 
 
-def save_fig(fig, name, insight=None):
-    if insight:
-        wrapped = textwrap.fill("Insight: " + insight, width=max(46, int(fig.get_figwidth() * 11.5)))
-        fig.canvas.draw()
-        bottom = fig.get_tightbbox(fig.canvas.get_renderer()).y0
-        fig.text(0.01, (bottom - 0.14) / fig.get_figheight(), wrapped, ha="left", va="top", fontsize=9.6, color=CFG.INK,
-                 bbox=dict(boxstyle="round,pad=0.55", fc="#e3effc", ec="none"))
+def save_fig(fig, name):
     fig.savefig(CFG.FIG_DIR / name)
     plt.show()
 
@@ -522,7 +516,7 @@ ax_bottom.set_title(f"Author-year-based: {len(years_present)} transaksi, satu pe
 
 fig.suptitle(f"Satu author, dua representasi ({example_author})", x=0.01, ha="left", fontweight="bold", fontsize=12, y=0.99)
 fig.tight_layout()
-save_fig(fig, "t3_ilustrasi_satu_author.png", insight="Satu author menjadi 1 transaksi (6 item) pada author-based dan 4 transaksi pada author-year-based; dua paper di venue sama hanya menjadi satu item.")
+save_fig(fig, "t3_ilustrasi_satu_author.png")
 """))
 
 cells.append(md(r"""
@@ -697,8 +691,7 @@ ax_bar.set_title("Komposisi ukuran transaksi (jumlah item per transaksi)")
 ax_bar.legend(handles=[Patch(color=c, label=l) for c, l in zip(ramp, bucket_labels)], title="Item per transaksi",
               loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=7, fontsize=8.6, title_fontsize=8.8)
 one_item = [dist_pct.loc[bucket_labels[0], n] for n in list(dist_pct.columns)]
-save_fig(fig, "t3_distribusi_item_per_transaksi.png",
-         insight=f"Mayoritas transaksi hanya berisi 1 item ({pct_id(one_item[0])} pada author-based dan {pct_id(one_item[1])} pada author-year-based); transaksi besar sangat jarang.")
+save_fig(fig, "t3_distribusi_item_per_transaksi.png")
 """))
 
 cells.append(md(r"""
@@ -741,24 +734,22 @@ ladder
 
 cells.append(code(r"""
 top10 = item_support.head(10).iloc[::-1].reset_index(drop=True)
-fig, ax = plt.subplots(figsize=(8.4, 4.6))
+fig, ax = plt.subplots(figsize=(6.6, 4.6))
 for y, row in top10.iterrows():
     ax.plot([row["support_author_year"], row["support_author"]], [y, y], color=CFG.GRAY, lw=2.2, zorder=1)
     ax.scatter(row["support_author"], y, s=70, color=CFG.BLUE, zorder=3)
     ax.scatter(row["support_author_year"], y, s=70, color=CFG.ORANGE, zorder=3)
-    ax.text(row["support_author"] + 0.07, y, pct_id(row["support_author"], 2), va="center", fontsize=9, color=CFG.BLUE)
 ax.set_yticks(range(len(top10)))
 ax.set_yticklabels(top10["nama"])
-ax.set_xlim(0, top10["support_author"].max() * 1.2)
+ax.set_xlim(0, top10["support_author"].max() * 1.15)
 ax.set_xlabel("Support (% transaksi yang memuat venue)")
 id_ticks(ax)
 ax.grid(axis="y", visible=False)
 ax.set_title("Support 10 venue teratas")
 ax.legend(handles=[Line2D([], [], marker="o", ls="", color=CFG.BLUE, ms=8, label="Author-based"),
                    Line2D([], [], marker="o", ls="", color=CFG.ORANGE, ms=8, label="Author-year-based")],
-          loc="lower right", fontsize=8.8)
-save_fig(fig, "t3_support_item_top15.png",
-         insight="Support setiap venue lebih rendah pada author-year-based karena jumlah transaksinya 2,24 kali lebih banyak.")
+          loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=8.8)
+save_fig(fig, "t3_support_item_top15.png")
 """))
 
 cells.append(code(r"""
@@ -766,15 +757,9 @@ grid = np.logspace(-4, np.log10(0.05), 200)
 fig, ax = plt.subplots(figsize=(6.4, 4.8))
 for support, name, color in ((support_a, "Author-based", CFG.BLUE), (support_ay, "Author-year-based", CFG.ORANGE)):
     ax.step(grid, [(support >= g).sum() for g in grid], where="post", color=color, lw=2.4, label=name)
+    ax.scatter(CFG.MIN_SUPPORTS, [int((support >= s).sum()) for s in CFG.MIN_SUPPORTS], s=40, color=color, zorder=4)
 for s in CFG.MIN_SUPPORTS:
     ax.axvline(s, color=CFG.MUTED, lw=0.9, ls=":", zorder=1)
-    for support, color, side in ((support_a, CFG.BLUE, "up"), (support_ay, CFG.ORANGE, "down")):
-        count = int((support >= s).sum())
-        ax.scatter(s, count, s=36, color=color, zorder=4)
-        if side == "up":
-            ax.text(s * 1.1, count * 1.25, fmt_id(count), fontsize=9, color=color, fontweight="bold")
-        else:
-            ax.text(s / 1.1, count * 0.72, fmt_id(count), fontsize=9, color=color, fontweight="bold", ha="right", va="top")
 ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xticks(CFG.MIN_SUPPORTS)
@@ -786,8 +771,7 @@ ax.set_xlabel("Ambang min support (skala logaritmik)")
 ax.set_ylabel("Item yang frequent")
 ax.set_title("Venue yang lolos tiap ambang min support")
 ax.legend(loc="lower left", fontsize=8.8)
-save_fig(fig, "t3_item_frequent_per_min_support.png",
-         insight=f"Hanya {fmt_id(int((support_a >= CFG.MIN_SUPPORTS[0]).sum()))} dari {fmt_id(len(support_a))} venue lolos 0,1% dan 6 venue lolos 2%: ruang pencarian pola mengecil tajam.")
+save_fig(fig, "t3_item_frequent_per_min_support.png")
 """))
 
 cells.append(md(r"""
@@ -855,14 +839,10 @@ for load, name, color in ((load_a, "Author-based", CFG.BLUE), (load_ay, "Author-
     ordered = np.sort(load)[::-1]
     cumulative = np.cumsum(ordered) / ordered.sum() * 100
     share_of_transactions = np.arange(1, len(ordered) + 1) / len(ordered) * 100
-    ax.plot(share_of_transactions, cumulative, color=color, lw=2.2, label=name)
+    ax.plot(share_of_transactions, cumulative, color=color, lw=2.4, label=name)
     for fraction in (0.1, 1.0):
         position = max(int(np.ceil(len(ordered) * fraction / 100)), 1) - 1
         ax.scatter(fraction, cumulative[position], s=40, color=color, zorder=4)
-        if color == CFG.BLUE:
-            ax.text(fraction / 1.15, cumulative[position] + 4, pct_id(cumulative[position], 0), fontsize=8.8, color=color, fontweight="bold", ha="right")
-        else:
-            ax.text(fraction * 1.15, cumulative[position] - 8, pct_id(cumulative[position], 0), fontsize=8.8, color=color, fontweight="bold")
 ax.set_xscale("log")
 ax.set_xlim(0.0004, 150)
 ax.set_xticks([0.001, 0.01, 0.1, 1, 10, 100])
@@ -872,7 +852,7 @@ ax.set_xlabel("Transaksi terbesar (% dari seluruh transaksi, skala logaritmik)")
 ax.set_ylabel("Porsi kumulatif beban kombinasi (%)")
 ax.set_title("Beban kombinasi terkonsentrasi pada transaksi terbesar")
 ax.legend(loc="lower right", fontsize=8.8)
-save_fig(fig, "t3_konsentrasi_beban_kombinasi.png", insight="Sebagian kecil transaksi menanggung hampir seluruh beban kombinasi: 0,1% transaksi terbesar menanggung sekitar 28% pada author-based.")
+save_fig(fig, "t3_konsentrasi_beban_kombinasi.png")
 """))
 
 cells.append(md(r"""
@@ -1015,10 +995,9 @@ for y, row in shown.iterrows():
     ax.plot([row["support_author_year_%"], row["support_author_%"]], [y, y], color=CFG.GRAY, lw=2.2, zorder=1)
     ax.scatter(row["support_author_%"], y, s=70, color=CFG.BLUE, zorder=3)
     ax.scatter(row["support_author_year_%"], y, s=70, color=CFG.ORANGE, zorder=3)
-    ax.text(row["support_author_%"] + 0.025, y, pct_id(row["support_author_%"], 2), va="center", fontsize=9, color=CFG.BLUE)
 ax.set_yticks(range(len(shown)))
 ax.set_yticklabels(shown["pasangan venue"])
-ax.set_xlim(0, shown["support_author_%"].max() * 1.25)
+ax.set_xlim(0, shown["support_author_%"].max() * 1.15)
 ax.set_xlabel("Support pasangan venue (% transaksi)")
 id_ticks(ax)
 ax.grid(axis="y", visible=False)
@@ -1026,8 +1005,7 @@ ax.set_title("Support 10 pasangan venue teratas")
 ax.legend(handles=[Line2D([], [], marker="o", ls="", color=CFG.BLUE, ms=8, label="Author-based"),
                    Line2D([], [], marker="o", ls="", color=CFG.ORANGE, ms=8, label="Author-year-based")],
           loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=8.8)
-save_fig(fig, "t3_support_pasangan_dua_representasi.png",
-         insight="Support pasangan turun sekitar 0,3 kali pada author-year-based (penyebut 2,24 kali lebih besar), tetapi urutan teratas hampir sama: ICML + NeurIPS tetap nomor satu.")
+save_fig(fig, "t3_support_pasangan_dua_representasi.png")
 """))
 
 cells.append(md(r"""
