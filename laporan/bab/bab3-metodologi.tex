@@ -1,6 +1,17 @@
 \chapter{METODOLOGI}
 \label{chap:metodologi}
 
+\section{Kerangka Kerja \textit{CRISP-DM}}
+\label{sec:crispdm}
+Metodologi mengikuti \textit{Cross-Industry Standard Process for Data Mining} (CRISP-DM) \cite{chapman2000}, yaitu enam tahap yang dapat berulang. Gambar~\ref{fig:crispdm} memetakan tiap tahap ke bab laporan dan \textit{task} pada spesifikasi. Tahap \textit{Business Understanding} sampai \textit{Data Preparation} sudah selesai, sedangkan tahap \textit{Modeling} dan \textit{Evaluation} adalah eksperimen berikutnya.
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-crispdm}
+\caption{Pemetaan tahap \textit{CRISP-DM} ke bab laporan dan \textit{task}}
+\label{fig:crispdm}
+\end{figure}
+
 \section{Alur Kerja}
 \label{sec:alur}
 Setiap tahap dikerjakan pada \textit{notebook} tersendiri agar masukan, keluaran, dan tanggung jawabnya jelas serta mudah diperiksa. Setiap tahap menyimpan hasilnya ke disk dan tahap berikutnya hanya membaca hasil tersebut. Gambar~\ref{fig:alur-kerja} memperlihatkan alur datanya, dan Tabel~\ref{tab:notebook} merinci isi tiap \textit{notebook}.
