@@ -1,0 +1,24 @@
+\begin{tikzpicture}[font=\scriptsize,
+  asal/.style={kotak,text width=4.9cm,minimum height=0.95cm,fill=white,draw=black!60},
+  hasil/.style={kotak,text width=4.1cm,minimum height=0.95cm,fill=bluelight!35,draw=bluemain}]
+\def\m#1{\textcolor{red}{\bfseries #1}}
+\foreach \i/\y/\t/\a/\b in {
+ 1/0/{Konsistensi tahun}/{\texttt{year} = \m{"2016"} (teks)}/{\texttt{year} = \m{2016} (bilangan bulat)},
+ 2/-1.4/{\textit{Missing values}}/{\texttt{conf/dac/X22}, "Frontmatter."\\\m{penulis kosong}}/{dibuang (2.255 \textit{record})},
+ 3/-2.8/{Seleksi \textit{key}}/{\texttt{\m{journals/entcs}/SuLC17}\\\textit{booktitle} MFPS}/{dibuang (3.161 \textit{record})},
+ 4/-4.2/{Normalisasi \textit{venue}}/{\textit{booktitle} \m{NIPS} dan \m{NeurIPS}}/{\textit{venue} \texttt{nips} (satu \textit{venue})},
+ 5/-5.6/{Duplikat}/{\texttt{conf/3dic/LahijiLS16}\\\texttt{conf/3dic/LahijiLS16\m{a}} (judul sama)}/{satu baris (1.542 dibuang)},
+ 6/-7.0/{Normalisasi penulis}/{\m{Tianqi Chen 0001|Carlos Guestrin}}/{dua baris makalah-penulis, nama tidak berubah}}{
+  \node[anchor=west,font=\scriptsize\bfseries,text width=2.7cm] at (0,\y) {\t};
+  \node[asal] (a\i) at (5.3,\y) {\a};
+  \node[hasil] (b\i) at (12.0,\y) {\b};
+  \draw[garis] (a\i.east) -- (b\i.west);
+}
+\node[anchor=west,font=\scriptsize\bfseries] at (0,-8.3) {Legenda:};
+\node[asal,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (1.9,-8.3) {};
+\node[anchor=west] at (2.25,-8.3) {sebelum};
+\node[hasil,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (4.3,-8.3) {};
+\node[anchor=west] at (4.65,-8.3) {sesudah};
+\node[anchor=west,text=red] at (6.6,-8.3) {\bfseries merah};
+\node[anchor=west] at (7.7,-8.3) {= bagian yang diubah atau menjadi alasan pembuangan};
+\end{tikzpicture}
