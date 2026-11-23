@@ -48,7 +48,7 @@ cells.append(md(f"""
 
 # Conference Popularity and Association Pattern Mining pada Dataset DBLP
 
-*Notebook 01: Task 1 (Data Understanding and Preprocessing) dan Task 2 (Conference Popularity Analysis).*
+*Notebook 01: Data Understanding and Preprocessing, lalu Conference Popularity Analysis.*
 """))
 
 cells.append(md(f"""
@@ -69,15 +69,15 @@ cells.append(md(f"""
 1. [**Introduction**](#1)
 2. [**Initialization**](#2)
 
-**[Part I: Task 1, Data Understanding and Preprocessing](#part1)**
+**[Part I: Data Understanding and Preprocessing](#part1)**
 
-3. [**Eksplorasi Dataset (Task 1.1)**](#3)
-4. [**Preprocessing (Task 1.2 dan 1.3)**](#4)
-5. [**Statistik Dataset Bersih (Task 1.4)**](#5)
+3. [**Eksplorasi Dataset**](#3)
+4. [**Preprocessing**](#4)
+5. [**Statistik Dataset Bersih**](#5)
 
-**[Part II: Task 2, Conference Popularity Analysis](#part2)**
+**[Part II: Conference Popularity Analysis](#part2)**
 
-6. [**Analisis Popularitas Konferensi (Task 2)**](#6)
+6. [**Analisis Popularitas Konferensi**](#6)
 7. [**Ringkasan dan Langkah Berikutnya**](#7)
 """))
 
@@ -89,21 +89,19 @@ cells.append(section("Introduction", "1"))
 cells.append(md("""
 ## Overview
 
-*DBLP (Digital Bibliography and Library Project) adalah basis data bibliografi ilmu komputer yang mencatat judul, author, tahun, dan venue setiap publikasi. Notebook ini mengerjakan Task 1 tugas besar Data Mining, yaitu memahami struktur dataset DBLP dan menyiapkan datanya untuk Frequent Pattern Mining dan Association Rule Mining pada task berikutnya.*
+*DBLP (Digital Bibliography and Library Project) adalah basis data bibliografi ilmu komputer yang mencatat judul, author, tahun, dan venue setiap publikasi.*
 
-*Popularitas konferensi pada proyek ini diukur dari aktivitas publikasi, yaitu jumlah publikasi dan jumlah author unik. Setelah data siap, Task 2 pada notebook yang sama menganalisis konferensi mana yang paling aktif, bagaimana peringkatnya berubah menurut dua ukuran tersebut, dan bagaimana aktivitasnya bergerak selama 2015-2025.*
+*Notebook ini memahami struktur dataset DBLP, menyiapkan datanya untuk Frequent Pattern Mining dan Association Rule Mining, lalu menganalisis popularitas konferensi. Popularitas diukur dari aktivitas publikasi, yaitu jumlah publikasi dan jumlah author unik.*
 """))
 
 cells.append(md("""
 ## Aim
 
-*Task 1.1: menjelaskan struktur dataset, atribut, jumlah record, dan jenis publikasi yang tersedia.*
-
-*Task 1.2 dan 1.3: melakukan preprocessing (memilih konferensi dan workshop, menangani missing values, menghapus duplikat, menormalisasi author dan venue, serta memastikan konsistensi tahun) dan menjelaskan alasan setiap tahap.*
-
-*Task 1.4: menampilkan statistik dataset bersih, yaitu total publikasi, author unik, venue unik, distribusi per tahun, dan distribusi per konferensi.*
-
-*Task 2: mengidentifikasi 10 konferensi dengan publikasi terbanyak dan 10 konferensi dengan author unik terbanyak, menganalisis tren publikasi per tahun, membandingkan kedua peringkat, lalu menjawab konferensi mana yang paling populer, apakah konferensi dengan publikasi terbanyak juga memiliki author unik terbanyak, dan bagaimana aktivitasnya berubah.*
+1. *Menjelaskan struktur dataset, atribut, jumlah record, dan jenis publikasi yang tersedia.*
+2. *Membersihkan data dalam enam tahap preprocessing (konsistensi tahun, missing values, seleksi konferensi dan workshop, normalisasi venue, duplikat, normalisasi author) beserta alasan tiap tahap.*
+3. *Menampilkan statistik dataset bersih: total publikasi, author unik, venue unik, distribusi per tahun, dan distribusi per konferensi.*
+4. *Menentukan 10 konferensi dengan publikasi terbanyak dan 10 konferensi dengan author unik terbanyak, lalu menganalisis tren per tahun dan membandingkan kedua peringkat.*
+5. *Menyimpulkan konferensi terpopuler, hubungan antara jumlah publikasi dan jumlah author unik, serta perubahan aktivitas selama periode pengamatan.*
 """))
 
 cells.append(md("""
@@ -117,7 +115,7 @@ $$\\text{Retensi} = \\frac{N_{\\text{bersih}}}{N_{\\text{mentah}}}
 \\qquad
 \\text{CAGR} = \\left(\\frac{N_{2024}}{N_{2015}}\\right)^{1/9} - 1$$
 
-*Pada Task 2, peringkat konferensi disusun menurut dua ukuran, yaitu jumlah publikasi dan jumlah author unik. Ukuran ketiga, **paper per author**, menunjukkan seberapa sering author yang sama kembali menerbitkan karya di sebuah konferensi, dengan pembilang jumlah pasangan paper-author dan penyebut jumlah author unik di konferensi tersebut.*
+*Peringkat konferensi disusun menurut jumlah publikasi dan jumlah author unik. **Paper per author** menunjukkan seberapa sering author yang sama kembali menerbitkan karya di sebuah konferensi.*
 
 $$\\text{Paper per author} = \\frac{\\text{jumlah pasangan paper-author di venue}}{\\text{jumlah author unik di venue}}$$
 """))
@@ -148,20 +146,20 @@ cells.append(md("""
 cells.append(md("""
 ## Approach: Eksplorasi, Preprocessing, lalu Statistik
 
-*Notebook ini membaca tabel mentah hasil `00_extract`, menjelaskan kondisinya, membersihkannya dalam enam tahap, lalu menghitung statistik pada data bersih. Setiap tahap menyimpan hasilnya ke disk dan tahap berikutnya hanya membaca, sehingga bagian statistik dapat dijalankan ulang tanpa mengulang preprocessing.*
+*Notebook ini membaca tabel mentah hasil `00_extract`, menjelaskan kondisinya, membersihkannya dalam enam tahap, lalu menghitung statistik pada data bersih.*
 
-*Pemilihan jenis chart mengikuti panduan Datawrapper (https://www.datawrapper.de/blog/chart-types-guide). Perkembangan waktu memakai column chart dengan garis tren dan small multiples, angka absolut memakai bar, lollipop, dan dumbbell chart, komposisi memakai stacked bar, perubahan peringkat memakai slope chart, hubungan dua ukuran memakai scatter plot, pola banyak kategori sepanjang waktu memakai heatmap, dan alur seleksi data memakai sankey diagram.*
+*Setiap tahap menyimpan hasilnya ke disk dan tahap berikutnya hanya membaca, sehingga bagian statistik dapat dijalankan ulang tanpa mengulang preprocessing.*
 
 ```
 inproceedings_raw.parquet            (00_extract)
     |
-    +-- Part I: Task 1
+    +-- Part I: Data Understanding and Preprocessing
     |     3. Eksplorasi: struktur, jenis publikasi, kondisi data
     |     4. Preprocessing: tahun, missing, seleksi conf/, venue, duplikat, author
     |           -> inproceedings_clean.parquet, paper_author.parquet
     |     5. Statistik: total, per tahun, per konferensi, per author
     |
-    +-- Part II: Task 2
+    +-- Part II: Conference Popularity Analysis
     |     6. Popularitas konferensi: top 10, tren, perbandingan peringkat
     |     7. Ringkasan dan langkah berikutnya
 ```
@@ -227,7 +225,7 @@ seed_everything(42)
 cells.append(md("""
 ## Settings
 
-Seluruh path, rentang tahun, dan warna dipusatkan di kelas `Settings`. Palet warna mengikuti palet referensi skill dataviz: satu warna biru sebagai aksen utama, jingga untuk penekanan, dan abu-abu untuk konteks.
+Seluruh path, rentang tahun, dan warna dipusatkan di kelas `Settings`. Palet warna memakai biru sebagai aksen utama, jingga untuk penekanan, dan abu-abu untuk konteks.
 """))
 
 cells.append(code("""
@@ -331,21 +329,21 @@ print(f"Data mentah  : {len(raw):,} baris x {raw.shape[1]} kolom")
 """))
 
 # ---------------------------------------------------------------------------
-# 3. Eksplorasi Dataset (Task 1.1)
+# 3. Eksplorasi Dataset
 # ---------------------------------------------------------------------------
-cells.append(part("PART I | TASK 1: Data Understanding and Preprocessing",
+cells.append(part("PART I | Data Understanding and Preprocessing",
                   "Memahami struktur dataset DBLP, membersihkannya, dan menghitung statistik dataset bersih.", "part1"))
 
-cells.append(section("Eksplorasi Dataset (Task 1.1)", "3"))
+cells.append(section("Eksplorasi Dataset", "3"))
 
 cells.append(md("""
-Bagian ini menjawab Task 1.1: bentuk file dan struktur record DBLP, atribut yang tersedia, jumlah record, dan jenis publikasi. Seluruh contoh record diambil langsung dari dump, bukan ditulis ulang.
+Bagian ini membahas bentuk file dan struktur record DBLP, atribut yang tersedia, jumlah record, dan jenis publikasi. Seluruh contoh record diambil langsung dari dump, bukan ditulis ulang.
 """))
 
 cells.append(md("""
 ## 3.1 Struktur File dan Record
 
-DBLP menyajikan datanya sebagai satu berkas XML yang berisi daftar datar record di bawah elemen akar `<dblp>`. Nama tag setiap record menunjukkan jenis publikasinya. Record `inproceedings` berikut adalah paper XGBoost, diambil apa adanya dari dump.
+DBLP menyajikan datanya sebagai satu berkas XML berisi daftar datar record di bawah elemen akar `<dblp>`, dan nama tag setiap record menunjukkan jenis publikasinya. Record `inproceedings` berikut adalah paper XGBoost, diambil apa adanya dari dump.
 """))
 
 cells.append(code("""
@@ -353,7 +351,7 @@ print(dump_info["sample_records"]["conf/kdd/ChenG16"])
 """))
 
 cells.append(md("""
-Atribut XML (di dalam tag pembuka) dan elemen anak (di antara tag pembuka dan penutup) dipisahkan berikut. Tabel ini dibentuk dengan mem-parsing record contoh di atas.
+Atribut XML (di dalam tag pembuka) dan elemen anak (di antara tag pembuka dan penutup) dipisahkan berikut dengan mem-parsing record contoh di atas.
 """))
 
 cells.append(code("""
@@ -369,17 +367,16 @@ structure
 cells.append(md("""
 #### Insights
 
-> Setiap record memiliki dua atribut XML, yaitu `key` (ID unik) dan `mdate` (tanggal modifikasi terakhir). Seluruh field lain adalah elemen anak yang berada di dalam tag `inproceedings`: `author`, `title`, `pages`, `year`, `booktitle`, `ee`, `crossref`, dan `url`.
-
-> Tag `author` berulang satu kali untuk setiap orang, sehingga author bukan tabel tersendiri. Satu paper dapat memiliki satu sampai puluhan author, dan inilah alasan data perlu diubah menjadi tabel pasangan paper dan author sebelum dibentuk menjadi transaksi.
-
-> Spesifikasi tugas menyebut atribut `author`, `title`, `year`, dan `venue`. Tiga yang pertama adalah elemen anak, tetapi `venue` tidak memiliki tag sendiri. Nilainya diturunkan dari segmen kedua `key` (pada contoh ini `kdd`), sedangkan elemen `booktitle` (`KDD`) disimpan sebagai pembanding.
+> 1. Setiap record memiliki dua atribut XML, yaitu `key` (ID unik) dan `mdate` (tanggal modifikasi terakhir).
+> 2. Field lain adalah elemen anak di dalam tag `inproceedings`: `author`, `title`, `pages`, `year`, `booktitle`, `ee`, `crossref`, dan `url`.
+> 3. Tag `author` berulang satu kali per orang, sehingga satu paper dapat memiliki satu sampai puluhan author. Karena itu data perlu diubah menjadi tabel pasangan paper-author sebelum dibentuk menjadi transaksi.
+> 4. `venue` tidak memiliki tag sendiri. Nilainya diturunkan dari segmen kedua `key` (pada contoh ini `kdd`), sedangkan `booktitle` (`KDD`) disimpan sebagai pembanding.
 """))
 
 cells.append(md("""
 ## 3.2 Jenis Publikasi
 
-Jenis publikasi dibandingkan pada dua cakupan, yaitu seluruh dump dan hanya periode 2015-2025. Karena jumlah record antarjenis berbeda sampai jutaan kali lipat (dari 27 sampai 4,5 juta), chart ini memakai bar chart horizontal dengan sumbu logaritmik, yaitu bentuk yang dalam panduan Datawrapper paling tepat untuk angka absolut. Batang terang adalah seluruh dump dan batang gelap adalah bagian yang jatuh pada periode analisis.
+Jenis publikasi dibandingkan pada dua cakupan, yaitu seluruh dump dan hanya periode 2015-2025. Jumlah record antarjenis berbeda dari 27 sampai 4,5 juta, sehingga sumbu horizontal memakai skala logaritmik. Batang terang adalah seluruh dump dan batang gelap adalah bagian pada periode analisis.
 """))
 
 cells.append(code("""
@@ -415,17 +412,16 @@ save_fig(fig, "t1_jenis_publikasi.png")
 cells.append(md("""
 #### Insights
 
-> Dump berisi 13.127.979 record. `article` (4,53 juta) dan `www` (4,25 juta) menyumbang sekitar 67% isi dump, sedangkan `inproceedings` berjumlah 4.004.309 atau sekitar 30,5% dari seluruh record. Dari jumlah itu, 2.004.202 (50,1%) berada pada periode 2015-2025 dan menjadi data mentah tugas ini.
-
-> Jenis `www` hanya memiliki satu record pada 2015-2025. Record ini adalah halaman profil author yang umumnya tidak memiliki tahun, sehingga bukan publikasi dan tidak dipakai. Jenis `proceedings` (65.903 record) adalah buku prosiding induk yang dirujuk oleh `crossref`, bukan paper, sehingga juga tidak dipakai.
-
-> Porsi periode 2015-2025 berbeda antarjenis, dari 26,8% (`book`) sampai 70,5% (`data`). Jenis `inproceedings` berada di tengah, yaitu 50,1%, artinya setengah dari seluruh paper konferensi di DBLP terbit dalam sebelas tahun terakhir.
+> 1. Dump berisi 13.127.979 record. `article` (4,53 juta) dan `www` (4,25 juta) menyumbang sekitar 67%, sedangkan `inproceedings` berjumlah 4.004.309 (sekitar 30,5%).
+> 2. Sebanyak 2.004.202 record `inproceedings` (50,1%) berada pada periode 2015-2025 dan menjadi data mentah analisis ini. Artinya setengah dari paper konferensi di DBLP terbit dalam sebelas tahun terakhir.
+> 3. `www` hanya memiliki satu record pada periode ini, yaitu halaman profil author yang bukan publikasi. `proceedings` (65.903 record) adalah buku prosiding induk yang dirujuk oleh `crossref`, bukan paper. Keduanya tidak dipakai.
+> 4. Porsi periode berbeda antarjenis, dari 26,8% (`book`) sampai 70,5% (`data`).
 """))
 
 cells.append(md("""
 ## 3.3 Atribut dan Kondisi Data Mentah
 
-Tabel mentah diperiksa dari sisi tipe data, nilai kosong, dan komposisi awalan `key`. Pemeriksaan ini menjadi dasar keputusan pada tahap preprocessing.
+Tabel mentah diperiksa dari sisi tipe data, nilai kosong, dan komposisi awalan `key` sebagai dasar keputusan preprocessing.
 """))
 
 cells.append(code("""
@@ -451,35 +447,33 @@ key_profile.round(2)
 cells.append(md("""
 #### Insights
 
-> Dari 2.004.202 record mentah, `title` dan `year` tidak pernah kosong, sedangkan `booktitle` kosong pada 190 record, `crossref` pada 2.471 record, dan `author` pada 2.255 record. Semuanya di bawah 0,13%, sehingga data mentah tergolong bersih dan penanganan nilai kosong berdampak kecil.
-
-> Kolom `year` bertipe teks karena XML tidak memiliki tipe data, sehingga perlu dikonversi menjadi bilangan bulat. Kolom `key` unik pada seluruh baris.
-
-> Sebanyak 99,8% record memiliki `key` berawalan `conf/`. Sisanya (3.163 record) berawalan `journals/` atau `books/`, yaitu record bertag `inproceedings` yang diarsipkan DBLP pada seri jurnal atau buku. Perlakuannya dibahas pada subbagian seleksi konferensi.
+> 1. Dari 2.004.202 record mentah, `title` dan `year` tidak pernah kosong. `booktitle` kosong pada 190 record, `crossref` pada 2.471, dan `author` pada 2.255, semuanya di bawah 0,13%.
+> 2. `year` bertipe teks karena XML tidak memiliki tipe data, sehingga perlu dikonversi menjadi bilangan bulat. `key` unik pada seluruh baris.
+> 3. Sebanyak 99,8% record berawalan `conf/`. Sisanya (3.163 record) berawalan `journals/` atau `books/`, yaitu `inproceedings` yang diarsipkan DBLP pada seri jurnal atau buku. Perlakuannya dibahas pada subbagian seleksi konferensi.
 """))
 
 # ---------------------------------------------------------------------------
-# 4. Preprocessing (Task 1.2 dan 1.3)
+# 4. Preprocessing
 # ---------------------------------------------------------------------------
-cells.append(section("Preprocessing (Task 1.2 dan 1.3)", "4"))
+cells.append(section("Preprocessing", "4"))
 
 cells.append(md(r"""
-Bagian ini menjawab Task 1.2 dan 1.3. Preprocessing dikerjakan pada salinan data mentah dalam enam tahap berurutan. Setiap tahap dibahas dengan pola yang sama, yaitu alasan pemilihan metode, bukti dari data, hasil, lalu insight. Jumlah paper setelah setiap tahap dicatat agar dampaknya dapat ditelusuri.
+Preprocessing dikerjakan pada salinan data mentah dalam enam tahap berurutan. Setiap tahap berisi alasan, bukti dari data, hasil, dan insight, dan jumlah paper setelah tiap tahap dicatat untuk menelusuri dampaknya.
 """))
 
 cells.append(md(r"""
 ## 4.1 Rancangan Tahap
 
-Tabel berikut memetakan setiap butir spesifikasi tugas ke tahap preprocessing yang dikerjakan. Urutan tahap sama dengan urutan kode pada subbagian berikutnya.
+Tabel berikut memetakan setiap tahap ke perlakuan dan alasannya. Urutan tahap sama dengan urutan kode pada subbagian berikutnya.
 
-| # | Tahap | Butir spesifikasi | Perlakuan | Alasan |
-|---|---|---|---|---|
-| 1 | Konsistensi tahun | Memastikan konsistensi atribut tahun | Konversi teks ke bilangan bulat, lalu validasi rentang 2015-2025 | `year` di XML bertipe teks sehingga tidak dapat dibandingkan atau dihitung |
-| 2 | Missing values | Menangani missing values | Buang paper tanpa author; kolom lain dibiarkan | Paper tanpa author tidak dapat masuk transaksi dan umumnya bukan paper |
-| 3 | Seleksi konferensi dan workshop | Memilih publikasi konferensi dan workshop | Tag `inproceedings` (saat ekstraksi) dan `key` berawalan `conf/` | Menurut dokumentasi DBLP, `conf/*` adalah paper konferensi atau workshop |
-| 4 | Normalisasi venue | Normalisasi nama conference atau venue | Venue diambil dari segmen kedua `key` | `booktitle` tidak konsisten, sedangkan `key` stabil antartahun |
-| 5 | Duplikat | Menghilangkan data duplikat | Buang `key` ganda, lalu judul + tahun + venue ganda | Satu paper tidak boleh terhitung dua kali |
-| 6 | Normalisasi author | Normalisasi nama author | NFKC dan rapikan spasi; sufiks disambiguasi DBLP dipertahankan; pecah menjadi satu baris per author | Menyeragamkan penulisan tanpa menggabungkan orang yang berbeda |
+| # | Tahap | Perlakuan | Alasan |
+|---|---|---|---|
+| 1 | Konsistensi tahun | Konversi teks ke bilangan bulat, lalu validasi rentang 2015-2025 | `year` di XML bertipe teks sehingga tidak dapat dibandingkan atau dihitung |
+| 2 | Missing values | Buang paper tanpa author, kolom lain dibiarkan | Paper tanpa author tidak dapat masuk transaksi dan umumnya bukan paper |
+| 3 | Seleksi konferensi dan workshop | Tag `inproceedings` (saat ekstraksi) dan `key` berawalan `conf/` | Menurut dokumentasi DBLP, `conf/*` adalah paper konferensi atau workshop |
+| 4 | Normalisasi venue | Venue diambil dari segmen kedua `key` | `booktitle` tidak konsisten, sedangkan `key` stabil antartahun |
+| 5 | Duplikat | Buang `key` ganda, lalu judul + tahun + venue ganda | Satu paper tidak boleh terhitung dua kali |
+| 6 | Normalisasi author | NFKC dan rapikan spasi, pertahankan sufiks disambiguasi DBLP, lalu pecah menjadi satu baris per author | Menyeragamkan penulisan tanpa menggabungkan orang yang berbeda |
 """))
 
 cells.append(code(r"""
@@ -500,7 +494,7 @@ def log_step(name, frame):
 cells.append(md(r"""
 ## 4.2 Konsistensi Tahun
 
-Kolom `year` dikonversi dari teks menjadi bilangan bulat. Sebelum dikonversi, dicek apakah seluruh nilai berupa empat digit, lalu setelah dikonversi dipastikan semua tahun berada pada rentang analisis.
+Kolom `year` dikonversi dari teks menjadi bilangan bulat agar dapat dihitung. Sebelum dan sesudah konversi, nilai dicek berupa empat digit dan berada pada rentang analisis.
 """))
 
 cells.append(code(r"""
@@ -519,15 +513,14 @@ print(f"Baris dibuang   : {attrition[-1]['dibuang']}")
 cells.append(md(r"""
 #### Insights
 
-> Seluruh nilai `year` berupa empat digit dan seluruhnya berada pada 2015-2025, sehingga tidak ada baris yang dibuang. Penyaringan rentang tahun sebenarnya sudah dilakukan saat ekstraksi, jadi tahap ini berfungsi sebagai validasi.
-
-> Konversi tetap diperlukan karena tahun bertipe teks tidak dapat dihitung. Bilangan bulat diperlukan untuk agregasi per tahun, garis tren, dan pembagian periode pada analisis temporal.
+> 1. Seluruh nilai `year` berupa empat digit dan berada pada 2015-2025, sehingga tidak ada baris yang dibuang. Penyaringan tahun sudah dilakukan saat ekstraksi, jadi tahap ini berfungsi sebagai validasi.
+> 2. Bilangan bulat tetap diperlukan untuk agregasi per tahun, garis tren, dan pembagian periode pada analisis temporal.
 """))
 
 cells.append(md(r"""
 ## 4.3 Missing Values
 
-Nilai kosong diperiksa pada setiap kolom, lalu keputusan diambil per kolom berdasarkan apakah kolom itu dipakai pada analisis. Kolom `authors` menjadi penentu, karena transaksi dibentuk dari author.
+Nilai kosong diperiksa pada setiap kolom, lalu keputusan diambil per kolom menurut perannya dalam analisis. Kolom `authors` menjadi penentu karena transaksi dibentuk dari author.
 """))
 
 cells.append(code(r"""
@@ -544,7 +537,7 @@ missing_plan.round(3)
 """))
 
 cells.append(md(r"""
-Judul pada record tanpa author diperiksa untuk memastikan record tersebut memang bukan paper, lalu salah satu record contoh ditampilkan apa adanya dari dump.
+Judul pada record tanpa author diperiksa untuk memastikan record itu bukan paper, lalu satu record contoh ditampilkan dari dump.
 """))
 
 cells.append(code(r"""
@@ -564,15 +557,15 @@ print(f"Baris dibuang: {attrition[-1]['dibuang']:,} | sisa: {len(df):,}")
 cells.append(md(r"""
 #### Insights
 
-> Hanya 2.255 record (0,11%) yang tidak memiliki author. Judulnya menunjukkan bahwa record tersebut bukan paper, melainkan halaman depan prosiding seperti "Front Matter, Table of Contents, Preface, Conference Organization." dan "Preface.". Karena itu membuang record ini sekaligus membersihkan non-paper dari dataset.
-
-> Kolom `booktitle` (190 kosong) dan `crossref` (2.471 kosong) dibiarkan karena tidak dipakai: venue diturunkan dari `key`, bukan dari `booktitle`. Kolom `title` dan `year` tidak memiliki nilai kosong.
+> 1. Hanya 2.255 record (0,11%) yang tidak memiliki author. Judulnya menunjukkan halaman depan prosiding, seperti "Front Matter, Table of Contents, Preface, Conference Organization." dan "Preface.", bukan paper.
+> 2. Membuang record ini sekaligus membersihkan non-paper dari dataset.
+> 3. `booktitle` (190 kosong) dan `crossref` (2.471 kosong) dibiarkan karena tidak dipakai, sebab venue diturunkan dari `key`. `title` dan `year` tidak memiliki nilai kosong.
 """))
 
 cells.append(md(r"""
 ## 4.4 Seleksi Konferensi dan Workshop
 
-Konferensi dan workshop pada DBLP sama-sama bertag `inproceedings`, sehingga tidak ada tag yang memisahkan keduanya. Tag itu sudah dipilih saat ekstraksi. Tahap ini menambah satu syarat, yaitu `key` berawalan `conf/`, yang menurut dokumentasi DBLP adalah tempat paper konferensi dan workshop. Record bertag `inproceedings` yang berawalan lain diperiksa dahulu sebelum dibuang.
+Konferensi dan workshop pada DBLP sama-sama bertag `inproceedings`, dan tag itu sudah dipilih saat ekstraksi. Tahap ini menambah syarat `key` berawalan `conf/`, yang menurut dokumentasi DBLP adalah tempat paper konferensi dan workshop. Record `inproceedings` dengan awalan lain diperiksa dahulu sebelum dibuang.
 """))
 
 cells.append(code(r"""
@@ -593,7 +586,7 @@ non_conf_profile
 """))
 
 cells.append(md(r"""
-Tag dan awalan `key` tidak selalu sejalan. Record contoh berikut bertag `article` tetapi berawalan `conf/`, karena tag mengikuti jenis publikasi (jurnal RLJ) sedangkan `key` mengikuti seri venue. Karena hanya tag `inproceedings` yang diambil, record seperti ini otomatis tidak ikut.
+Tag dan awalan `key` tidak selalu sejalan. Record contoh berikut bertag `article` tetapi berawalan `conf/`, karena tag mengikuti jenis publikasi (jurnal RLJ) sedangkan `key` mengikuti seri venue. Karena hanya tag `inproceedings` yang diambil, record seperti ini tidak ikut.
 """))
 
 cells.append(code(r"""
@@ -611,17 +604,16 @@ print(f"Baris dibuang: {attrition[-1]['dibuang']:,} | sisa: {len(df):,}")
 cells.append(md(r"""
 #### Insights
 
-> Sebanyak 3.161 record (0,16%) bertag `inproceedings` tetapi tidak berawalan `conf/`. Rinciannya 2.734 record berawalan `journals/corr`, 387 berawalan `journals/entcs`, dan 40 berawalan `books/sp`. Record ini adalah prosiding acara kecil yang diarsipkan DBLP pada seri jurnal atau buku.
-
-> Record tersebut tersebar pada sekitar 150 acara berbeda (130 pada `journals/corr`, 16 pada `journals/entcs`, dan 2 pada `books/sp`), dan acara terbesarnya hanya 187 paper (MFPS). Angka itu jauh di bawah ambang min support terendah, karena 0,1% dari 1,82 juta author adalah sekitar 1.800 author. Selain itu, `key` mereka akan menyatukan 130 acara berbeda ke dalam satu venue palsu `corr`. Karena itu record ini dibuang.
-
-> Keputusan ini perlu dicatat sebagai keterbatasan: sebagian record yang dibuang memang prosiding konferensi atau workshop kecil, sehingga ada sedikit workshop yang tidak terambil. Dampaknya pada hasil mining diperkirakan tidak ada.
+> 1. Sebanyak 3.161 record (0,16%) bertag `inproceedings` tetapi tidak berawalan `conf/`: 2.734 berawalan `journals/corr`, 387 `journals/entcs`, dan 40 `books/sp`. Semuanya prosiding acara kecil yang diarsipkan DBLP pada seri jurnal atau buku.
+> 2. Record ini tersebar pada sekitar 150 acara berbeda (130 pada `journals/corr`, 16 pada `journals/entcs`, dan 2 pada `books/sp`), dan acara terbesarnya hanya 187 paper (MFPS). Angka itu jauh di bawah ambang min support terendah, karena 0,1% dari 1,82 juta author adalah sekitar 1.800 author.
+> 3. `key` mereka akan menyatukan 130 acara berbeda menjadi satu venue palsu `corr`, sehingga record ini dibuang.
+> 4. Keterbatasan: sebagian record yang dibuang memang prosiding konferensi atau workshop kecil, sehingga ada sedikit workshop yang tidak terambil. Dampaknya pada hasil mining diperkirakan tidak ada.
 """))
 
 cells.append(md(r"""
 ## 4.5 Normalisasi Venue
 
-Spesifikasi meminta nama conference atau venue dinormalisasi. Elemen `booktitle` adalah kandidat yang jelas, tetapi nilainya ditulis berbeda antartahun dan antartrack. Segmen kedua `key` (`conf/kdd/ChenG16` menjadi `kdd`) menyatakan seri konferensi yang sama sepanjang waktu, sehingga dipilih sebagai venue. Perbandingan keduanya ditunjukkan di bawah.
+Nama venue dinormalisasi dengan mengambil segmen kedua `key` (`conf/kdd/ChenG16` menjadi `kdd`), yang menyatakan seri konferensi yang sama sepanjang waktu. `booktitle` tidak dipakai karena penulisannya berbeda antartahun dan antartrack. Perbandingan keduanya ditunjukkan berikut.
 """))
 
 cells.append(code(r"""
@@ -646,7 +638,7 @@ venue_norm.round(1)
 """))
 
 cells.append(md(r"""
-Perbedaan itu divisualisasikan sebagai stacked column per tahun, yaitu varian chart komposisi dalam panduan Datawrapper yang cocok untuk melihat pergeseran nama dari waktu ke waktu. Tiga venue dipilih karena masing-masing mewakili satu jenis masalah: pergantian nama (`nips`), workshop di bawah konferensi induk (`cvpr`), dan track tambahan (`chi`).
+Perbedaan itu divisualisasikan sebagai stacked column per tahun. Tiga venue dipilih karena masing-masing mewakili satu masalah, yaitu pergantian nama (`nips`), workshop di bawah konferensi induk (`cvpr`), dan track tambahan (`chi`).
 """))
 
 cells.append(code(r"""
@@ -683,7 +675,7 @@ save_fig(fig, "t1_normalisasi_venue.png")
 """))
 
 cells.append(md(r"""
-Nama tampilan setiap venue untuk grafik dan tabel berikutnya diambil dari `booktitle` yang paling sering dipakai venue tersebut, setelah menghapus keterangan dalam kurung dan akhiran seperti `Workshops`. Jika beberapa venue mendapat nama yang sama, venue terbesar memakai nama polos dan venue lainnya diberi kunci venue dalam kurung siku agar tetap dapat dibedakan.
+Nama tampilan setiap venue untuk grafik dan tabel berikutnya diambil dari `booktitle` yang paling sering dipakai venue itu, setelah menghapus keterangan dalam kurung dan akhiran seperti `Workshops`. Jika beberapa venue mendapat nama sama, venue terbesar memakai nama polos dan lainnya diberi kunci venue dalam kurung siku.
 """))
 
 cells.append(code(r"""
@@ -708,17 +700,16 @@ pd.DataFrame({"venue": ["nips", "hci", "acl", "amcc", "vtc"],
 cells.append(md(r"""
 #### Insights
 
-> `booktitle` memiliki 8.784 nama berbeda, sedangkan `key` hanya menghasilkan 4.373 venue. Sebanyak 1.270 venue (29%) memiliki lebih dari satu variasi `booktitle`, dan 377.262 paper (18,9%) memakai `booktitle` yang bukan nama utama venue-nya. Memakai `booktitle` akan memecah satu konferensi menjadi beberapa venue.
-
-> Contoh paling jelas adalah NeurIPS: `booktitle` tercatat `NIPS` pada 2015-2017 dan `NeurIPS` sejak 2018, padahal `key` tetap `nips`. Pada CVPR dan CHI, `booktitle` juga memisahkan acara utama dari workshop dan extended abstracts.
-
-> Pemakaian `key` memiliki konsekuensi: workshop dan track tambahan ikut terhitung sebagai konferensi induknya. Pada CVPR, workshop menyumbang sekitar 23% paper, dan pada CHI sekitar 44%. Hal ini dicatat sebagai asumsi dan keterbatasan, terutama untuk peringkat popularitas pada Task 2.
+> 1. `booktitle` memiliki 8.784 nama berbeda, sedangkan `key` hanya menghasilkan 4.373 venue. Memakai `booktitle` akan memecah satu konferensi menjadi beberapa venue.
+> 2. Sebanyak 1.270 venue (29%) memiliki lebih dari satu variasi `booktitle`, dan 377.262 paper (18,9%) memakai `booktitle` yang bukan nama utama venue-nya.
+> 3. Contoh paling jelas adalah NeurIPS: `booktitle` tercatat `NIPS` pada 2015-2017 dan `NeurIPS` sejak 2018, padahal `key` tetap `nips`. Pada CVPR dan CHI, `booktitle` memisahkan acara utama dari workshop dan extended abstracts.
+> 4. Keterbatasan: dengan `key`, workshop dan track tambahan ikut terhitung sebagai konferensi induknya (sekitar 23% paper CVPR dan 44% paper CHI). Hal ini memengaruhi peringkat popularitas pada analisis berikutnya.
 """))
 
 cells.append(md(r"""
 ## 4.6 Duplikat
 
-Duplikat dicari dalam dua lapis. Lapis pertama adalah `key` ganda, yang seharusnya tidak ada karena `key` dijamin unik. Lapis kedua adalah paper dengan judul, tahun, dan venue yang sama tetapi `key` berbeda. Judul dinormalisasi lebih dahulu (huruf kecil, spasi dirapikan, titik akhir dibuang) agar perbedaan penulisan kecil tidak menyembunyikan duplikat.
+Duplikat dicari dalam dua lapis, yaitu `key` ganda (seharusnya tidak ada) dan paper dengan judul, tahun, dan venue sama tetapi `key` berbeda. Judul dinormalisasi lebih dahulu (huruf kecil, spasi dirapikan, titik akhir dibuang) agar perbedaan penulisan kecil tidak menyembunyikan duplikat.
 """))
 
 cells.append(code(r"""
@@ -744,7 +735,7 @@ dup_summary.round(1)
 """))
 
 cells.append(md(r"""
-Grup dengan daftar author berbeda diperiksa secara khusus, karena di situlah aturan ini berpotensi menghapus paper yang sebenarnya berbeda. Contoh dan judul yang paling sering muncul ditampilkan berikut.
+Grup dengan daftar author berbeda diperiksa khusus karena berpotensi menghapus paper yang sebenarnya berbeda. Contoh dan judul yang paling sering muncul ditampilkan berikut.
 """))
 
 cells.append(code(r"""
@@ -771,17 +762,16 @@ print(f"Baris dibuang: {attrition[-1]['dibuang']:,} | sisa: {len(df):,}")
 cells.append(md(r"""
 #### Insights
 
-> Tidak ada `key` ganda, tetapi ada 1.373 grup paper dengan judul, tahun, dan venue yang sama sehingga 1.542 baris dibuang (0,08% data). Seluruh anggota grup memiliki `key` berbeda, biasanya dengan akhiran huruf seperti `...23` dan `...23a`.
-
-> Sebanyak 80% grup memiliki daftar author yang identik, jadi hampir pasti duplikat. Sekitar 20% grup memiliki daftar author berbeda. Contohnya adalah paper yang sama dengan urutan author berbeda, ejaan nama berbeda (`Joaquin` dan `Joaquín`), atau subset author. Sebagian lain adalah judul generik seperti "Preface", "Vorwort", dan "Session introduction" yang memang dokumen berbeda tetapi bukan paper penelitian.
-
-> Aturan dipertahankan karena dampaknya sangat kecil dan hasil keduanya hampir sama: jika daftar author ikut menjadi kunci, yang dibuang 1.127 baris, sehingga hanya sekitar 415 baris yang berbeda. Risikonya (menghapus paper yang berbeda) dicatat sebagai keterbatasan.
+> 1. Tidak ada `key` ganda, tetapi ada 1.373 grup paper dengan judul, tahun, dan venue sama sehingga 1.542 baris dibuang (0,08% data). Anggota grup memiliki `key` berbeda, biasanya dengan akhiran huruf seperti `...23` dan `...23a`.
+> 2. Sebanyak 80% grup memiliki daftar author identik sehingga hampir pasti duplikat. Sekitar 20% grup berbeda daftar author, misalnya urutan author berbeda, ejaan nama berbeda (`Joaquin` dan `Joaquín`), atau subset author.
+> 3. Sebagian grup berbeda adalah judul generik seperti "Preface", "Vorwort", dan "Session introduction", yaitu dokumen berbeda yang bukan paper penelitian.
+> 4. Aturan dipertahankan karena dampaknya kecil. Jika daftar author ikut menjadi kunci, yang dibuang 1.127 baris, sehingga hanya sekitar 415 baris yang berbeda. Risiko menghapus paper yang berbeda dicatat sebagai keterbatasan.
 """))
 
 cells.append(md(r"""
 ## 4.7 Normalisasi Author
 
-Nama author dinormalisasi dengan NFKC (menyeragamkan karakter yang setara secara Unicode) dan perapian spasi, lalu setiap paper dipecah menjadi satu baris per author. Sufiks angka seperti `Tianqi Chen 0001` sengaja dipertahankan karena sufiks itu adalah penanda dari DBLP bahwa dua orang berbeda memiliki nama yang sama. Menghapusnya justru akan menggabungkan orang yang berbeda. Efek normalisasi diukur, bukan diasumsikan.
+Nama author dinormalisasi dengan NFKC (menyeragamkan karakter yang setara secara Unicode) dan perapian spasi, lalu setiap paper dipecah menjadi satu baris per author. Sufiks angka seperti `Tianqi Chen 0001` dipertahankan karena itu penanda DBLP bahwa dua orang berbeda bernama sama. Efek normalisasi diukur, bukan diasumsikan.
 """))
 
 cells.append(code(r"""
@@ -805,7 +795,7 @@ author_norm
 """))
 
 cells.append(md(r"""
-Karena NFKC dan spasi ternyata tidak mengubah satu nama pun, diperiksa pula seberapa banyak nama yang berbeda hanya pada huruf besar-kecil atau tanda diakritik (misalnya `A. Gómez` dan `A. Gomez`). Pemeriksaan ini hanya mengukur, tidak menggabungkan, karena nama yang tampak serupa belum tentu orang yang sama.
+Karena NFKC dan spasi tidak mengubah satu nama pun, diperiksa pula nama yang berbeda hanya pada huruf besar-kecil atau diakritik (misalnya `A. Gómez` dan `A. Gomez`). Pemeriksaan ini hanya mengukur dan tidak menggabungkan, karena nama serupa belum tentu orang yang sama.
 """))
 
 cells.append(code(r"""
@@ -845,19 +835,16 @@ print(venues_per_author.head(5).to_string())
 cells.append(md(r"""
 #### Insights
 
-> Normalisasi Unicode dan spasi tidak mengubah satu pun dari 7,87 juta kemunculan nama author (1,82 juta nama unik), sehingga DBLP sudah menyajikan nama dalam bentuk yang bersih. Tahap ini tetap dijalankan sebagai pengaman, dan hasil nolnya adalah temuan yang perlu dilaporkan apa adanya.
-
-> Sebanyak 97 pasangan paper-author ganda dalam satu paper dibuang, dan 90.593 nama membawa sufiks disambiguasi DBLP yang dipertahankan. Hasil akhirnya adalah 7.870.902 pasangan paper-author.
-
-> Ada 7.573 kelompok nama (0,4% dari nama unik) yang hanya berbeda huruf besar-kecil atau diakritik, misalnya `A. Gómez` dan `A. Gomez`. Nama-nama ini tidak digabung karena sebagian besar berupa inisial yang sudah ambigu, dan penggabungan berisiko menyatukan orang yang berbeda. Dampaknya kecil dan dicatat sebagai keterbatasan.
-
-> Masalah sebaliknya lebih berpengaruh: nama umum tanpa sufiks dapat mewakili banyak orang sekaligus. `Yang Liu` tercatat pada 332 venue dan `Wei Wang` pada 280 venue, sehingga transaksi untuk nama-nama ini bukan riwayat satu orang. Hal ini menjadi keterbatasan utama pada analisis berbasis author.
+> 1. Normalisasi Unicode dan spasi tidak mengubah satu pun dari 7,87 juta kemunculan nama author (1,82 juta nama unik). DBLP sudah menyajikan nama dalam bentuk bersih, dan tahap ini tetap dijalankan sebagai pengaman dengan hasil nol yang dilaporkan apa adanya.
+> 2. Sebanyak 97 pasangan paper-author ganda dalam satu paper dibuang, dan 90.593 nama membawa sufiks disambiguasi DBLP yang dipertahankan. Hasil akhirnya 7.870.902 pasangan paper-author.
+> 3. Ada 7.573 kelompok nama (0,4% dari nama unik) yang hanya berbeda huruf besar-kecil atau diakritik. Nama ini tidak digabung karena sebagian besar berupa inisial yang sudah ambigu, dan dampaknya kecil.
+> 4. Keterbatasan utama: nama umum tanpa sufiks dapat mewakili banyak orang. `Yang Liu` tercatat pada 332 venue dan `Wei Wang` pada 280 venue, sehingga transaksi untuk nama ini bukan riwayat satu orang.
 """))
 
 cells.append(md(r"""
 ## 4.8 Hasil Preprocessing dan Penyimpanan
 
-Ringkasan jumlah paper setelah setiap tahap disusun dalam satu tabel, lalu divisualisasikan sebagai lollipop chart untuk membandingkan besar pengurangan antartahap. Tabel dan grafik ini menjawab Task 1.3, yaitu seberapa besar dampak setiap tahap.
+Jumlah paper setelah setiap tahap disusun dalam satu tabel dan divisualisasikan sebagai lollipop chart untuk membandingkan besar pengurangan antartahap.
 """))
 
 cells.append(code(r"""
@@ -893,7 +880,7 @@ save_fig(fig, "t1_dampak_preprocessing.png")
 """))
 
 cells.append(md(r"""
-Alur seleksi dari seluruh dump sampai dataset bersih digambarkan sebagai sankey diagram, jenis chart yang dalam panduan Datawrapper dipakai untuk menunjukkan aliran dalam sebuah sistem. Ketebalan pita sebanding dengan jumlah record. Aliran yang sangat kecil digambar dengan ketebalan minimum agar tetap terlihat.
+Alur seleksi dari seluruh dump sampai dataset bersih digambarkan sebagai sankey diagram. Ketebalan pita sebanding dengan jumlah record, dan aliran yang sangat kecil digambar dengan ketebalan minimum agar tetap terlihat.
 """))
 
 cells.append(code(r"""
@@ -981,7 +968,7 @@ save_fig(fig, "t1_alur_seleksi.png")
 """))
 
 cells.append(md(r"""
-Hasil preprocessing disimpan ke disk dalam dua tabel. Tabel paper (`inproceedings_clean`) dipakai untuk menghitung hal per paper, dan tabel pasangan paper-author (`paper_author`) dipakai untuk menghitung hal per author serta membentuk transaksi. Tabel besar di memori dilepas setelah disimpan, dan bagian berikutnya membaca ulang hanya kolom yang dibutuhkan.
+Hasil preprocessing disimpan dalam dua tabel. `inproceedings_clean` dipakai untuk perhitungan per paper, dan `paper_author` dipakai untuk perhitungan per author serta pembentukan transaksi. Tabel besar di memori dilepas setelah disimpan, dan bagian berikutnya membaca ulang hanya kolom yang dibutuhkan.
 """))
 
 cells.append(code(r"""
@@ -997,26 +984,24 @@ del raw, df, pairs, paper_author
 cells.append(md(r"""
 #### Insights
 
-> Preprocessing hanya membuang 6.958 dari 2.004.202 paper, sehingga retensi data 99,65%. Rinciannya: 3.161 paper bukan berawalan `conf/` (45%), 2.255 tanpa author (32%), dan 1.542 duplikat (22%). Tahap konsistensi tahun tidak membuang apa pun.
-
-> Sankey diagram menunjukkan bahwa penyempitan terbesar justru terjadi sebelum preprocessing, yaitu saat memilih `inproceedings` (30,5% dari seluruh dump) dan periode 2015-2025 (separuhnya). Preprocessing sendiri hanya membersihkan sisa kecil, sehingga hasil analisis hampir sepenuhnya ditentukan oleh aturan seleksi pada tahap ekstraksi.
-
-> Hasil akhirnya adalah 1.997.244 paper dan 7.870.902 pasangan paper-author. Kedua tabel disimpan dan menjadi masukan bagi seluruh task berikutnya.
+> 1. Preprocessing membuang 6.958 dari 2.004.202 paper, sehingga retensi 99,65%. Rinciannya: 3.161 bukan berawalan `conf/` (45%), 2.255 tanpa author (32%), dan 1.542 duplikat (22%). Tahap konsistensi tahun tidak membuang apa pun.
+> 2. Penyempitan terbesar terjadi sebelum preprocessing, yaitu saat memilih `inproceedings` (30,5% dari seluruh dump) dan periode 2015-2025 (separuhnya). Hasil analisis karenanya hampir sepenuhnya ditentukan aturan seleksi pada ekstraksi.
+> 3. Hasil akhirnya 1.997.244 paper dan 7.870.902 pasangan paper-author. Keduanya disimpan dan menjadi masukan bagian berikutnya.
 """))
 
 # ---------------------------------------------------------------------------
-# 5. Statistik Dataset Bersih (Task 1.4)
+# 5. Statistik Dataset Bersih
 # ---------------------------------------------------------------------------
-cells.append(section("Statistik Dataset Bersih (Task 1.4)", "5"))
+cells.append(section("Statistik Dataset Bersih", "5"))
 
 cells.append(md(r"""
-Bagian ini menjawab Task 1.4. Seluruh angka dihitung dari parquet hasil preprocessing, dan hanya kolom yang dibutuhkan yang dimuat ke memori. Bagian ini juga dapat dijalankan ulang tanpa mengulang preprocessing.
+Seluruh angka dihitung dari parquet hasil preprocessing, dan hanya kolom yang dibutuhkan dimuat ke memori. Bagian ini dapat dijalankan ulang tanpa mengulang preprocessing.
 """))
 
 cells.append(md(r"""
 ## 5.1 Ringkasan Statistik
 
-Tiga statistik utama Task 1.4 (total publikasi, author unik, dan venue unik) dihitung bersama beberapa ukuran pendukung yang menjelaskan bentuk datanya, yaitu jumlah author per paper dan jumlah paper per author.
+Total publikasi, author unik, dan venue unik dihitung bersama ukuran pendukung yang menjelaskan bentuk data, yaitu jumlah author per paper dan jumlah paper per author.
 """))
 
 cells.append(code(r"""
@@ -1051,17 +1036,16 @@ summary.round(2)
 cells.append(md(r"""
 #### Insights
 
-> Dataset bersih memuat 1.997.244 publikasi dari 1.821.757 author unik dan 4.373 venue unik, dengan 7.870.902 pasangan paper-author. Ketiga angka pertama adalah jawaban langsung Task 1.4.
-
-> Paper umumnya ditulis berkelompok (median 4 author per paper, rata-rata 3,94), sedangkan author umumnya hanya muncul sekali: median paper per author adalah 1 dan 51,4% author hanya memiliki satu paper. Rata-rata paper per author (4,32) jauh di atas median karena sebagian kecil author sangat produktif.
-
-> Karena satu paper menyumbang banyak author, jumlah pasangan paper-author (7,87 juta) hampir empat kali jumlah paper. Menghitung publikasi dari tabel pasangan akan melipatgandakan setiap paper, sehingga publikasi dihitung dari tabel paper dan author dihitung dari tabel pasangan.
+> 1. Dataset bersih memuat 1.997.244 publikasi dari 1.821.757 author unik dan 4.373 venue unik, dengan 7.870.902 pasangan paper-author.
+> 2. Paper umumnya ditulis berkelompok (median 4 author per paper, rata-rata 3,94), sedangkan author umumnya muncul sekali: median paper per author 1 dan 51,4% author hanya memiliki satu paper.
+> 3. Rata-rata paper per author (4,32) jauh di atas median karena sebagian kecil author sangat produktif.
+> 4. Pasangan paper-author (7,87 juta) hampir empat kali jumlah paper. Karena itu publikasi dihitung dari tabel paper dan author dari tabel pasangan, agar paper tidak terhitung berkali-kali.
 """))
 
 cells.append(md(r"""
 ## 5.2 Distribusi Publikasi per Tahun
 
-Perkembangan jumlah publikasi per tahun ditampilkan sebagai column chart, jenis chart yang dalam panduan Datawrapper paling jelas untuk membaca nilai tiap periode. Tambahan analitiknya adalah garis tren linear yang dihitung hanya dari tahun lengkap (2015-2024), dan label nilai hanya diberikan pada 2015, 2020, dan 2024 agar grafik tetap bersih. Tahun 2025 digambar dengan arsiran karena indeks DBLP untuk tahun tersebut belum lengkap.
+Jumlah publikasi per tahun ditampilkan sebagai column chart dengan garis tren linear yang dihitung hanya dari tahun lengkap (2015-2024). Tahun 2025 diarsir karena indeks DBLP untuk tahun itu belum lengkap.
 """))
 
 cells.append(code(r"""
@@ -1086,7 +1070,7 @@ year_table.round(1)
 """))
 
 cells.append(md(r"""
-Penurunan 2025 diperiksa lebih jauh pada tingkat konferensi. Konferensi yang aktif pada 2024 tetapi tidak memiliki satu pun paper pada 2025 dihitung, karena sebabnya bisa berbeda: konferensi tahunan yang prosidingnya belum terindeks, atau konferensi dua tahunan yang memang tidak diadakan pada 2025. Pola tahun demi tahun konferensi terbesar di kelompok ini diperlihatkan untuk membedakan keduanya.
+Penurunan 2025 diperiksa pada tingkat konferensi dengan menghitung konferensi yang aktif pada 2024 tetapi tidak memiliki paper pada 2025. Sebabnya bisa berbeda, yaitu prosiding konferensi tahunan yang belum terindeks atau konferensi dua tahunan yang memang tidak diadakan. Pola tahun demi tahun konferensi terbesar di kelompok ini diperlihatkan untuk membedakan keduanya.
 """))
 
 cells.append(code(r"""
@@ -1136,17 +1120,16 @@ save_fig(fig, "t1_publikasi_per_tahun.png")
 cells.append(md(r"""
 #### Insights
 
-> Jumlah publikasi naik dari 160.800 pada 2015 menjadi 213.328 pada 2024 (+32,7%), setara CAGR 3,2% per tahun atau sekitar 4.800 paper tambahan setiap tahun. Pertumbuhan ini tidak mulus: 2020 turun 8,8%, dan jumlahnya tetap di bawah garis tren sampai 2022 (-5,7%, -4,7%, dan -7,1%), lalu melonjak 13,1% pada 2023 hingga kembali di atas tren. Penurunan 2020 kemungkinan terkait pandemi, tetapi data ini tidak memuat penyebabnya sehingga hubungan itu hanya dugaan.
-
-> Penurunan 2025 (-6,5%) tidak dapat dibaca sebagai turunnya aktivitas. Ada 789 konferensi yang aktif pada 2024 tetapi kosong pada 2025, dan konferensi itu menyumbang 49.328 paper atau 23,1% dari total 2024. Penyebabnya ada dua. Konferensi dua tahunan genap seperti ECCV dan ICPR hanya memiliki data pada 2020, 2022, dan 2024, sedangkan konferensi tahunan seperti IGARSS, EMBC, dan ICCCNT memiliki data setiap tahun sampai 2024 lalu kosong pada 2025, yang menandakan prosidingnya belum terindeks.
-
-> Jika konferensi yang kosong itu dikeluarkan, jumlah paper 2025 justru 21,7% di atas 2024. Angka ini bukan ukuran pertumbuhan yang adil, karena 322 konferensi yang hanya aktif pada 2025 (umumnya konferensi dua tahunan ganjil, 17.785 paper) tetap ikut terhitung. Karena itu 2025 digambar dengan arsiran dan tidak dipakai untuk menghitung tren.
+> 1. Publikasi naik dari 160.800 pada 2015 menjadi 213.328 pada 2024 (+32,7%). Itu setara CAGR 3,2% per tahun atau sekitar 4.800 paper tambahan setiap tahun.
+> 2. Pertumbuhan tidak mulus. 2020 turun 8,8% dan jumlahnya tetap di bawah garis tren sampai 2022 (-5,7%, -4,7%, dan -7,1%), lalu melonjak 13,1% pada 2023 hingga kembali di atas tren. Penurunan 2020 mungkin terkait pandemi, tetapi data tidak memuat penyebabnya sehingga hubungan itu hanya dugaan.
+> 3. Penurunan 2025 (-6,5%) bukan turunnya aktivitas. Ada 789 konferensi aktif pada 2024 tetapi kosong pada 2025, dan konferensi itu menyumbang 49.328 paper (23,1% dari total 2024). Konferensi dua tahunan genap seperti ECCV dan ICPR hanya memiliki data pada 2020, 2022, dan 2024, sedangkan IGARSS, EMBC, dan ICCCNT memiliki data setiap tahun sampai 2024 lalu kosong pada 2025, tanda prosidingnya belum terindeks.
+> 4. Tanpa konferensi yang kosong, paper 2025 21,7% di atas 2024. Angka ini bukan ukuran pertumbuhan yang adil karena 322 konferensi yang hanya aktif pada 2025 (umumnya dua tahunan ganjil, 17.785 paper) ikut terhitung. Karena itu 2025 diarsir dan tidak dipakai untuk menghitung tren.
 """))
 
 cells.append(md(r"""
 ## 5.3 Distribusi Publikasi per Konferensi
 
-Distribusi per konferensi dibaca dari tiga sisi. Bar chart memperlihatkan 10 konferensi terbesar, kurva kumulatif memperlihatkan seberapa terkonsentrasi publikasi pada sedikit konferensi, dan histogram berskala logaritmik memperlihatkan bentuk seluruh distribusi ukuran konferensi. Nama lengkap konferensi dicantumkan pada tabel dari judul prosiding terbaru di dump.
+Distribusi per konferensi dibaca dari tiga sisi: bar chart 10 konferensi terbesar, kurva kumulatif untuk konsentrasi publikasi, dan histogram berskala logaritmik untuk bentuk distribusi ukuran konferensi. Nama lengkap konferensi dicantumkan pada tabel dari judul prosiding terbaru di dump.
 """))
 
 cells.append(code(r"""
@@ -1227,17 +1210,16 @@ save_fig(fig, "t1_distribusi_ukuran_venue.png")
 cells.append(md(r"""
 #### Insights
 
-> Publikasi sangat terkonsentrasi pada sedikit konferensi. Sepuluh konferensi teratas menghasilkan 9,4% seluruh paper dan 20 teratas 15,6%. Sebanyak 231 dari 4.373 venue (5,3%) sudah menghasilkan separuh publikasi, dan 1.011 venue (23,1%) menghasilkan 80%.
-
-> Sisi sebaliknya adalah ekor panjang yang tebal. Median venue hanya 134 paper, jauh di bawah rata-rata 457 yang ditarik oleh venue raksasa (maksimum 25.455 paper), dan 1.358 venue (31%) memiliki kurang dari 50 paper dalam sebelas tahun.
-
-> Di antara 20 konferensi terbesar, NeurIPS (25.455), CVPR (22.751), ICASSP (21.606), HCI (HCI International, 19.912), IGARSS (19.685), dan AAAI (19.274) membentuk kelompok atas di atas 19.000 paper. Peringkat 7 sampai 10 berada rapat pada 14.300 sampai 14.800 paper, sehingga selisih antarperingkat di sana sangat kecil.
+> 1. Publikasi sangat terkonsentrasi. Sepuluh konferensi teratas menghasilkan 9,4% seluruh paper dan 20 teratas 15,6%. Sebanyak 231 dari 4.373 venue (5,3%) menghasilkan separuh publikasi, dan 1.011 venue (23,1%) menghasilkan 80%.
+> 2. Ekor panjangnya tebal. Median venue hanya 134 paper, jauh di bawah rata-rata 457 yang ditarik venue raksasa (maksimum 25.455 paper), dan 1.358 venue (31%) memiliki kurang dari 50 paper dalam sebelas tahun.
+> 3. NeurIPS (25.455), CVPR (22.751), ICASSP (21.606), HCI (HCI International, 19.912), IGARSS (19.685), dan AAAI (19.274) membentuk kelompok atas di atas 19.000 paper.
+> 4. Peringkat 7 sampai 10 berada rapat pada 14.300 sampai 14.800 paper, sehingga selisih antarperingkat di sana sangat kecil.
 """))
 
 cells.append(md(r"""
 ## 5.4 Distribusi Author
 
-Produktivitas author menentukan seberapa padat transaksi yang akan dibentuk pada task berikutnya. Karena perbandingannya berupa porsi dari keseluruhan, dipakai stacked bar 100% yang dalam panduan Datawrapper mudah dibandingkan antarkategori. Dua batang disandingkan dengan warna yang sama: porsi jumlah author dan porsi pasangan paper-author yang mereka tulis, dibagi menjadi tiga kelompok produktivitas.
+Produktivitas author menentukan seberapa padat transaksi yang dibentuk pada analisis berikutnya. Dua stacked bar 100% disandingkan dengan warna sama, yaitu porsi jumlah author dan porsi pasangan paper-author yang mereka tulis, dibagi menjadi tiga kelompok produktivitas.
 """))
 
 cells.append(code(r"""
@@ -1281,27 +1263,28 @@ save_fig(fig, "t1_produktivitas_author.png")
 cells.append(md(r"""
 #### Insights
 
-> Produktivitas author sangat timpang. Sebanyak 51,4% author hanya menulis satu paper, tetapi mereka hanya menyumbang 11,9% pasangan paper-author. Sebaliknya, 8,3% author yang menulis 11 paper atau lebih (150.894 orang) menyumbang 52,6% pasangan.
-
-> Konsekuensinya bagi mining, pola konferensi yang muncul bersama kelak diperkirakan lebih banyak dibentuk oleh kelompok kecil author yang menerbitkan di banyak konferensi, bukan oleh mayoritas author yang hanya sekali menerbitkan. Author paling produktif adalah `Yang Liu` (725 paper), yaitu nama umum yang kemungkinan menggabungkan banyak orang berbeda (lihat bagian 4.7).
+> 1. Produktivitas author sangat timpang. Sebanyak 51,4% author hanya menulis satu paper dan menyumbang 11,9% pasangan paper-author.
+> 2. Sebanyak 8,3% author yang menulis 11 paper atau lebih (150.894 orang) menyumbang 52,6% pasangan.
+> 3. Pola konferensi yang muncul bersama kelak diperkirakan lebih banyak dibentuk oleh kelompok kecil author yang menerbitkan di banyak konferensi, bukan oleh mayoritas yang hanya sekali menerbitkan.
+> 4. Author paling produktif adalah `Yang Liu` (725 paper), nama umum yang kemungkinan menggabungkan banyak orang berbeda (lihat bagian 4.7).
 """))
 
 # ---------------------------------------------------------------------------
-# 6. Analisis Popularitas Konferensi (Task 2)
+# 6. Analisis Popularitas Konferensi
 # ---------------------------------------------------------------------------
-cells.append(part("PART II | TASK 2: Conference Popularity Analysis",
+cells.append(part("PART II | Conference Popularity Analysis",
                   "Mengidentifikasi konferensi dengan aktivitas publikasi tertinggi dan menganalisis tren serta perbandingan peringkatnya.", "part2"))
 
-cells.append(section("Analisis Popularitas Konferensi (Task 2)", "6"))
+cells.append(section("Analisis Popularitas Konferensi", "6"))
 
 cells.append(md(r"""
-Popularitas konferensi pada tugas ini diukur dari aktivitas publikasi, dengan dua ukuran yang saling melengkapi. Jumlah publikasi menunjukkan seberapa banyak karya yang diterbitkan, sedangkan jumlah author unik menunjukkan seberapa luas komunitas yang terlibat. Seluruh perhitungan memakai data hasil preprocessing, dengan venue yang diidentifikasi dari `key` DBLP.
+Popularitas konferensi diukur dari aktivitas publikasi dengan dua ukuran yang saling melengkapi. Jumlah publikasi menunjukkan banyaknya karya yang diterbitkan, sedangkan jumlah author unik menunjukkan luasnya komunitas yang terlibat. Seluruh perhitungan memakai data hasil preprocessing, dengan venue yang diidentifikasi dari `key` DBLP.
 """))
 
 cells.append(md(r"""
-## 6.1 Sepuluh Konferensi dengan Publikasi Terbanyak (Task 2.1)
+## 6.1 Sepuluh Konferensi dengan Publikasi Terbanyak
 
-Peringkat disusun dari jumlah paper per konferensi. Hasilnya ditampilkan sebagai bar chart horizontal, bentuk yang dalam panduan Datawrapper paling tepat untuk membandingkan angka absolut. Warna gelap menandai konferensi yang juga masuk 10 besar menurut jumlah author unik, dan angka di ujung batang adalah nilainya; perbandingan peringkat lengkap ada pada Task 2.4.
+Peringkat disusun dari jumlah paper per konferensi dan ditampilkan sebagai bar chart horizontal dengan nilai di ujung batang. Warna gelap menandai konferensi yang juga masuk 10 besar menurut jumlah author unik. Perbandingan kedua peringkat dibahas pada subbagian 6.4.
 """))
 
 cells.append(code(r"""
@@ -1352,17 +1335,16 @@ save_fig(fig, "t2_top10_publikasi.png")
 cells.append(md(r"""
 #### Insights
 
-> Konferensi dengan publikasi terbanyak adalah NeurIPS (25.455 paper, 1,27% dari seluruh dataset), disusul CVPR (22.751), ICASSP (21.606), HCI (19.912), IGARSS (19.685), dan AAAI (19.274). Sepuluh konferensi teratas menghasilkan 9,4% seluruh publikasi.
-
-> Daftar ini bercampur lintas bidang: kecerdasan buatan dan pemrosesan bahasa (NeurIPS, CVPR, AAAI, EMNLP), pemrosesan sinyal dan penginderaan jauh (ICASSP, IGARSS), interaksi manusia dan komputer (HCI, CHI), serta teknik biomedis dan komunikasi (EMBC, ICC). Tidak ada satu bidang yang mendominasi, tetapi bidang kecerdasan buatan menempati empat dari sepuluh tempat.
-
-> Batas 10 besar sangat tipis: ICC di peringkat 10 (14.329 paper) hanya unggul 86 paper dari GLOBECOM di peringkat 11 (14.243). Daftar ini juga bergantung pada keputusan menggabungkan workshop ke konferensi induknya, yang diuji pada subbagian 6.5.
+> 1. NeurIPS menerbitkan paling banyak paper (25.455, atau 1,27% dari seluruh dataset), disusul CVPR (22.751), ICASSP (21.606), HCI (19.912), IGARSS (19.685), dan AAAI (19.274).
+> 2. Sepuluh konferensi teratas menghasilkan 9,4% seluruh publikasi. Daftarnya lintas bidang, dan kecerdasan buatan hanya menempati empat dari sepuluh tempat (NeurIPS, CVPR, AAAI, EMNLP).
+> 3. Batas 10 besar sangat tipis. ICC di peringkat 10 (14.329 paper) hanya unggul 86 paper dari GLOBECOM di peringkat 11 (14.243).
+> 4. Daftar ini bergantung pada keputusan menggabungkan workshop ke konferensi induknya, yang diuji pada subbagian 6.5.
 """))
 
 cells.append(md(r"""
-## 6.2 Sepuluh Konferensi dengan Author Unik Terbanyak (Task 2.2)
+## 6.2 Sepuluh Konferensi dengan Author Unik Terbanyak
 
-Ukuran kedua menghitung berapa orang berbeda yang pernah menerbitkan paper di sebuah konferensi. Satu orang dihitung sekali per konferensi, berapa pun jumlah papernya, sehingga ukuran ini lebih mencerminkan luas komunitas daripada volume karya. Bentuk chart dan kode warna sama dengan subbagian sebelumnya agar kedua peringkat dapat dibandingkan langsung.
+Ukuran kedua menghitung berapa orang berbeda yang pernah menerbitkan paper di sebuah konferensi. Satu author dihitung sekali per konferensi, sehingga ukuran ini mencerminkan luas komunitas, bukan volume karya. Bentuk chart dan kode warna sama dengan subbagian sebelumnya.
 """))
 
 cells.append(code(r"""
@@ -1378,15 +1360,16 @@ save_fig(fig, "t2_top10_author.png")
 cells.append(md(r"""
 #### Insights
 
-> Konferensi dengan author unik terbanyak juga NeurIPS (57.800 author), diikuti CVPR (47.664), AAAI (46.437), ICASSP (42.057), dan EMBC (39.318). Pada seluruh konferensi di daftar ini, jumlah author unik lebih besar daripada jumlah paper, karena satu paper ditulis oleh beberapa orang.
-
-> Ukuran paper per author menunjukkan seberapa sering author yang sama kembali. IGARSS (2,64) dan CVPR (2,50) tertinggi pada daftar ini, artinya rata-rata author menerbitkan 2 sampai 3 paper di sana. AAAI, HCI, IROS, dan EMBC terendah (sekitar 1,83), artinya komunitasnya lebih luas dan lebih banyak author yang hanya muncul satu kali.
+> 1. NeurIPS juga terbanyak pada author unik (57.800), diikuti CVPR (47.664), AAAI (46.437), ICASSP (42.057), dan EMBC (39.318).
+> 2. Pada semua konferensi di daftar ini, author unik lebih banyak daripada paper karena satu paper ditulis beberapa orang.
+> 3. IGARSS (2,64) dan CVPR (2,50) memiliki paper per author tertinggi, artinya rata-rata author menerbitkan 2 sampai 3 paper di sana.
+> 4. AAAI, HCI, IROS, dan EMBC terendah (sekitar 1,83), artinya komunitasnya lebih luas dan lebih banyak author yang hanya muncul satu kali.
 """))
 
 cells.append(md(r"""
-## 6.3 Tren Publikasi per Tahun (Task 2.3)
+## 6.3 Tren Publikasi per Tahun
 
-Tren dianalisis untuk 10 konferensi dengan publikasi terbanyak. Karena setiap konferensi berbeda skalanya, dipakai small multiples, yaitu satu panel per konferensi dengan sumbu vertikal yang sama sehingga ukuran dan kemiringannya dapat dibandingkan langsung. Setiap panel memuat garis jumlah paper, garis tren linear 2015-2024, dan titik berongga untuk 2025 yang indeksnya belum lengkap. Judul tiap panel memuat kelipatan 2015 ke 2024 (x), dan laju pertumbuhan (CAGR) ditampilkan pada grafik berikutnya.
+Tren dianalisis untuk 10 konferensi dengan publikasi terbanyak, satu panel per konferensi dengan sumbu vertikal yang sama sehingga ukuran dan kemiringannya dapat dibandingkan langsung. Setiap panel memuat garis jumlah paper, garis tren linear 2015-2024, dan titik berongga untuk 2025 yang indeksnya belum lengkap.
 """))
 
 cells.append(code(r"""
@@ -1446,7 +1429,7 @@ save_fig(fig, "t2_tren_top10.png")
 """))
 
 cells.append(md(r"""
-Laju pertumbuhan 10 konferensi dibandingkan dalam satu chart. Garis putus-putus menandai CAGR seluruh dataset, sehingga terlihat konferensi mana yang tumbuh lebih cepat atau lebih lambat daripada keseluruhan.
+Laju pertumbuhan tahunan (CAGR) 10 konferensi dibandingkan dalam satu chart. Garis putus-putus menandai CAGR seluruh dataset sebagai pembanding.
 """))
 
 cells.append(code(r"""
@@ -1473,7 +1456,7 @@ save_fig(fig, "t2_cagr_top10.png")
 """))
 
 cells.append(md(r"""
-Untuk melihat pola yang sama pada banyak konferensi sekaligus (12 dari 20 konferensi terbesar: 8 dengan indeks 2024 tertinggi dan 4 terendah), dipakai heatmap, yaitu chart yang dalam panduan Datawrapper cocok untuk menampilkan banyak kategori sepanjang waktu. Setiap sel adalah indeks jumlah paper terhadap rata-rata 2015-2017 konferensi itu sendiri (100 berarti sama dengan awal periode). Konferensi yang tidak tercatat pada salah satu tahun 2015-2017 dikeluarkan karena rata-rata awalnya tidak dapat dihitung secara adil, dan penggantinya diambil dari peringkat berikutnya. Biru berarti di atas awal periode, merah di bawahnya, dan kolom 2025 diberi arsiran karena belum lengkap. Angka pada kolom 2024 menyebut indeksnya.
+Pola yang sama dilihat pada lebih banyak konferensi lewat heatmap 12 dari 20 konferensi terbesar (8 dengan indeks 2024 tertinggi dan 4 terendah). Setiap sel adalah indeks jumlah paper terhadap rata-rata 2015-2017 konferensi itu sendiri, dengan 100 berarti sama dengan awal periode. Biru berarti di atas awal periode, merah di bawahnya, dan kolom 2025 diarsir karena belum lengkap. Konferensi yang tidak tercatat pada salah satu tahun 2015-2017 dikeluarkan karena rata-rata awalnya tidak dapat dihitung secara adil, dan penggantinya diambil dari peringkat berikutnya.
 """))
 
 cells.append(code(r"""
@@ -1509,21 +1492,17 @@ save_fig(fig, "t2_heatmap_tren_top20.png")
 cells.append(md(r"""
 #### Insights
 
-> Pertumbuhan terkonsentrasi pada konferensi kecerdasan buatan. NeurIPS tumbuh 10,2 kali (440 menjadi 4.494 paper pada 2024, CAGR 29,5%), EMNLP 7,6 kali (324 menjadi 2.450, CAGR 25,2%), CVPR 4,8 kali (CAGR 19,1%), dan AAAI 3,6 kali (CAGR 15,5%). Keempatnya jauh di atas CAGR seluruh dataset sebesar 3,2%.
-
-> Konferensi dari bidang lain tumbuh lebih lambat atau menyusut. ICASSP tumbuh 2,4 kali (CAGR 10,3%), IGARSS 1,9 kali (7,5%), CHI 1,8 kali (7,0%), dan HCI hampir datar (1,1 kali, 0,6%). Dua konferensi justru menurun, yaitu ICC (0,7 kali, -3,3%) dan EMBC (0,7 kali, -4,0%).
-
-> Akibatnya konsentrasi makin tinggi: porsi 10 konferensi teratas terhadap seluruh publikasi naik dari 7,0% (2015) menjadi 11,7% (2024), dan 12,9% pada 2025. Kenaikan ini sudah terlihat sejak 2017, jadi tidak semata-mata akibat data 2025 yang tidak lengkap.
-
-> Heatmap pada 20 konferensi memperkuat pola tersebut. Konferensi pembelajaran mesin dan NLP (NeurIPS, ICML, EMNLP, ACL) berindeks 524 sampai 788 pada 2024 terhadap rata-rata 2015-2017, sedangkan IECON (85), EMBC (88), ICC (91), dan CDC (95) berada di bawah level awal. ICLR dikeluarkan dari heatmap karena tidak tercatat di DBLP pada 2015 dan 2016; sejak 2017 ICLR tumbuh dari 309 menjadi 2.454 paper pada 2024.
-
-> Pada 2025, NeurIPS (5.823, +29,6%), EMNLP (3.491, +42,5%), dan AAAI (3.508, +21,7%) melanjutkan kenaikan, sedangkan IGARSS dan EMBC bernilai nol karena prosiding 2025 belum terindeks, bukan karena berhenti diselenggarakan.
+> 1. Pertumbuhan terkonsentrasi pada konferensi kecerdasan buatan. NeurIPS tumbuh 10,2 kali (440 menjadi 4.494 paper pada 2024, CAGR 29,5%), EMNLP 7,6 kali (324 menjadi 2.450, CAGR 25,2%), CVPR 4,8 kali (CAGR 19,1%), dan AAAI 3,6 kali (CAGR 15,5%), jauh di atas CAGR seluruh dataset sebesar 3,2%.
+> 2. Konferensi bidang lain tumbuh lebih lambat atau menyusut. ICASSP tumbuh 2,4 kali (CAGR 10,3%), IGARSS 1,9 kali (7,5%), CHI 1,8 kali (7,0%), dan HCI hampir datar (1,1 kali, 0,6%). ICC (0,7 kali, -3,3%) dan EMBC (0,7 kali, -4,0%) menurun.
+> 3. Porsi 10 konferensi teratas terhadap seluruh publikasi naik dari 7,0% (2015) menjadi 11,7% (2024), dan 12,9% pada 2025. Kenaikan sudah terlihat sejak 2017, sehingga tidak semata-mata akibat data 2025 yang tidak lengkap.
+> 4. Heatmap memperkuat pola ini. NeurIPS, ICML, EMNLP, dan ACL berindeks 524 sampai 788 pada 2024, sedangkan IECON (85), EMBC (88), ICC (91), dan CDC (95) di bawah level awal. ICLR dikeluarkan dari heatmap karena tidak tercatat di DBLP pada 2015 dan 2016, dan sejak 2017 tumbuh dari 309 menjadi 2.454 paper pada 2024.
+> 5. Pada 2025, NeurIPS (5.823, +29,6%), EMNLP (3.491, +42,5%), dan AAAI (3.508, +21,7%) melanjutkan kenaikan. IGARSS dan EMBC bernilai nol karena prosiding 2025 belum terindeks, bukan karena berhenti diselenggarakan.
 """))
 
 cells.append(md(r"""
-## 6.4 Perbandingan Peringkat Publikasi dan Author Unik (Task 2.4)
+## 6.4 Perbandingan Peringkat Publikasi dan Author Unik
 
-Perbandingan dilakukan dalam tiga bentuk. Tabel memuat seluruh konferensi yang masuk 10 besar pada salah satu ukuran. Slope chart, jenis chart yang dalam panduan Datawrapper dipakai untuk melihat perubahan antara dua kondisi, menunjukkan bagaimana peringkat bergeser dari ukuran publikasi ke ukuran author unik. Scatter plot, jenis chart untuk hubungan dua ukuran, menunjukkan seluruh konferensi sekaligus: area biru menandai rentang 1 sampai 4 author unik per paper dan konferensi 10 besar diberi warna biru tua.
+Perbandingan dilakukan dalam tiga bentuk. Tabel memuat semua konferensi yang masuk 10 besar pada salah satu ukuran. Slope chart menunjukkan pergeseran peringkat dari ukuran publikasi ke ukuran author unik. Scatter plot menampilkan seluruh konferensi, dengan area biru menandai rentang 1 sampai 4 author unik per paper dan konferensi 10 besar berwarna biru tua.
 """))
 
 cells.append(code(r"""
@@ -1588,19 +1567,18 @@ save_fig(fig, "t2_scatter_publikasi_author.png")
 cells.append(md(r"""
 #### Insights
 
-> Peringkat publikasi dan peringkat author unik sangat selaras. Korelasi peringkat Spearman pada seluruh 4.373 konferensi adalah 0,987, dan 8 dari 10 konferensi teratas sama pada kedua ukuran. NeurIPS dan CVPR menempati posisi 1 dan 2 pada keduanya, dan EMNLP tetap di posisi 8.
-
-> Perbedaan muncul di peringkat tengah. AAAI naik dari peringkat 6 ke 3 dan EMBC dari 9 ke 5 pada peringkat author unik, karena keduanya memiliki author unik per paper yang tinggi (2,41 dan 2,68). Sebaliknya CHI turun dari 7 ke 12 dan ICC dari 10 ke 19, sehingga keduanya keluar dari 10 besar author dan digantikan oleh ICML (dari peringkat 12 ke 9) dan IROS (dari 14 ke 10).
-
-> Pada scatter plot, hampir semua konferensi berada di antara garis 1 dan 4 author unik per paper dan mengelompok di sekitar 2. Perbedaan peringkat karena itu berasal dari variasi rasio tersebut, bukan dari hubungan yang berbeda antara dua ukuran. ICC mengalami penurunan terbesar (9 peringkat), dan sekitar seperlima papernya (22,8%) adalah paper workshop (lihat 6.5).
+> 1. Kedua peringkat sangat selaras. Korelasi peringkat Spearman pada 4.373 konferensi adalah 0,987, dan 8 dari 10 konferensi teratas sama. NeurIPS dan CVPR berada di posisi 1 dan 2 pada keduanya, dan EMNLP tetap di posisi 8.
+> 2. Perbedaan muncul di peringkat tengah. AAAI naik dari peringkat 6 ke 3 dan EMBC dari 9 ke 5 pada author unik, karena author unik per paper keduanya tinggi (2,41 dan 2,68).
+> 3. CHI turun dari 7 ke 12 dan ICC dari 10 ke 19, sehingga keduanya keluar dari 10 besar author dan digantikan ICML (dari 12 ke 9) dan IROS (dari 14 ke 10). ICC mengalami penurunan terbesar (9 peringkat), dan 22,8% papernya adalah paper workshop (lihat 6.5).
+> 4. Pada scatter plot, hampir semua konferensi berada di antara garis 1 dan 4 author unik per paper dan mengelompok di sekitar 2. Perbedaan peringkat berasal dari variasi rasio ini, bukan dari hubungan yang berbeda antara kedua ukuran.
 """))
 
 cells.append(md(r"""
 ## 6.5 Uji Sensitivitas terhadap Keputusan Venue
 
-Venue diidentifikasi dari `key`, sehingga workshop dan acara pendamping ikut terhitung sebagai konferensi induknya. Agar kesimpulan peringkat tidak bergantung pada keputusan itu, peringkat dihitung ulang tanpa acara satelit. Acara satelit dikenali dari kata kunci pada `booktitle` (Workshop, `@`, Extended Abstracts, Companion, Doctoral, Tutorial, Demo, Poster, Student, Competition, dan Challenge). Pengenalan ini bersifat pendekatan.
+Venue diidentifikasi dari `key`, sehingga workshop dan acara pendamping ikut terhitung sebagai konferensi induknya. Agar kesimpulan peringkat tidak bergantung pada keputusan itu, peringkat dihitung ulang tanpa acara satelit. Acara satelit dikenali dari kata kunci pada `booktitle` (Workshop, `@`, Extended Abstracts, Companion, Doctoral, Tutorial, Demo, Poster, Student, Competition, dan Challenge), sehingga hasilnya bersifat pendekatan.
 
-Pendekatan lain, yaitu akhiran huruf pada `crossref` (misalnya `conf/cvpr/2011w`), juga diuji dan dibandingkan di tabel. Pendekatan itu ditinggalkan karena menandai volume Findings pada EMNLP dan ACL sebagai satelit, padahal Findings adalah bagian dari konferensi utama.
+Pendekatan lain, yaitu akhiran huruf pada `crossref` (misalnya `conf/cvpr/2011w`), juga diuji dan dibandingkan di tabel. Pendekatan ini ditinggalkan karena menandai volume Findings pada EMNLP dan ACL sebagai satelit, padahal Findings adalah bagian dari konferensi utama.
 """))
 
 cells.append(code(r"""
@@ -1632,29 +1610,26 @@ sens.sort_values("rank_seluruh_key").head(12)[["nama", "publikasi_seluruh_key", 
 cells.append(md(r"""
 #### Insights
 
-> Peringkat teratas relatif kuat terhadap keputusan menggabungkan workshop. Setelah acara satelit dikeluarkan (144.549 paper atau 7,2% dataset), 8 dari 10 konferensi teratas tetap sama dan NeurIPS tetap nomor satu (25.178 paper). ICASSP naik ke peringkat 2, HCI ke 3, IGARSS ke 4, dan AAAI ke 5.
-
-> Yang berubah adalah konferensi yang banyak memiliki acara pendamping. CVPR turun dari peringkat 2 ke 6 karena 23,4% papernya adalah workshop, ICC dari 10 ke 18 (22,8%), dan CHI dari 7 ke 29 karena 44,0% papernya berasal dari Extended Abstracts. ICML dan IROS masuk 10 besar sebagai gantinya.
-
-> Karena itu pernyataan bahwa CVPR adalah konferensi paling populer kedua bergantung pada definisi. Pernyataan itu benar jika workshop dihitung sebagai bagian konferensi, sesuai pengelompokan DBLP, tetapi tidak benar jika hanya acara utama yang dihitung. Jawaban Task 2 memakai definisi berbasis `key`, dan hasil alternatifnya dilaporkan di sini.
-
-> Pendekatan alternatif berbasis akhiran `crossref` ditolak karena menandai 39,9% paper EMNLP sebagai satelit, padahal kata kunci `booktitle` hanya menemukan 5,0%. Selisihnya adalah volume Findings, yang merupakan bagian dari konferensi utama.
+> 1. Peringkat teratas relatif kuat. Setelah acara satelit dikeluarkan (144.549 paper atau 7,2% dataset), 8 dari 10 konferensi teratas tetap sama dan NeurIPS tetap nomor satu (25.178 paper). ICASSP naik ke peringkat 2, HCI ke 3, IGARSS ke 4, dan AAAI ke 5.
+> 2. Yang berubah adalah konferensi dengan banyak acara pendamping. CVPR turun dari peringkat 2 ke 6 (23,4% papernya workshop), ICC dari 10 ke 18 (22,8%), dan CHI dari 7 ke 29 (44,0% papernya Extended Abstracts). ICML dan IROS masuk 10 besar sebagai gantinya.
+> 3. Posisi CVPR sebagai konferensi paling populer kedua bergantung pada definisi. Pernyataan itu benar jika workshop dihitung sebagai bagian konferensi, sesuai pengelompokan DBLP, tetapi tidak benar jika hanya acara utama yang dihitung. Analisis memakai definisi berbasis `key`, dan hasil alternatifnya dilaporkan di sini.
+> 4. Pendekatan berbasis akhiran `crossref` ditolak karena menandai 39,9% paper EMNLP sebagai satelit, padahal kata kunci `booktitle` hanya menemukan 5,0%. Selisihnya adalah volume Findings, yang merupakan bagian dari konferensi utama.
 """))
 
 cells.append(md(r"""
-## 6.6 Jawaban Pertanyaan Task 2
+## 6.6 Ringkasan Temuan Popularitas
 
-Tiga pertanyaan penutup Task 2 dijawab berdasarkan hasil pada subbagian 6.1 sampai 6.5. Jawaban memakai definisi venue berbasis `key`, dan dampak definisi lain dijelaskan pada subbagian 6.5.
+Subbagian ini merangkum temuan 6.1 sampai 6.5 tentang konferensi terpopuler, hubungan antara publikasi dan author unik, serta perubahan aktivitas dari waktu ke waktu. Seluruh temuan memakai definisi venue berbasis `key`, dan dampak definisi lain dijelaskan pada subbagian 6.5.
 """))
 
 cells.append(md(r"""
 #### Insights
 
-> **Konferensi mana yang paling populer berdasarkan jumlah publikasi?** NeurIPS, dengan 25.455 paper atau 1,27% dari seluruh dataset 2015-2025, disusul CVPR (22.751) dan ICASSP (21.606). NeurIPS tetap nomor satu pada uji sensitivitas yang mengeluarkan workshop dan acara satelit.
-
-> **Apakah konferensi dengan publikasi terbanyak juga memiliki author unik terbanyak?** Ya untuk yang teratas, tetapi tidak untuk seluruh daftar. NeurIPS nomor satu pada kedua ukuran (57.800 author unik), CVPR nomor dua pada keduanya, dan 8 dari 10 konferensi teratas sama. Korelasi peringkat pada seluruh venue sangat tinggi (Spearman 0,987). Perbedaan terjadi di peringkat tengah: AAAI dan EMBC lebih tinggi pada author unik, sedangkan CHI dan ICC lebih tinggi pada jumlah paper, sehingga ICC yang berada di peringkat 10 pada publikasi hanya berada di peringkat 19 pada author unik.
-
-> **Bagaimana aktivitas publikasi berubah selama 2015-2025?** Jumlah publikasi keseluruhan tumbuh 32,7% dari 2015 ke 2024 (CAGR 3,2%), dengan penurunan 8,8% pada 2020. Pertumbuhan sangat tidak merata: NeurIPS, EMNLP, CVPR, dan AAAI tumbuh 3,6 sampai 10,2 kali, HCI hampir datar, dan ICC serta EMBC menurun. Akibatnya porsi 10 konferensi teratas naik dari 7,0% menjadi 11,7% pada 2024. Angka 2025 tidak dipakai untuk menyimpulkan tren karena sebagian konferensi dua tahunan tidak diadakan dan sebagian konferensi tahunan belum terindeks.
+> 1. NeurIPS adalah konferensi terpopuler menurut jumlah publikasi, dengan 25.455 paper (1,27% dari seluruh dataset 2015-2025), disusul CVPR (22.751) dan ICASSP (21.606). NeurIPS tetap nomor satu setelah workshop dan acara satelit dikeluarkan.
+> 2. Publikasi terbanyak umumnya diikuti author unik terbanyak. NeurIPS (57.800 author unik) dan CVPR tetap di posisi 1 dan 2, 8 dari 10 konferensi teratas sama, dan korelasi peringkat Spearman pada seluruh venue adalah 0,987.
+> 3. Perbedaan terjadi di peringkat tengah. AAAI dan EMBC lebih tinggi pada author unik, sedangkan CHI dan ICC lebih tinggi pada jumlah paper, sehingga ICC di peringkat 10 pada publikasi hanya di peringkat 19 pada author unik.
+> 4. Jumlah publikasi keseluruhan tumbuh 32,7% dari 2015 ke 2024 (CAGR 3,2%), dengan penurunan 8,8% pada 2020. Pertumbuhan sangat tidak merata: NeurIPS, EMNLP, CVPR, dan AAAI tumbuh 3,6 sampai 10,2 kali, HCI hampir datar, dan ICC serta EMBC menurun, sehingga porsi 10 konferensi teratas naik dari 7,0% menjadi 11,7% pada 2024.
+> 5. Angka 2025 tidak dipakai untuk menyimpulkan tren karena sebagian konferensi dua tahunan tidak diadakan dan sebagian konferensi tahunan belum terindeks.
 """))
 
 # ---------------------------------------------------------------------------
@@ -1663,21 +1638,21 @@ cells.append(md(r"""
 cells.append(section("Ringkasan dan Langkah Berikutnya", "7"))
 
 cells.append(md(r"""
-Ringkasan berikut merangkum jawaban Task 1 dan Task 2, asumsi yang dipakai, keterbatasan yang perlu dinyatakan pada laporan, dan langkah berikutnya.
+Bagian ini merangkum temuan utama dari eksplorasi data dan analisis popularitas konferensi, asumsi yang dipakai, keterbatasan yang perlu dinyatakan pada laporan, dan langkah berikutnya.
 """))
 
 cells.append(md(r"""
-## 7.1 Ringkasan Hasil
+## 7.1 Ringkasan Temuan
 
-| Task | Pertanyaan | Hasil utama | Bukti |
-|---|---|---|---|
-| 1.1 | Struktur dan jenis publikasi | DBLP adalah daftar datar 13.127.979 record dari sembilan jenis. `inproceedings` berjumlah 4.004.309, dan 2.004.202 di antaranya terbit pada 2015-2025 | 3.1 dan 3.2 |
-| 1.2 dan 1.3 | Preprocessing | Enam tahap membuang 6.958 paper (0,35%), retensi 99,65%. Hasil akhir 1.997.244 paper dan 7.870.902 pasangan paper-author | 4.1 sampai 4.8 |
-| 1.4 | Statistik dataset bersih | 1.997.244 publikasi, 1.821.757 author unik, 4.373 venue unik. Distribusi per tahun dan per konferensi sangat terkonsentrasi | 5.1 sampai 5.4 |
-| 2.1 | Top 10 publikasi | NeurIPS, CVPR, ICASSP, HCI, IGARSS, AAAI, CHI, EMNLP, EMBC, ICC | 6.1 |
-| 2.2 | Top 10 author unik | NeurIPS, CVPR, AAAI, ICASSP, EMBC, HCI, IGARSS, EMNLP, ICML, IROS | 6.2 |
-| 2.3 | Tren per tahun | CAGR 3,2% per tahun, tetapi pertumbuhan terkonsentrasi pada konferensi AI dan NLP | 6.3 |
-| 2.4 | Perbandingan peringkat | 8 dari 10 konferensi sama, korelasi peringkat 0,987 | 6.4 dan 6.5 |
+| Topik | Temuan utama | Bagian |
+|---|---|---|
+| Struktur dan jenis publikasi | DBLP adalah daftar datar 13.127.979 record dari sembilan jenis. `inproceedings` berjumlah 4.004.309, dan 2.004.202 di antaranya terbit pada 2015-2025 | 3.1 dan 3.2 |
+| Preprocessing | Enam tahap membuang 6.958 paper (0,35%), retensi 99,65%. Hasil akhir 1.997.244 paper dan 7.870.902 pasangan paper-author | 4.1 sampai 4.8 |
+| Statistik dataset bersih | 1.997.244 publikasi, 1.821.757 author unik, 4.373 venue unik. Distribusi per tahun dan per konferensi sangat terkonsentrasi | 5.1 sampai 5.4 |
+| 10 konferensi dengan publikasi terbanyak | NeurIPS, CVPR, ICASSP, HCI, IGARSS, AAAI, CHI, EMNLP, EMBC, ICC | 6.1 |
+| 10 konferensi dengan author unik terbanyak | NeurIPS, CVPR, AAAI, ICASSP, EMBC, HCI, IGARSS, EMNLP, ICML, IROS | 6.2 |
+| Tren publikasi per tahun | CAGR 3,2% per tahun, tetapi pertumbuhan terkonsentrasi pada konferensi AI dan NLP | 6.3 |
+| Perbandingan peringkat | 8 dari 10 konferensi sama, korelasi peringkat 0,987 | 6.4 dan 6.5 |
 """))
 
 cells.append(md(r"""
@@ -1695,16 +1670,15 @@ cells.append(md(r"""
 cells.append(md(r"""
 ## 7.3 Langkah Berikutnya
 
-1. Task 3: membentuk dua transactional database dari `paper_author.parquet`, yaitu berbasis author dan berbasis author-tahun, lalu menampilkan contoh transaksi, jumlah transaksi, dan distribusi item per transaksi.
-2. Task 4: mengimplementasikan Apriori dan FP-Growth pada database berbasis author dengan minimum support 0,1%, 0,5%, 1%, dan 2%, lalu memvalidasi hasilnya dengan `mlxtend`.
-3. Task 5 dan 6: membangkitkan association rules dengan minimum confidence 50% dan membandingkan performa kedua algoritma.
-4. Analisis temporal: menjalankan mining per periode 2015-2017, 2018-2020, 2021-2023, dan 2024-2025 pada database berbasis author-tahun, dengan memperhitungkan keterbatasan data 2025.
+1. Pembentukan dua transactional database dari `paper_author.parquet`, yaitu berbasis author dan berbasis author-tahun, disertai contoh transaksi, jumlah transaksi, dan distribusi item per transaksi.
+2. Frequent pattern mining dengan Apriori dan FP-Growth pada database berbasis author, dengan minimum support 0,1%, 0,5%, 1%, dan 2%, lalu validasi hasilnya dengan `mlxtend`.
+3. Pembangkitan association rules dengan minimum confidence 50%, diikuti perbandingan performa kedua algoritma.
+4. Analisis temporal, yaitu mining per periode 2015-2017, 2018-2020, 2021-2023, dan 2024-2025 pada database berbasis author-tahun, dengan memperhitungkan keterbatasan data 2025.
 
 ## Referensi
 
 - DBLP XML dump: https://dblp.org/xml/ (diunduh 19 November 2026).
 - Ley, M. *DBLP XML*, dokumentasi struktur XML dan `key`: https://dblp.org/xml/docu/dblpxml.pdf
-- Datawrapper, *A friendly guide to choosing a chart type*: https://www.datawrapper.de/blog/chart-types-guide
 """))
 
 # @@APPEND@@
