@@ -5,14 +5,14 @@
 \label{sec:crispdm}
 Proyek ini mengikuti \textit{Cross-Industry Standard Process for Data Mining} (CRISP-DM) \cite{chapman2000}, yaitu enam tahap yang dapat berulang (Gambar~\ref{fig:crispdm}). Tabel~\ref{tab:crispdm} memetakan setiap tahap ke penerapannya pada proyek ini, dan Gambar~\ref{fig:alur-kerja} menunjukkan alur data antar-\textit{notebook}.
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.55\textwidth]{images/crispdm.png}
+\includegraphics[width=0.45\textwidth]{images/crispdm.png}
 \caption{Proses CRISP-DM (Jensen 2012)}
 \label{fig:crispdm}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Penerapan CRISP-DM pada proyek}
 \label{tab:crispdm}
 \small
@@ -35,9 +35,9 @@ Proyek ini mengikuti \textit{Cross-Industry Standard Process for Data Mining} (C
 \end{tabularx}
 \end{table}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-alur-kerja}
+\figtikz[7cm]{fig-alur-kerja}
 \caption{Alur data dan \textit{notebook}}
 \label{fig:alur-kerja}
 \end{figure}
@@ -59,7 +59,7 @@ Tahap ini terdiri atas tiga kegiatan.
 \subsection{\textit{Preprocessing}}
 Tabel~\ref{tab:prepro} merangkum lima tahap \textit{preprocessing}, yang masing-masing dikerjakan pada salinan data mentah.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Tahapan \textit{preprocessing}}
 \label{tab:prepro}
 \small
@@ -83,9 +83,9 @@ Normalisasi penulis & Normalisasi Unicode NFKC dan spasi; sufiks DBLP dipertahan
 Hasil \textit{preprocessing} disimpan dalam format Parquet, yang lebih kecil dan lebih cepat dibaca daripada CSV serta mempertahankan tipe data. Tiga tabel dihasilkan: \texttt{raw} (2.004.202 makalah), \texttt{clean} (1.997.244 makalah) untuk perhitungan per makalah, dan \texttt{paper\_author} (7.870.902 pasangan makalah-penulis) untuk perhitungan per penulis dan pembentukan transaksi.
 
 \subsection{\textit{Transactional Database}}
-Dua \textit{database} dibentuk dari \texttt{paper\_author} dengan \textit{venue} sebagai item (Tabel~\ref{tab:def-db}). Setiap transaksi berupa himpunan \textit{venue} unik, sehingga dua makalah pada \textit{venue} yang sama dalam satu transaksi hanya menghasilkan satu item. Bentuk ini sesuai spesifikasi, dan jumlah makalah per transaksi tetap tersimpan pada kolom \texttt{n\_paper}.
+Dua \textit{database} dibentuk dari \texttt{paper\_author} dengan \textit{venue} sebagai item (Tabel~\ref{tab:def-db}). Setiap transaksi berupa himpunan \textit{venue} unik, sehingga dua makalah pada \textit{venue} yang sama dalam satu transaksi hanya menghasilkan satu item. Bentuk ini sesuai dengan tujuan analisis, yaitu daftar konferensi tempat penulis menerbitkan makalah, dan jumlah makalah per transaksi tetap tersimpan pada kolom \texttt{n\_paper}.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Definisi dua \textit{transactional database}}
 \label{tab:def-db}
 \small
@@ -97,7 +97,7 @@ Satu transaksi & Satu penulis & Satu kombinasi penulis dan tahun \\
 \midrule
 Item & \textit{Venue} yang diterbitkan penulis selama 2015--2025 & \textit{Venue} yang diterbitkan penulis pada tahun itu \\
 \midrule
-Dipakai pada & \textit{Task} 4 dan \textit{Task} 5 & Bagian E (analisis temporal) \\
+Dipakai pada & \textit{Frequent pattern mining} dan \textit{association rules} & Analisis temporal \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -106,14 +106,14 @@ Dipakai pada & \textit{Task} 4 dan \textit{Task} 5 & Bagian E (analisis temporal
 \label{sec:struktur-data}
 Kedua \textit{database} dibentuk dari satu tabel panjang \texttt{(tid, item)} yang disimpan di disk agar isinya konsisten, lalu diturunkan menjadi dua bentuk di memori (Gambar~\ref{fig:satu-sumber}). Kesetaraan kedua bentuk diperiksa pada jumlah transaksi, jumlah pasangan, ukuran tiap transaksi, dan isi 2.000 transaksi acak. Tabel~\ref{tab:bentuk} membandingkan bentuk yang dipertimbangkan.
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-satu-sumber}
+\figtikz[6.6cm]{fig-satu-sumber}
 \caption{Struktur data \textit{transactional database}}
 \label{fig:satu-sumber}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Bentuk representasi \textit{database} \textit{author-based}}
 \label{tab:bentuk}
 \small
@@ -143,7 +143,7 @@ Empat aturan ditetapkan agar hasil konsisten.
 \section{\textit{Modeling}}
 Apriori dan FP-Growth dijalankan pada \textit{author-based database}, lalu \textit{association rules} dibangkitkan dari \textit{frequent itemsets} yang dihasilkan. Konfigurasi eksperimen dirangkum pada Tabel~\ref{tab:konfigurasi}.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Konfigurasi eksperimen}
 \label{tab:konfigurasi}
 \small
@@ -151,7 +151,7 @@ Apriori dan FP-Growth dijalankan pada \textit{author-based database}, lalu \text
 \toprule
 \textbf{Parameter} & \textbf{Nilai} \\
 \midrule
-\textit{Database} \textit{Task} 4 sampai 6 & \textit{Author-based} (1.821.757 transaksi) \\
+\textit{Database} \textit{mining} dan perbandingan performa & \textit{Author-based} (1.821.757 transaksi) \\
 \midrule
 \textit{min\_sup} & 0,1\%, 0,5\%, 1\%, dan 2\% \\
 \midrule
@@ -161,15 +161,15 @@ Ukuran \textit{rule} & \textit{Support}, \textit{confidence}, dan \textit{lift} 
 \midrule
 Pengulangan waktu & Tiga kali per kombinasi, dilaporkan median dan rentangnya \\
 \midrule
-\textit{Database} Bagian E & \textit{Author-year-based}, empat periode: 2015--2017, 2018--2020, 2021--2023, dan 2024--2025 \\
+\textit{Database} analisis temporal & \textit{Author-year-based}, empat periode: 2015--2017, 2018--2020, 2021--2023, dan 2024--2025 \\
 \midrule
-\textit{min\_sup} Bagian E & 0,01\%, 0,02\% (utama), dan 0,05\% \\
+\textit{min\_sup} analisis temporal & 0,01\%, 0,02\% (utama), dan 0,05\% \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{\textit{Evaluation}}
-Evaluasi mencakup tiga hal. Pertama, validasi hasil kedua algoritma terhadap \texttt{mlxtend}. Kedua, perbandingan Apriori dan FP-Growth berdasarkan jumlah \textit{frequent itemsets}, jumlah \textit{rules}, dan waktu eksekusi pada setiap \textit{min\_sup}. Ketiga, perbandingan \textit{rules} antarperiode pada Bagian E, yaitu yang bertahan, hilang, dan muncul.
+Evaluasi mencakup tiga hal. Pertama, validasi hasil kedua algoritma terhadap \texttt{mlxtend}. Kedua, perbandingan Apriori dan FP-Growth berdasarkan jumlah \textit{frequent itemsets}, jumlah \textit{rules}, dan waktu eksekusi pada setiap \textit{min\_sup}. Ketiga, perbandingan \textit{rules} antarperiode pada analisis temporal, yaitu yang bertahan, hilang, dan muncul.
 
 \section{\textit{Deployment}}
 Hasil disajikan dalam laporan ini dan presentasi. Seluruh kode dan \textit{notebook} dapat dijalankan ulang berurutan dari \textit{dump} DBLP.

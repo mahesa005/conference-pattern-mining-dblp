@@ -5,7 +5,7 @@
 \label{sec:dataset}
 \textit{Dataset} berupa \textit{dump} XML DBLP \cite{dblpxml} yang diunduh dari \url{https://dblp.org/xml/} pada 19 November 2026. Gambar~\ref{fig:format-berkas} menunjukkan dua berkas yang disediakan dan cara keduanya dibaca. Berkas data berukuran 1,1 GB sehingga dibaca secara \textit{streaming}, dan nilai SHA-256 \textit{dump} tercatat pada \texttt{dump\_info.json}.
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
 \figtikz{fig-format-berkas}
 \caption{Berkas \textit{dump} DBLP dan proses pembacaannya}
@@ -16,7 +16,7 @@
 \label{sec:struktur}
 Struktur \textit{dump} berupa daftar datar \textit{record}. Nama \textit{tag} setiap \textit{record} menunjukkan jenis publikasinya, dan makalah konferensi serta \textit{workshop} sama-sama bertag \texttt{inproceedings} (Gambar~\ref{fig:struktur-xml}).
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
 \figtikz{fig-struktur-xml}
 \caption{Struktur \texttt{dblp.xml} dan isi satu \textit{record} \texttt{inproceedings}}
@@ -25,7 +25,7 @@ Struktur \textit{dump} berupa daftar datar \textit{record}. Nama \textit{tag} se
 
 \section{Atribut}
 \label{sec:anatomi}
-Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XGBoost pada KDD 2016. Tabel~\ref{tab:pemetaan} memetakan atribut yang diminta spesifikasi ke letaknya pada \textit{record}.
+Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XGBoost pada KDD 2016. Tabel~\ref{tab:pemetaan} memetakan atribut yang dipakai pada analisis ke letaknya pada \textit{record}.
 
 \begin{lstlisting}[caption={Satu \textit{record} \texttt{inproceedings} pada \textit{dump} DBLP},label={lst:record},language=XML,basicstyle=\ttfamily\footnotesize,breaklines=true]
 <inproceedings mdate="2022-12-17" key="conf/kdd/ChenG16">
@@ -39,7 +39,7 @@ Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XG
 </inproceedings>
 \end{lstlisting}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Letak atribut pada \textit{record} \texttt{inproceedings}}
 \label{tab:pemetaan}
 \small
@@ -59,13 +59,14 @@ Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XG
 \label{sec:key}
 \textit{Venue} pada laporan ini berarti seri konferensi (misalnya NeurIPS), bukan edisi tahunannya, dan diturunkan dari segmen kedua \textit{key} DBLP (Gambar~\ref{fig:anatomi-key}). Asumsi dan alasannya adalah sebagai berikut.
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
 \figtikz{fig-anatomi-key}
 \caption{Segmen \textit{key} DBLP dan segmen yang dipakai sebagai \textit{venue}}
 \label{fig:anatomi-key}
 \end{figure}
 
+Keputusan tersebut didasarkan pada empat pertimbangan berikut.
 \begin{enumerate}
 \item \textit{Record} tidak memiliki \textit{tag} \textit{venue}. Dokumentasi DBLP \cite{ley2009} menyatakan bahwa \texttt{conf/*} adalah makalah konferensi atau \textit{workshop} dan bahwa segmen kedua \textit{key} \textit{typically} menunjukkan seri konferensinya. Pada data, segmen kedua memiliki 4.373 nilai berbeda.
 \item \textit{Booktitle} tidak dipakai karena tidak konsisten. NeurIPS berganti nama dari \textit{NIPS} (2015--2017) menjadi \textit{NeurIPS} (2018--2025) padahal \textit{key}-nya tetap \texttt{nips}, sehingga \textit{booktitle} memecahnya menjadi dua \textit{venue}. Sebaliknya, 456 nama \textit{booktitle} dipakai oleh konferensi berbeda, misalnya \textit{ITC} pada \texttt{itc}, \texttt{teletraffic}, \texttt{citc}, dan \texttt{icits}. Secara keseluruhan terdapat 8.784 nama \textit{booktitle} untuk 4.373 \textit{venue}.
@@ -73,7 +74,7 @@ Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XG
 \item \textit{Workshop} yang memakai \textit{key} konferensi induk (misalnya \textit{CVPR Workshops} pada \texttt{conf/cvpr}) ikut terhitung sebagai konferensi induknya, sesuai pengelompokan DBLP. Dokumentasi DBLP menyebut batas ini tidak selalu seragam, sehingga dampaknya terhadap peringkat diuji pada Subbab~\ref{sec:hasil-sensitivitas}.
 \end{enumerate}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Tingkatan istilah konferensi pada DBLP}
 \label{tab:istilah}
 \small

@@ -5,9 +5,9 @@ Pola asosiasi dibandingkan pada empat periode, yaitu 2015--2017, 2018--2020, 202
 
 \section{Data per Periode dan Pemilihan \textit{min\_sup}}
 \label{sec:hasil-e-data}
-Keempat periode berukuran sebanding (Tabel~\ref{tab:e-periode}). \textit{Min\_sup} pada \textit{Task} 4 terlalu tinggi untuk \textit{database} ini karena 71\% transaksinya hanya berisi satu konferensi: pada 0,1\%, tiga periode pertama hanya menghasilkan 1, 0, dan 3 \textit{rules}. Karena itu dipakai tiga ambang yang lebih rendah. Ambang utama adalah 0,02\%, yaitu ambang yang memberi cukup \textit{rules} pada setiap periode dengan ketahanan terbaik. Ketahanan diuji dengan mengulang \textit{mining} tanpa transaksi berisi 20 konferensi atau lebih dalam satu tahun, yang sebagian besar berasal dari nama umum. Pada 0,02\%, 94\% sampai 100\% \textit{rules} tiga periode pertama tetap ditemukan, sedangkan pada 2024--2025 hanya 67\%, sehingga \textit{rules} periode ini dibaca hati-hati.
+Keempat periode berukuran sebanding (Tabel~\ref{tab:e-periode}). \textit{Min\_sup} pada \textit{frequent pattern mining} sebelumnya terlalu tinggi untuk \textit{database} ini karena 71\% transaksinya hanya berisi satu konferensi: pada 0,1\%, tiga periode pertama hanya menghasilkan 1, 0, dan 3 \textit{rules}. Karena itu dipakai tiga ambang yang lebih rendah. Ambang utama adalah 0,02\%, yaitu ambang yang memberi cukup \textit{rules} pada setiap periode dengan ketahanan terbaik. Ketahanan diuji dengan mengulang \textit{mining} tanpa transaksi berisi 20 konferensi atau lebih dalam satu tahun, yang sebagian besar berasal dari nama umum. Pada 0,02\%, 94\% sampai 100\% \textit{rules} tiga periode pertama tetap ditemukan, sedangkan pada 2024--2025 hanya 67\%, sehingga \textit{rules} periode ini dibaca hati-hati.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Transaksi dan jumlah \textit{rules} per periode}
 \label{tab:e-periode}
 \small
@@ -29,7 +29,7 @@ Keempat periode berukuran sebanding (Tabel~\ref{tab:e-periode}). \textit{Min\_su
 \label{sec:hasil-e-fpm}
 Pada 0,02\%, \textit{itemset} berisi dua konferensi atau lebih berjumlah 279, 376, 662, dan 2.380 dari periode pertama sampai terakhir, dan \textit{itemset} berisi empat konferensi atau lebih naik dari 1 menjadi 710. Pada 2015--2017, pasangan teratas tersebar di telekomunikasi, kendali, robotika, dan komunikasi optik (Tabel~\ref{tab:e-pasangan}). Pada 2024--2025, sembilan dari sepuluh pasangan teratas memuat NeurIPS, ICML, ICLR, ACL, EMNLP, atau AAAI. \textit{Support} ICLR + NeurIPS naik dari 0,18\% pada 2018--2020 menjadi 1,04\%, sedangkan GLOBECOM + ICC turun dari peringkat pertama ke luar sepuluh besar.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Lima pasangan konferensi dengan \textit{support} tertinggi per periode (\textit{min\_sup} 0,02\%)}
 \label{tab:e-pasangan}
 \footnotesize
@@ -51,18 +51,18 @@ Pada 0,02\%, \textit{itemset} berisi dua konferensi atau lebih berjumlah 279, 37
 \label{sec:hasil-e-rules}
 Jumlah \textit{rules} pada 0,02\% naik tajam menuju 2024--2025, dari 17, 32, dan 113 menjadi 1.874 (Gambar~\ref{fig:e-rules}). \textit{Rules} baru berpusat pada konferensi besar sehingga median \textit{lift} turun dari 49 menjadi 28 dan 20. \textit{Rule} satu-ke-satu hampir tidak ada (2, 1, 1, dan 0), karena dalam satu tahun, menerbitkan di satu konferensi jarang cukup untuk memprediksi konferensi lain dengan \textit{confidence} 50\%.
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.85\textwidth]{images/hasil/t7_rules_per_periode.png}
+\includegraphics[width=0.72\textwidth]{images/hasil/t7_rules_per_periode.png}
 \caption{Jumlah \textit{rules} per periode pada tiga \textit{min\_sup} (skala logaritmik)}
 \label{fig:e-rules}
 \end{figure}
 
 \section{Perbandingan \textit{Rules} antarperiode}
 \label{sec:hasil-e-banding}
-Setiap \textit{rule} pada 0,02\% dikelompokkan menurut kemunculannya: \textit{bertahan} (lolos di keempat periode), \textit{muncul} (tidak lolos di awal, lalu lolos terus sampai 2024--2025), \textit{hilang} (lolos di awal, lalu tidak lolos sampai 2024--2025), dan \textit{berselang} (pola lain). Tabel~\ref{tab:e-kategori} menunjukkan bahwa 97\% sampai 98\% \textit{rules} adalah \textit{rules} yang muncul pada ketiga ambang, sehingga yang disimpulkan adalah polanya, bukan angkanya.
+Setiap \textit{rule} pada 0,02\% dikelompokkan menurut kemunculannya, yaitu \textit{bertahan} (lolos di keempat periode), \textit{muncul} (tidak lolos di awal, lalu lolos terus sampai 2024--2025), \textit{hilang} (lolos di awal, lalu tidak lolos sampai 2024--2025), dan \textit{berselang} (pola lain). Tabel~\ref{tab:e-kategori} menunjukkan bahwa 97\% sampai 98\% \textit{rules} adalah \textit{rules} yang muncul pada ketiga ambang, sedangkan \textit{rules} yang bertahan sangat sedikit. Karena jumlah pastinya bergantung pada ambang, yang disimpulkan adalah polanya, bukan angkanya.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Jumlah \textit{rules} per kategori pada tiga \textit{min\_sup}}
 \label{tab:e-kategori}
 \small
@@ -78,6 +78,7 @@ Muncul & 7.704 & 1.865 & 281 \\
 \end{tabular*}
 \end{table}
 
+Pola setiap kategori dirinci berikut ini.
 \begin{enumerate}
 \item \textbf{Bertahan.} Satu-satunya \textit{rule} yang bertahan adalah AISTATS + ICML $\Rightarrow$ NeurIPS, dengan \textit{confidence} hampir tetap (58\% sampai 61\%).
 \item \textbf{Hilang.} Dari 11 \textit{rules} yang hilang, tujuh melibatkan GLOBECOM dan ICC. Hilangnya bukan karena hubungan berhenti: \textit{count}-nya relatif datar sementara ambang \textit{count} naik karena \textit{database} bertambah, \textit{confidence}-nya tetap 40\% sampai 64\% di sekitar ambang 50\%, atau konferensinya tidak tercatat (ICCC tidak tercatat pada 2024--2025).
@@ -87,9 +88,6 @@ Muncul & 7.704 & 1.865 & 281 \\
 
 \section{Kemungkinan Perubahan Tren Publikasi}
 \label{sec:hasil-e-tren}
-\begin{enumerate}
-\item Kombinasi konferensi dalam satu tahun makin terpusat pada NeurIPS, ICLR, ICML, ACL, EMNLP, AAAI, dan CVPR, sejalan dengan Bab~\ref{chap:popularitas} yang menunjukkan konferensi yang sama tumbuh paling cepat.
-\item Penulis di konferensi tersebut makin sering menerbitkan di beberapa konferensi besar pada tahun yang sama, termasuk lintas NLP dan \textit{machine learning}. Rata-rata konferensi per transaksi hanya naik dari 1,57 menjadi 1,68, sehingga perubahan ini terkonsentrasi pada konferensi tersebut, bukan pada seluruh penulis.
-\item Kombinasi di telekomunikasi, kendali, dan komunikasi optik relatif tetap secara absolut tetapi mengecil secara relatif.
-\item Tren yang paling dapat dipercaya adalah 95 \textit{rules} yang muncul pada 2018--2023. \textit{Rules} yang hanya ada pada 2024--2025 sebagian dipengaruhi transaksi berisi banyak konferensi dan data 2025 yang belum lengkap.
-\end{enumerate}
+Hasil per periode menunjukkan bahwa kombinasi konferensi dalam satu tahun makin terpusat pada NeurIPS, ICLR, ICML, ACL, EMNLP, AAAI, dan CVPR. Pemusatan ini sejalan dengan Bab~\ref{chap:popularitas}, yang menunjukkan bahwa konferensi yang sama tumbuh paling cepat. Penulis di konferensi tersebut makin sering menerbitkan di beberapa konferensi besar pada tahun yang sama, termasuk lintas pemrosesan bahasa alami dan \textit{machine learning}. Namun, rata-rata konferensi per transaksi hanya naik dari 1,57 menjadi 1,68, sehingga perubahan ini terkonsentrasi pada konferensi tersebut dan tidak terjadi pada seluruh penulis.
+
+Sebaliknya, kombinasi di telekomunikasi, kendali, dan komunikasi optik relatif tetap secara absolut tetapi mengecil secara relatif. Tren yang paling dapat dipercaya adalah 95 \textit{rules} yang muncul pada 2018--2023 dan bertahan sampai 2024--2025. \textit{Rules} yang hanya ada pada 2024--2025 dibaca hati-hati.

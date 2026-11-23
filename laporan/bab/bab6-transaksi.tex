@@ -3,11 +3,11 @@
 
 \section{Pembentukan Dua \textit{Database}}
 \label{sec:hasil-bentuk}
-Dari 7.870.902 pasangan makalah-penulis terbentuk 1.821.757 transaksi pada \textit{author-based} dan 4.085.594 transaksi pada \textit{author-year-based}, dengan 4.373 \textit{venue} sebagai item unik pada keduanya. Gambar~\ref{fig:ilustrasi} mengilustrasikan perbedaannya pada satu penulis dengan 10 makalah di enam \textit{venue} (2021--2024): penulis ini menjadi satu transaksi berisi enam item pada \textit{author-based}, dan empat transaksi berisi tiga, tiga, satu, dan satu item pada \textit{author-year-based}. Dua makalah pada \textit{venue} yang sama dalam satu tahun, yaitu CCE pada 2023 dan ACC pada 2024, hanya menjadi satu item. Cuplikan berkas hasil ada pada Lampiran~\ref{lamp:transaksi}.
+Dari 7.870.902 pasangan makalah-penulis terbentuk 1.821.757 transaksi pada \textit{author-based} dan 4.085.594 transaksi pada \textit{author-year-based}, dengan 4.373 \textit{venue} sebagai item unik pada keduanya. Gambar~\ref{fig:ilustrasi} mengilustrasikan perbedaannya pada satu penulis dengan 10 makalah di enam \textit{venue} (2021--2024): penulis ini menjadi satu transaksi berisi enam item pada \textit{author-based}, dan empat transaksi berisi tiga, tiga, satu, dan satu item pada \textit{author-year-based}. Dua makalah pada \textit{venue} yang sama dalam satu tahun, yaitu CCE pada 2023 dan ACC pada 2024, hanya menjadi satu item. Karena itu model himpunan tidak menyimpan jumlah makalah per \textit{venue}: 38,3\% makalah pada \textit{author-based} dan 17,4\% pada \textit{author-year-based} tidak menambah item baru. Cuplikan berkas hasil ada pada Lampiran~\ref{lamp:transaksi}.
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-ilustrasi-author}
+\figtikz[7.4cm]{fig-ilustrasi-author}
 \caption{Satu penulis pada \textit{author-based} dan \textit{author-year-based}}
 \label{fig:ilustrasi}
 \end{figure}
@@ -16,7 +16,7 @@ Dari 7.870.902 pasangan makalah-penulis terbentuk 1.821.757 transaksi pada \text
 \label{sec:hasil-contoh}
 Tabel~\ref{tab:contoh-a} dan Tabel~\ref{tab:contoh-ay} menunjukkan masing-masing sepuluh transaksi yang dipilih acak (\textit{seed} 42) menurut ukurannya. Transaksi berukuran empat sampai delapan item umumnya berisi \textit{venue} dari bidang yang berdekatan, sedangkan transaksi 25 item (\textit{Haibo Zhang}) mencampur banyak bidang dan kemungkinan menggabungkan beberapa orang bernama sama.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Sepuluh contoh transaksi \textit{author-based}}
 \label{tab:contoh-a}
 \footnotesize
@@ -38,7 +38,7 @@ Tabel~\ref{tab:contoh-a} dan Tabel~\ref{tab:contoh-ay} menunjukkan masing-masing
 \end{tabularx}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Sepuluh contoh transaksi \textit{author-year-based}}
 \label{tab:contoh-ay}
 \footnotesize
@@ -69,7 +69,7 @@ Tabel~\ref{tab:statistik-tx} merangkum statistik kedua \textit{database}, dan Ga
 \item Distribusinya berekor panjang: rata-rata jauh di atas median (satu item), dan transaksi terbesar (332 dan 85 item) berasal dari \textit{Yang Liu}, nama umum yang menggabungkan banyak orang.
 \end{enumerate}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Statistik kedua \textit{transactional database}}
 \label{tab:statistik-tx}
 \small
@@ -87,7 +87,7 @@ Transaksi berisi minimal 2 item & 41,6\% & 29,0\% \\
 \end{tabular*}
 \end{table}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
 \figtikz{fig-komposisi-transaksi}
 \caption{Komposisi ukuran transaksi pada kedua \textit{database}}
@@ -104,7 +104,7 @@ Pada \textit{author-based}, dua \textit{venue} dianggap muncul bersama jika seor
 \item Konferensi dua tahunan berselang tidak dapat berpasangan. ICCV dan ECCV memiliki 10.051 transaksi bersama pada \textit{author-based}, tetapi nol pada \textit{author-year-based} (Tabel~\ref{tab:iccv}).
 \end{enumerate}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Perbandingan pasangan \textit{venue} pada kedua representasi}
 \label{tab:banding-repr}
 \small
@@ -119,7 +119,7 @@ Irisan 20 pasangan teratas dan korelasi peringkat Spearman & 18 dari 20 dan 0,89
 \end{tabular*}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Lima pasangan \textit{venue} teratas pada \textit{author-based} dan padanannya pada \textit{author-year-based}}
 \label{tab:top-pasangan}
 \footnotesize
@@ -136,7 +136,7 @@ CVPR + ICCV & 15.441 & 0,85\% & 12.359 & 0,30\% & 5 & 0,80 \\
 \end{tabularx}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Transaksi \textit{author-year-based} yang memuat ICCV dan ECCV per tahun}
 \label{tab:iccv}
 \footnotesize
@@ -155,6 +155,5 @@ Kedua representasi menjawab pertanyaan yang berbeda, dengan kelebihan dan keterb
 \begin{enumerate}
 \item \textit{Author-based} berisi transaksi yang lebih kaya (41,6\% berisi minimal dua item) dan menangkap asosiasi lintas waktu, tetapi tidak memiliki dimensi waktu dan bebannya terkonsentrasi pada transaksi besar (0,1\% transaksi menanggung 27,8\% pasangan yang dapat dibentuk).
 \item \textit{Author-year-based} mengikat kemunculan bersama pada waktu yang sama dan dapat dipotong per periode, tetapi 71,0\% transaksinya hanya satu item sehingga \textit{support} pasangan rendah dan pasangan lintas tahun hilang.
-\item \textit{Author-based} dipilih untuk \textit{Task} 4 dan \textit{Task} 5 karena riwayat publikasi mencakup seluruh periode, dan \textit{author-year-based} dipilih untuk Bagian E karena memiliki dimensi tahun.
+\item \textit{Author-based} dipilih untuk \textit{frequent pattern mining} dan \textit{association rules} karena riwayat publikasi mencakup seluruh periode, dan \textit{author-year-based} dipilih untuk analisis temporal karena memiliki dimensi tahun.
 \end{enumerate}
-Model himpunan tidak menyimpan jumlah makalah per \textit{venue}: 38,3\% makalah pada \textit{author-based} dan 17,4\% pada \textit{author-year-based} tidak menambah item baru.

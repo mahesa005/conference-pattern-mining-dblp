@@ -9,16 +9,17 @@ Pertanyaan kedua merupakan persoalan \textit{frequent pattern mining}. Jika seti
 \section{Tujuan}
 Tujuan tugas besar ini adalah sebagai berikut.
 \begin{enumerate}
-\item Memahami struktur data DBLP dan melakukan \textit{preprocessing} terhadap publikasi konferensi periode 2015--2025 (\textit{Task} 1).
-\item Menganalisis popularitas konferensi berdasarkan jumlah publikasi dan jumlah penulis unik (\textit{Task} 2).
-\item Membentuk \textit{transactional database} berbasis penulis dan berbasis penulis-tahun (\textit{Task} 3).
-\item Mengimplementasikan Apriori dan FP-Growth untuk menemukan \textit{frequent itemsets} (\textit{Task} 4).
-\item Membangkitkan dan menganalisis \textit{association rules} antarkonferensi (\textit{Task} 5).
-\item Membandingkan performa Apriori dan FP-Growth (\textit{Task} 6).
-\item Menganalisis perubahan pola asosiasi antarperiode waktu (Bagian E).
+\item Memahami struktur data DBLP dan melakukan \textit{preprocessing} terhadap publikasi konferensi periode 2015--2025.
+\item Menganalisis popularitas konferensi berdasarkan jumlah publikasi dan jumlah penulis unik.
+\item Membentuk \textit{transactional database} berbasis penulis dan berbasis penulis-tahun.
+\item Mengimplementasikan Apriori dan FP-Growth untuk menemukan \textit{frequent itemsets}.
+\item Membangkitkan dan menganalisis \textit{association rules} antarkonferensi.
+\item Membandingkan performa Apriori dan FP-Growth.
+\item Menganalisis perubahan pola asosiasi antarperiode waktu.
 \end{enumerate}
 
 \section{Ruang Lingkup}
+Ruang lingkup laporan dibatasi pada data dan analisis berikut.
 \begin{enumerate}
 \item Data yang digunakan adalah \textit{XML dump} DBLP \cite{dblpxml} yang diunduh pada 19 November 2026.
 \item Jenis publikasi yang dianalisis hanya \texttt{inproceedings}, yaitu makalah konferensi dan \textit{workshop}.
@@ -28,6 +29,7 @@ Tujuan tugas besar ini adalah sebagai berikut.
 \end{enumerate}
 
 \section{Sistematika Penulisan}
+Laporan disusun dalam dua belas bab, dengan isi masing-masing bab sebagai berikut.
 \begin{enumerate}
 \item Bab~\ref{chap:pendahuluan} Pendahuluan berisi latar belakang, tujuan, ruang lingkup, dan sistematika penulisan.
 \item Bab~\ref{chap:dataset} Deskripsi \textit{Dataset} dan Dasar Teori berisi struktur data DBLP serta konsep \textit{frequent pattern mining} dan \textit{association rule mining}.
@@ -37,5 +39,5 @@ Tujuan tugas besar ini adalah sebagai berikut.
 \item Bab~\ref{chap:transaksi} Hasil Pembentukan \textit{Transactional Database} berisi dua representasi transaksi beserta perbandingannya.
 \item Bab~\ref{chap:fpm} sampai Bab~\ref{chap:temporal} berisi hasil \textit{frequent pattern mining}, \textit{association rule mining}, perbandingan performa, dan analisis temporal.
 \item Bab~\ref{chap:analisis} Analisis dan Interpretasi menafsirkan temuan yang tersedia.
-\item Bab~\ref{chap:kesimpulan} Kesimpulan berisi jawaban pertanyaan kesimpulan yang sudah dapat dijawab, keterbatasan, dan asumsi.
+\item Bab~\ref{chap:kesimpulan} Kesimpulan berisi ringkasan temuan, keterbatasan, dan asumsi.
 \end{enumerate}
