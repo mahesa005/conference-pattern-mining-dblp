@@ -16,7 +16,7 @@ laporan/*.run.xml
 laporan/*.pdf
 !laporan/Laporan.pdf
 
-# Kelas dokumen LaTeX (template) tidak disertakan
+# Kelas dokumen lama (diganti format-laporan.cls)
 laporan/kp-sti.cls
 
 # Python dan Jupyter
