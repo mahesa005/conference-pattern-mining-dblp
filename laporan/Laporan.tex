@@ -24,6 +24,7 @@
 \definecolor{hxCDE2FB}{HTML}{CDE2FB}
 % Tanda kutip judul pada daftar pustaka (glyph kutip bawaan tidak tampil pada font ini)
 \DeclareFieldFormat[article,inproceedings,incollection]{title}{\char"201C #1\char"201D}
+\setlength{\cftfignumwidth}{3.4em}\setlength{\cfttabnumwidth}{3.4em}
 \newsavebox{\kotakfig}
 \newcommand{\figtikz}[1]{%
   \sbox{\kotakfig}{\input{images/#1}}%
