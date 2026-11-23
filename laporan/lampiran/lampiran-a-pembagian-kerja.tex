@@ -11,9 +11,31 @@
 \textbf{Anggota} & \textbf{Kode dan eksperimen} & \textbf{Laporan} \\
 \midrule
 Izhar Alif Akbar (18223129) & Ekstraksi dan \textit{preprocessing} (Task 1), analisis popularitas (Task 2) & Bab I, Bab II, Bab IV--V, integrasi \LaTeX \\
-Harfhan Ikhtiar (18223123) & \textit{Transactional database} (Task 3), implementasi Apriori, eksperimen Task 4 & Bab III, Bab VI--VII \\
-Mahesa Andre (13523140) & Implementasi FP-Growth, \textit{association rules} (Task 5), perbandingan performa (Task 6), analisis temporal & Bab VIII--X, Bab XII \\
+Harfhan Ikhtiar (18223123) & \textit{Transactional database} (Task 3), implementasi Apriori, eksperimen Task 4 sisi Apriori, Task 6 bersama (Tabel~\ref{tab:pembagian-t6}) & Bab III, Bab VI, Bab VII sisi Apriori, Bab IX bersama \\
+Mahesa Andre (13523140) & Implementasi FP-Growth, eksperimen Task 4 sisi FP-Growth, \textit{association rules} (Task 5), Task 6 bersama (Tabel~\ref{tab:pembagian-t6}), analisis temporal (Bagian E) & Bab VII sisi FP-Growth, Bab VIII, Bab IX bersama, Bab X, Bab XII \\
 Bersama & Tinjauan silang kode dan hasil & Presentasi dan pemeriksaan akhir \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textit{Task} 6 dikerjakan bersama oleh Harfhan dan Mahesa. Tabel~\ref{tab:pembagian-t6} memetakan setiap poin spesifikasi \textit{Task} 6 ke subbab laporan dan penanggung jawabnya.
+
+\begin{table}[ht]
+\caption{Pembagian \textit{Task} 6 menurut poin spesifikasi}
+\label{tab:pembagian-t6}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}@{}}
+\toprule
+\textbf{Poin spesifikasi} & \textbf{Subbab} & \textbf{Penanggung jawab} \\
+\midrule
+Rancangan perbandingan: \textit{database} dan \textit{min\_sup} yang sama, cara pengukuran & Pembuka Bab IX & Mahesa \\
+Jumlah \textit{frequent itemsets} & IX.1 & Harfhan \\
+Jumlah \textit{association rules} & IX.1 & Harfhan \\
+Waktu eksekusi (tambahan di luar spesifikasi) & IX.2 & Harfhan \\
+Pertanyaan 1: pengaruh \textit{min\_sup} terhadap performa & IX.3 & Harfhan (perubahan jumlah pola, kandidat per tingkat Apriori); Mahesa (pembentukan FP-\textit{tree} dan penambangan, kesimpulan) \\
+Pertanyaan 2: kesamaan \textit{frequent itemsets} & IX.3 & Harfhan \\
+Pertanyaan 3: algoritma yang lebih sesuai untuk DBLP & IX.3, Bab XII & Mahesa \\
+Keterbatasan pengukuran & IX.3 & Harfhan \\
 \bottomrule
 \end{tabularx}
 \end{table}

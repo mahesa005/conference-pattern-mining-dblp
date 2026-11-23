@@ -1,2 +1,70 @@
 \chapter{PERBANDINGAN PERFORMA ALGORITMA}
-\label{chap:performa}
+\label{chap:performa}\label{sec:hasil-t6}
+% Task 6: perbandingan Apriori dan FP-Growth (notebook 06_performance).
+Bab ini membandingkan Apriori (Subbab~\ref{sec:hasil-t4-apriori}) dan FP-Growth (Subbab~\ref{sec:hasil-t4-fp-validasi}) pada \textit{author-based database} dan keempat \textit{min\_sup} yang sama. Keduanya menerima masukan yang sama, yaitu \textit{list} \textit{frozenset} kode item, memakai ambang \textit{min count} yang sama, dan menjalankan pra-pemrosesan yang sama (Subbab~\ref{sec:aturan-mining}). Waktu diukur dengan jam dinding di sekitar pemanggilan fungsi sehingga pemuatan Parquet tidak dihitung. Waktu Apriori mencakup seluruh tingkat, dan waktu FP-Growth mencakup pembentukan FP-\textit{tree} dan penambangannya. Setiap kombinasi dijalankan tiga kali pada satu komputer, dan hasil setiap pengulangan diperiksa sama persis. Yang dilaporkan adalah median beserta nilai minimum dan maksimumnya.
+
+\section{Jumlah \textit{frequent itemsets} dan \textit{association rules}}
+\label{sec:hasil-t6-jumlah}
+Tabel~\ref{tab:t6-jumlah} membandingkan hasil kedua algoritma. \textit{Rules} dibangkitkan dari \textit{itemset} masing-masing algoritma dengan kode yang sama (\texttt{src/rules.py}) dan \textit{min\_conf} 50\%. Pada keempat \textit{min\_sup}, \textit{itemset} beserta \textit{count}-nya identik, dan \textit{rules} beserta \textit{support}, \textit{confidence}, dan \textit{lift}-nya juga identik.
+
+\begin{table}[ht]
+\caption{Jumlah \textit{frequent itemsets} dan \textit{rules} Apriori dan FP-Growth}
+\label{tab:t6-jumlah}
+\small
+\begin{tabular}{@{}lrrrrc@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{\textit{Frequent itemsets}}} & \multicolumn{2}{c}{\textbf{\textit{Rules} (\textit{min\_conf} 50\%)}} & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+\textbf{\textit{min\_sup}} & \textbf{Apriori} & \textbf{FP-Growth} & \textbf{Apriori} & \textbf{FP-Growth} & \textbf{Identik} \\
+\midrule
+0,1\% & 1.514 & 1.514 & 1.387 & 1.387 & ya \\
+0,5\% & 88 & 88 & 7 & 7 & ya \\
+1\% & 30 & 30 & 1 & 1 & ya \\
+2\% & 6 & 6 & 0 & 0 & ya \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Waktu eksekusi}
+\label{sec:hasil-t6-waktu}
+Tabel~\ref{tab:t6-waktu} dan Gambar~\ref{fig:t6-waktu} menunjukkan waktu kedua algoritma. Untuk FP-Growth, median waktu pembentukan FP-\textit{tree} dan penambangan juga ditampilkan terpisah. Kolom terakhir menyebut algoritma yang mediannya lebih kecil beserta selisihnya, yaitu (median yang lebih lambat $-$ median yang lebih cepat) dibagi median yang lebih lambat.
+
+\begin{table}[ht]
+\caption{Waktu eksekusi Apriori dan FP-Growth (detik, tiga eksekusi)}
+\label{tab:t6-waktu}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrrrl@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Apriori}} & \multicolumn{4}{c}{\textbf{FP-Growth}} & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-7}
+\textbf{\textit{min\_sup}} & \textbf{Median} & \textbf{Min--maks} & \textbf{Median} & \textbf{Min--maks} & \textbf{FP-\textit{tree}} & \textbf{Penambangan} & \textbf{Lebih cepat} \\
+\midrule
+0,1\% & 5,41 & 5,39--5,56 & 5,19 & 5,09--5,20 & 3,33 & 1,75 & FP-Growth, 4\% \\
+0,5\% & 1,37 & 1,36--1,40 & 1,35 & 1,33--1,41 & 1,11 & 0,23 & FP-Growth, 1\% \\
+1\% & 1,00 & 0,99--1,19 & 1,06 & 1,02--1,08 & 1,00 & 0,06 & Apriori, 6\% \\
+2\% & 0,83 & 0,81--0,88 & 0,83 & 0,82--0,84 & 0,83 & 0,00 & sama \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-t6-waktu}
+\caption{Waktu eksekusi per \textit{min\_sup}. Setiap batang adalah eksekusi median dari tiga pengulangan, dan batang FP-Growth dipecah menjadi pembentukan FP-\textit{tree} dan penambangan.}
+\label{fig:t6-waktu}
+\end{figure}
+
+\section{Jawaban pertanyaan \textit{Task} 6}
+\label{sec:jawab-t6}
+\textbf{Pengaruh \textit{min\_sup} terhadap performa.} Menaikkan \textit{min\_sup} mempercepat kedua algoritma, tetapi jauh lebih lambat daripada turunnya jumlah pola. Dari 0,1\% ke 2\%, waktu Apriori turun dari 5,41 menjadi 0,83 detik dan waktu FP-Growth dari 5,19 menjadi 0,83 detik, atau sekitar 6,3 sampai 6,5 kali, sedangkan jumlah \textit{itemset} turun 252 kali. Penyebabnya adalah biaya tetap yang selalu dibayar kedua algoritma, yaitu pemindaian 1.821.757 transaksi untuk menghitung \textit{support} item tunggal, lalu pemangkasan dan penggabungan transaksi. Pada 2\%, biaya tetap ini praktis seluruh waktunya: penambangan FP-Growth hanya 0,00006 detik, dan Apriori berhenti di tingkat 2 setelah 15 kandidat tidak ada yang \textit{frequent}. Pada \textit{min\_sup} rendah, bagian yang bergantung pada \textit{min\_sup} mulai dominan, dan kedua algoritma membayarnya di tempat berbeda. Apriori membayarnya di tingkat 2 (164.451 kandidat pada 0,1\%, Subbab~\ref{sec:hasil-t4-apriori-kandidat}), sedangkan FP-Growth membayarnya saat membentuk FP-\textit{tree} (3,33 detik, dibanding 1,75 detik penambangan). Dugaan pada Subbab~\ref{sec:hasil-beban} bahwa Apriori paling berat pada \textit{min\_sup} 0,1\% terbukti, tetapi FP-Growth pada \textit{min\_sup} yang sama hampir sama beratnya.
+
+\textbf{Kesamaan \textit{frequent itemsets}.} Ya. Pada keempat \textit{min\_sup}, kedua algoritma menghasilkan himpunan \textit{frequent itemsets} yang sama persis, tanpa \textit{itemset} yang hanya ditemukan salah satunya dan tanpa perbedaan \textit{count}, sehingga \textit{rules} yang dihasilkan juga identik (Tabel~\ref{tab:t6-jumlah}). Hasil ini memang diharapkan karena keduanya algoritma eksak dengan definisi \textit{support} dan ambang yang sama. Perbedaan keduanya hanya pada cara menghitung, bukan pada hasil.
+
+\textbf{Algoritma yang lebih sesuai untuk DBLP.} Dari segi waktu, kedua algoritma setara pada keempat \textit{min\_sup}. Selisih median paling besar 6\% (Apriori lebih cepat pada 1\%), sedangkan waktu satu algoritma antarpengulangan dapat berbeda sampai 19\% (Apriori pada 1\%). Pada 0,1\%, FP-Growth lebih cepat pada ketiga eksekusi, tetapi selisihnya hanya 4\%, masih lebih kecil daripada variasi antarpengulangan. Karena itu, data ini tidak menunjukkan algoritma yang lebih cepat.
+
+Hasil ini berbeda dari gambaran umum bahwa FP-Growth jauh lebih cepat, dan penyebabnya ada pada sifat data. Pertama, 58,4\% penulis hanya menerbitkan di satu \textit{venue}, sehingga setelah pemangkasan dan penggabungan hanya tersisa 315.694 transaksi unik yang dipindai Apriori pada setiap tingkat. Kedua, \textit{itemset} terpanjang hanya berisi enam konferensi sehingga Apriori cukup menjalankan enam tingkat, dan langkah \textit{prune} pada tingkat 3 ke atas membuang hampir semua kombinasi. Ketiga, kedua implementasi memakai pra-pemrosesan yang sama, dan Apriori memilih cara penghitungan kandidat yang lebih murah untuk setiap transaksi.
+
+Meskipun demikian, FP-Growth dipilih sebagai algoritma utama untuk DBLP karena tidak membangkitkan kandidat. Kandidat Apriori tumbuh kuadratik terhadap jumlah item \textit{frequent}: dari 2\% ke 0,1\%, item \textit{frequent} naik 96 kali, tetapi kandidat tingkat 2 naik sekitar 11.000 kali. Jika \textit{min\_sup} diturunkan di bawah 0,1\%, misalnya untuk menangkap pola bidang yang lebih kecil, biaya kandidat Apriori diperkirakan tumbuh lebih cepat daripada biaya FP-\textit{tree}. Perkiraan ini berasal dari pola pertumbuhan kandidat dan belum diukur. Selain itu, penambangan FP-Growth pada 0,1\% hanya 1,75 detik, sedangkan tingkat 2 ke atas Apriori sekitar 4,4 detik (Tabel~\ref{tab:t4-apriori-level}). Total waktu keduanya tetap setara karena FP-Growth menghabiskan lebih banyak waktu untuk membentuk pohon. Perbandingan ini kasar karena kedua angka berasal dari eksekusi yang berbeda.
+
+\textbf{Keterbatasan pengukuran.} Kedua algoritma ditulis dalam Python murni dan berjalan pada satu \textit{thread}, sehingga waktu absolutnya mencerminkan \textit{overhead} \textit{interpreter} dan dapat berbeda pada implementasi C atau Java. Pengukuran hanya dilakukan tiga kali pada satu komputer, dan kedua implementasi memakai optimasi yang tidak selalu ada pada implementasi buku teks, yaitu penggabungan transaksi identik serta pemilihan cara penghitungan kandidat pada Apriori.

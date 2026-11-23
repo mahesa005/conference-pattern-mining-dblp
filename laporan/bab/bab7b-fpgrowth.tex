@@ -1,0 +1,189 @@
+% Sisi FP-Growth dari Task 4 (Mahesa). Sisi Apriori ada pada bab4-task4-apriori.tex.
+
+\section{Implementasi dan validasi FP-Growth}
+\label{sec:hasil-t4-fp-validasi}
+FP-Growth diimplementasikan sendiri (\texttt{src/fpgrowth.py}) dan mengikuti empat aturan pada Subbab~\ref{sec:aturan-mining}. Item yang tidak \textit{frequent} dipangkas setelah pemindaian pertama. Transaksi dengan kurang dari dua item \textit{frequent} tidak dimasukkan ke FP-\textit{tree} karena tidak dapat memuat kombinasi, tetapi tetap dihitung pada penyebut \textit{support}, dan \textit{support} 1-\textit{itemset} diambil dari pemindaian pertama. Transaksi yang identik setelah pemangkasan digabung dan dimasukkan sekali dengan bobotnya. Urutan item di pohon adalah \textit{count} menurun, lalu kode item menaik, sehingga hasilnya deterministik. Ambang dihitung sebagai bilangan bulat terkecil $c$ dengan $c/N \ge$ \textit{min\_sup}, yaitu 1.822, 9.109, 18.218, dan 36.436 penulis untuk \textit{min\_sup} 0,1\%, 0,5\%, 1\%, dan 2\%.
+
+Implementasi diuji dengan \texttt{pytest} pada tiga lapis. Contoh sembilan transaksi pada buku \textcite{han2012} menghasilkan bentuk FP-\textit{tree} dan 13 \textit{frequent itemsets} yang sama dengan buku. Enam belas \textit{dataset} acak menghasilkan \textit{itemset} dan \textit{count} yang sama dengan perhitungan \textit{brute force} atas seluruh subset. Pada data asli, hasil keempat \textit{min\_sup} identik dengan \texttt{mlxtend} \cite{raschka2018} (Tabel~\ref{tab:t4-validasi}).
+
+\begin{table}[ht]
+\caption{Validasi FP-Growth terhadap \texttt{mlxtend} pada \textit{author-based}}
+\label{tab:t4-validasi}
+\small
+\begin{tabular}{@{}lrrrrrc@{}}
+\toprule
+\textbf{\textit{min\_sup}} & \textbf{FP-Growth} & \textbf{\texttt{mlxtend}} & \textbf{Hilang} & \textbf{Berlebih} & \textbf{\textit{Count} beda} & \textbf{Identik} \\
+\midrule
+0,1\% & 1.514 & 1.514 & 0 & 0 & 0 & ya \\
+0,5\% & 88 & 88 & 0 & 0 & 0 & ya \\
+1\% & 30 & 30 & 0 & 0 & 0 & ya \\
+2\% & 6 & 6 & 0 & 0 & 0 & ya \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{\textit{Frequent itemsets} pada empat \textit{min\_sup}}
+\label{sec:hasil-t4-fp-jumlah}
+Tabel~\ref{tab:t4-ukuran} dan Gambar~\ref{fig:t4-ukuran} menunjukkan jumlah \textit{frequent itemsets} menurut ukurannya. Pada \textit{min\_sup} 0,1\% ditemukan 1.514 \textit{itemset}, terdiri atas 574 1-\textit{itemset}, 393 pasangan, 348 \textit{triple}, dan 199 \textit{itemset} berisi empat sampai enam konferensi. Pada 0,5\% tersisa 88 \textit{itemset} dengan satu \textit{triple}, pada 1\% tersisa 30 \textit{itemset} dengan satu pasangan, dan pada 2\% hanya enam konferensi tunggal. Perkiraan pada Subbab~\ref{sec:hasil-support-item} terkonfirmasi: \textit{min\_sup} 2\% tidak menghasilkan satu pun pasangan.
+
+\begin{table}[ht]
+\caption{Jumlah \textit{frequent itemsets} FP-Growth menurut ukuran}
+\label{tab:t4-ukuran}
+\small
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+\textbf{\textit{min\_sup}} & \textbf{\textit{Min count}} & \textbf{Total} & \textbf{1 item} & \textbf{2 item} & \textbf{3 item} & \textbf{4--6 item} & \textbf{Terpanjang} \\
+\midrule
+0,1\% & 1.822 & 1.514 & 574 & 393 & 348 & 199 & 6 \\
+0,5\% & 9.109 & 88 & 66 & 21 & 1 & 0 & 3 \\
+1\% & 18.218 & 30 & 29 & 1 & 0 & 0 & 2 \\
+2\% & 36.436 & 6 & 6 & 0 & 0 & 0 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-t4-itemset-ukuran}
+\caption{Jumlah \textit{frequent itemsets} menurut ukuran dan \textit{min\_sup}}
+\label{fig:t4-ukuran}
+\end{figure}
+
+\section{Sepuluh \textit{itemset} dengan \textit{support} tertinggi}
+\label{sec:hasil-t4-fp-top10}
+Pada \textit{min\_sup} 0,1\%, 0,5\%, dan 1\%, sepuluh \textit{itemset} dengan \textit{support} tertinggi sama persis dan seluruhnya berupa konferensi tunggal (Tabel~\ref{tab:t4-top10}). Pada 2\% hanya enam konferensi pertama yang lolos, karena IGARSS (35.229 penulis) berada di bawah ambang 36.436. Tidak ada kombinasi yang masuk sepuluh besar karena pasangan teratas, ICML dan NeurIPS, hanya didukung 18.503 penulis, lebih sedikit dari konferensi ke-10, IROS (31.249 penulis).
+
+\begin{table}[ht]
+\caption{Sepuluh \textit{itemset} dengan \textit{support} tertinggi (\textit{min\_sup} 0,1\%, 0,5\%, dan 1\%)}
+\label{tab:t4-top10}
+\small
+\begin{tabular}{@{}rlrr@{}}
+\toprule
+\textbf{\#} & \textbf{\textit{Itemset}} & \textbf{Penulis} & \textbf{\textit{Support}} \\
+\midrule
+1 & NeurIPS & 57.800 & 3,17\% \\
+2 & CVPR & 47.664 & 2,62\% \\
+3 & AAAI & 46.437 & 2,55\% \\
+4 & ICASSP & 42.057 & 2,31\% \\
+5 & EMBC & 39.318 & 2,16\% \\
+6 & HCI & 37.884 & 2,08\% \\
+7 & IGARSS & 35.229 & 1,93\% \\
+8 & EMNLP & 33.954 & 1,86\% \\
+9 & ICML & 31.896 & 1,75\% \\
+10 & IROS & 31.249 & 1,72\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Pengaruh \textit{min\_sup}}
+\label{sec:hasil-t4-fp-minsup}
+Jumlah \textit{itemset} turun 17,2 kali dari 0,1\% ke 0,5\% (1.514 menjadi 88) dan 252 kali dari 0,1\% ke 2\% (1.514 menjadi 6). \textit{Itemset} besar hilang lebih dulu: ukuran empat ke atas hanya ada pada 0,1\%, \textit{triple} hilang setelah 0,5\%, dan pasangan hilang setelah 1\%. Penyebabnya adalah sebaran transaksi yang berekor panjang (Subbab~\ref{sec:hasil-statistik-tx}). Sebanyak 58,4\% penulis hanya menerbitkan di satu \textit{venue} sehingga hanya sebagian kecil transaksi yang dapat memuat kombinasi, dan \textit{support} sebuah kombinasi jauh lebih kecil dari \textit{support} konferensi penyusunnya. Akibatnya, hanya \textit{min\_sup} 0,1\% yang menghasilkan pola kombinasi yang cukup kaya untuk dianalisis. Pada 1\% dan 2\% hasilnya praktis hanya mengulang peringkat popularitas \textit{Task} 2, dan \textit{Task} 5 memakai hasil 0,1\% sebagai dasar utama.
+
+\section{Kombinasi konferensi yang paling sering muncul bersama}
+\label{sec:hasil-t4-fp-kombinasi}
+Hasil pada 0,1\% memuat seluruh hasil pada \textit{min\_sup} yang lebih tinggi sehingga kombinasi teratas diambil dari sana. Tabel~\ref{tab:t4-pasangan} dan Gambar~\ref{fig:t4-pasangan} menunjukkan sepuluh pasangan teratas, dengan kolom \textit{min\_sup} tertinggi tempat pasangan itu masih \textit{frequent}. Pasangan ini sama dengan pratinjau pada Tabel~\ref{tab:top-pasangan}, kini sebagai hasil \textit{mining}. ICML dan NeurIPS adalah satu-satunya pasangan yang masih \textit{frequent} pada 1\%.
+
+\begin{table}[ht]
+\caption{Sepuluh pasangan konferensi teratas (\textit{min\_sup} 0,1\%)}
+\label{tab:t4-pasangan}
+\small
+\begin{tabular}{@{}rlrrr@{}}
+\toprule
+\textbf{\#} & \textbf{Pasangan} & \textbf{Penulis} & \textbf{\textit{Support}} & \textbf{\textit{Frequent} sampai} \\
+\midrule
+1 & ICML + NeurIPS & 18.503 & 1,02\% & 1\% \\
+2 & ICLR + NeurIPS & 17.852 & 0,98\% & 0,5\% \\
+3 & AAAI + NeurIPS & 15.973 & 0,88\% & 0,5\% \\
+4 & CVPR + NeurIPS & 15.640 & 0,86\% & 0,5\% \\
+5 & CVPR + ICCV & 15.441 & 0,85\% & 0,5\% \\
+6 & ACL + EMNLP & 14.557 & 0,80\% & 0,5\% \\
+7 & CVPR + ECCV & 13.752 & 0,75\% & 0,5\% \\
+8 & ICLR + ICML & 12.947 & 0,71\% & 0,5\% \\
+9 & AAAI + CVPR & 12.169 & 0,67\% & 0,5\% \\
+10 & ICRA + IROS & 11.860 & 0,65\% & 0,5\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-t4-pasangan}
+\caption{Sepuluh pasangan konferensi teratas pada \textit{min\_sup} 0,1\%}
+\label{fig:t4-pasangan}
+\end{figure}
+
+Tabel~\ref{tab:t4-triple} menunjukkan sepuluh \textit{triple} teratas. ICLR, ICML, dan NeurIPS (10.413 penulis) adalah satu-satunya \textit{triple} yang masih \textit{frequent} pada 0,5\%. NeurIPS muncul pada empat dari sepuluh pasangan teratas dan delapan dari sepuluh \textit{triple} teratas. \textit{Itemset} terpanjang berisi enam konferensi, yaitu AAAI, CVPR, ECCV, ICCV, ICLR, dan NeurIPS (2.005 penulis), disusul CVPR, ECCV, ICCV, ICLR, ICML, dan NeurIPS (1.849) serta AAAI, CVPR, ECCV, ICCV, ACM Multimedia, dan NeurIPS (1.827). Seluruh 40 \textit{itemset} berukuran lima atau enam hanya melibatkan 14 konferensi, dan NeurIPS ada pada 35 di antaranya.
+
+\begin{table}[ht]
+\caption{Sepuluh \textit{triple} konferensi teratas (\textit{min\_sup} 0,1\%)}
+\label{tab:t4-triple}
+\small
+\begin{tabular}{@{}rlrr@{}}
+\toprule
+\textbf{\#} & \textbf{\textit{Triple}} & \textbf{Penulis} & \textbf{\textit{Support}} \\
+\midrule
+1 & ICLR + ICML + NeurIPS & 10.413 & 0,57\% \\
+2 & CVPR + ECCV + ICCV & 8.474 & 0,47\% \\
+3 & CVPR + ICCV + NeurIPS & 8.407 & 0,46\% \\
+4 & AAAI + ICML + NeurIPS & 7.585 & 0,42\% \\
+5 & AAAI + ICLR + NeurIPS & 7.371 & 0,40\% \\
+6 & AAAI + CVPR + NeurIPS & 7.301 & 0,40\% \\
+7 & CVPR + ECCV + NeurIPS & 7.272 & 0,40\% \\
+8 & CVPR + ICLR + NeurIPS & 7.157 & 0,39\% \\
+9 & AAAI + CVPR + ICCV & 6.477 & 0,36\% \\
+10 & CVPR + ICML + NeurIPS & 6.259 & 0,34\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Popularitas dan keterhubungan}
+\label{sec:hasil-t4-fp-keterhubungan}
+Konferensi yang besar belum tentu sering dipasangkan dengan konferensi lain. Dari 574 konferensi yang \textit{frequent} pada 0,1\%, hanya 105 yang muncul pada minimal satu pasangan \textit{frequent}. Tabel~\ref{tab:t4-keterhubungan} membandingkan sepuluh konferensi terbesar. AAAI, NeurIPS, ICASSP, dan CVPR masing-masing termasuk dalam 34 sampai 44 pasangan \textit{frequent}, sedangkan EMBC, IGARSS, dan HCI hanya dalam empat, empat, dan satu pasangan. Dua kolom terakhir menjelaskan penyebabnya. Penulis NeurIPS, CVPR, dan ICASSP biasanya menerbitkan di enam konferensi, dan hanya 10,3\% sampai 11,6\% yang menerbitkan di satu konferensi saja. Penulis EMBC, HCI, dan IGARSS biasanya hanya menerbitkan di satu atau dua konferensi, dan 37,4\% sampai 54,2\% tidak pernah menerbitkan di konferensi lain. Penulis yang menerbitkan di tempat lain pun tersebar ke banyak konferensi berbeda sehingga tidak ada pasangan yang mencapai 1.822 penulis.
+
+\begin{table}[ht]
+\caption{Keterhubungan sepuluh konferensi terbesar pada \textit{min\_sup} 0,1\%}
+\label{tab:t4-keterhubungan}
+\small
+\begin{tabularx}{\textwidth}{@{}lrr>{\raggedleft\arraybackslash}X>{\raggedleft\arraybackslash}X@{}}
+\toprule
+\textbf{Konferensi} & \textbf{Penulis} & \textbf{Pasangan \textit{frequent}} & \textbf{Penulis yang hanya di konferensi ini} & \textbf{Median konferensi per penulis} \\
+\midrule
+NeurIPS & 57.800 & 42 & 11,6\% & 6 \\
+CVPR & 47.664 & 34 & 10,3\% & 6 \\
+AAAI & 46.437 & 44 & 8,5\% & 8 \\
+ICASSP & 42.057 & 41 & 10,6\% & 6 \\
+EMBC & 39.318 & 4 & 37,4\% & 2 \\
+HCI & 37.884 & 1 & 40,8\% & 2 \\
+IGARSS & 35.229 & 4 & 54,2\% & 1 \\
+EMNLP & 33.954 & 25 & 11,1\% & 7 \\
+ICML & 31.896 & 24 & 8,4\% & 7 \\
+IROS & 31.249 & 14 & 16,4\% & 4 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Interpretasi}
+\label{sec:hasil-t4-fp-interpretasi}
+Nama bidang pada subbab ini, yaitu \textit{machine learning}, \textit{computer vision}, NLP, robotika, dan kecerdasan buatan umum, adalah pengetahuan umum penulis laporan, bukan atribut hasil \textit{mining}. Nama itu dicocokkan dengan judul prosiding pada data DBLP (\texttt{venue\_proceedings.csv}), misalnya \textit{Neural Information Processing Systems}, \textit{Computer Vision and Pattern Recognition}, \textit{Computational Linguistics}, \textit{Robotics and Automation}, dan \textit{Artificial Intelligence}.
+
+\textbf{Kombinasi yang lolos ambang berasal dari bidang yang sama.} Pasangan teratas mengelompok menjadi \textit{machine learning} (ICML, ICLR, NeurIPS), \textit{computer vision} (CVPR, ICCV, ECCV), NLP (ACL, EMNLP), dan robotika (ICRA, IROS). Kombinasi lintas bidang yang lolos hanya terjadi antara \textit{machine learning}, \textit{computer vision}, dan AAAI, misalnya CVPR dan NeurIPS (15.640 penulis).
+
+\textbf{NeurIPS menjadi titik temu.} NeurIPS ada pada sebagian besar pasangan, \textit{triple}, dan \textit{itemset} panjang teratas, dan \textit{itemset} berisi lima atau enam konferensi hanya terbentuk di sekitar \textit{machine learning}, \textit{computer vision}, dan AAAI.
+
+\textbf{Popularitas berbeda dengan keterhubungan.} Konferensi besar seperti EMBC, IGARSS, dan HCI hampir tidak membentuk pasangan \textit{frequent}, sedangkan ICASSP terhubung dengan 41 konferensi lain. Pertanyaan apakah konferensi terpopuler juga memiliki asosiasi terkuat dijawab dengan \textit{lift} pada Bab~\ref{sec:hasil-t5}, karena \textit{support} pasangan yang tinggi dapat muncul hanya karena kedua konferensinya besar.
+
+\textbf{Batas tafsiran.} \textit{Support} hanya mengukur seberapa sering kombinasi muncul. Kombinasi lintas bidang dapat saja banyak secara total tetapi tersebar ke banyak pasangan kecil yang tidak lolos ambang 1.822 penulis, sehingga hasil ini tidak membuktikan bahwa penulis jarang berpindah bidang. Selain itu, 291 transaksi dengan 100 konferensi atau lebih hampir seluruhnya milik nama umum tanpa nomor disambiguasi (Subbab~\ref{sec:hasil-statistik-tx}). Transaksi ini menyumbang median 3,0\% \textit{count} pasangan dan 3,9\% \textit{count} \textit{triple}. Tanpa transaksi tersebut, 109 dari 1.514 \textit{itemset} pada 0,1\% (7\%) jatuh di bawah ambang, tetapi sepuluh pasangan teratas hanya berkurang 0,8\% sampai 1,8\% (ICML dan NeurIPS dari 18.503 menjadi 18.348). Kesimpulan utama tidak berubah, dan hasil dilaporkan apa adanya.
+
+\section{Jawaban pertanyaan \textit{Task} 4 (sisi FP-Growth)}
+\label{sec:jawab-t4-fp}
+\textbf{\textit{Frequent itemsets}.} FP-Growth menemukan 1.514, 88, 30, dan 6 \textit{frequent itemsets} pada \textit{min\_sup} 0,1\%, 0,5\%, 1\%, dan 2\%, identik dengan \texttt{mlxtend}.
+
+\textbf{1-, 2-, dan 3-\textit{itemset}.} Berturut-turut 574, 393, dan 348 pada 0,1\%; 66, 21, dan 1 pada 0,5\%; 29, 1, dan 0 pada 1\%; serta 6, 0, dan 0 pada 2\%. Pada 0,1\% juga terdapat 199 \textit{itemset} berisi empat sampai enam konferensi.
+
+\textbf{Sepuluh \textit{itemset} teratas.} Seluruhnya konferensi tunggal, dipimpin NeurIPS (57.800 penulis, \textit{support} 3,17\%), CVPR (47.664), dan AAAI (46.437).
+
+\textbf{Pengaruh \textit{min\_sup}.} Jumlah \textit{itemset} turun 17,2 kali dari 0,1\% ke 0,5\% dan 252 kali dari 0,1\% ke 2\%, dan \textit{itemset} besar hilang lebih dulu. Hanya 0,1\% yang menghasilkan pola kombinasi yang cukup kaya.
+
+\textbf{Kombinasi yang paling sering muncul bersama.} ICML dan NeurIPS (18.503 penulis, \textit{support} 1,02\%) untuk pasangan, ICLR, ICML, dan NeurIPS (10.413) untuk \textit{triple}, serta AAAI, CVPR, ECCV, ICCV, ICLR, dan NeurIPS (2.005) sebagai \textit{itemset} terpanjang.
+
+\textbf{Interpretasi.} Kombinasi yang lolos ambang mengelompok per bidang dengan NeurIPS sebagai titik temu, dan popularitas sebuah konferensi tidak menjamin keterhubungannya dengan konferensi lain.

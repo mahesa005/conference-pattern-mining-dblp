@@ -1,7 +1,7 @@
 \chapter{ANALISIS DAN INTERPRETASI}
 \label{chap:analisis}
 
-Bab ini menafsirkan temuan \textit{Task} 1 sampai \textit{Task} 3 sebagai dasar eksperimen \textit{mining}. Interpretasi hasil \textit{frequent pattern mining}, \textit{association rules}, performa, dan analisis temporal ditambahkan setelah eksperimen tersebut selesai.
+Bab ini menafsirkan temuan seluruh \textit{task} dengan merangkum maknanya, bukan mengulang angka pada bab hasil. Angka rinci ada pada bab yang dirujuk.
 
 \section{Makna Hasil Pemahaman Data}
 Tiga temuan pada Bab~\ref{chap:prepro} menentukan cara membaca seluruh hasil berikutnya.
@@ -19,10 +19,19 @@ Pertumbuhan tidak merata. Konferensi kecerdasan buatan dan pemrosesan bahasa ala
 \section{Makna Pilihan Representasi Transaksi}
 Dua representasi menjawab pertanyaan berbeda, dan perbedaannya terukur. \textit{Author-based} menangkap riwayat penulis selama sebelas tahun, sedangkan \textit{author-year-based} hanya menangkap kemunculan pada tahun yang sama. Akibatnya \textit{support} pasangan pada \textit{author-year-based} median 0,29 kali, sekitar 23\% pasangan tidak pernah muncul, dan konferensi dua tahunan berselang seperti ICCV dan ECCV tidak dapat berpasangan sama sekali. Pratinjau pasangan menunjukkan kandidat keterkaitan terkuat berada di antara konferensi kecerdasan buatan (ICML, NeurIPS, ICLR, CVPR), tetapi kandidat tersebut baru dapat disimpulkan setelah \textit{Task} 4 dan \textit{Task} 5.
 
-\section{Implikasi untuk Eksperimen Berikutnya}
+\section{Makna Hasil \textit{Frequent Pattern Mining} dan \textit{Association Rules}}
+Bab~\ref{chap:fpm} dan Bab~\ref{chap:rules} memperlihatkan bahwa keterkaitan konferensi mengelompok per bidang. Kombinasi yang paling sering muncul bersama adalah ICML dan NeurIPS, dan \textit{itemset} terpanjang berisi enam konferensi kecerdasan buatan dan \textit{computer vision}. Popularitas tidak sama dengan keterkaitan kuat: konferensi terpopuler memiliki paling banyak asosiasi, tetapi \textit{lift} \textit{rules} yang menuju kepadanya rendah karena \textit{lift} dibagi dengan \textit{support} konferensi tujuan. Hubungan satu-ke-satu terkuat justru dimiliki pasangan konferensi yang lebih kecil dalam satu bidang, misalnya ECOC dan OFC. \textit{Lift} yang sangat tinggi pada \textit{rule} berisi banyak konferensi perlu dibaca bersama \textit{support}-nya, karena sebagian bergantung pada nama umum yang menggabungkan banyak orang.
+
+\section{Makna Perbandingan Performa}
+Pada Bab~\ref{chap:performa}, kedua algoritma menghasilkan \textit{itemset} dan \textit{rules} yang identik dengan waktu yang setara. Transaksi DBLP pendek dan polanya dangkal, sehingga keunggulan FP-Growth yang tidak membangkitkan kandidat belum terlihat pada waktu. Keunggulan itu tampak pada jumlah kandidat Apriori, yang tumbuh kuadratik terhadap jumlah item \textit{frequent}. Dengan demikian pemilihan algoritma pada \textit{dataset} ini lebih ditentukan oleh skalabilitas bila ambang diturunkan, bukan oleh waktu pada empat \textit{min\_sup} yang diuji.
+
+\section{Makna Analisis Temporal}
+Bab~\ref{chap:temporal} menunjukkan bahwa kelompok konferensi yang ditemukan tetap sama antarperiode, tetapi pusat perhatiannya bergeser dari konferensi komunikasi (GLOBECOM dan ICC) ke konferensi kecerdasan buatan (ICLR dan NeurIPS). Sebagian perubahan ditentukan oleh data, bukan oleh perilaku penulis: konferensi yang tidak diadakan setiap tahun dan tahun yang tidak tercatat di DBLP membuat sebagian \textit{rules} muncul atau hilang.
+
+\section{Penafsiran yang Perlu Hati-hati}
 \begin{enumerate}
-\item \textit{Min support} 2\% diperkirakan tidak menghasilkan \textit{itemset} berukuran dua karena pasangan teratas hanya memiliki \textit{support} 1,02\%.
-\item Beban kombinasi terkonsentrasi pada transaksi terbesar (0,1\% transaksi menanggung 27,8\%), sehingga waktu proses kemungkinan ditentukan oleh sedikit transaksi.
-\item \textit{Lift} perlu dibaca bersama \textit{support}, karena \textit{venue} kecil dapat menghasilkan \textit{lift} besar secara kebetulan.
-\item Analisis temporal perlu memperlakukan 2025 dengan hati-hati karena datanya tidak lengkap.
+\item Seluruh peringkat dan asosiasi berlaku untuk definisi \textit{venue} berbasis \textit{key}, yaitu \textit{workshop} ikut konferensi induk.
+\item Nama penulis umum yang menggabungkan banyak orang memengaruhi sebagian \textit{itemset} dan \textit{rules} yang besar, sehingga hasil dibaca bersama keterbatasan pada Bab~\ref{chap:kesimpulan}.
+\item \textit{Lift} dipakai untuk membandingkan \textit{rules}, bukan sebagai ukuran mutlak, karena \textit{min\_conf} 50\% dan \textit{support} konferensi yang rendah menjadikan \textit{lift} minimum cukup tinggi.
+\item Data 2025 tidak lengkap sehingga periode 2024--2025 pada Bagian E bias.
 \end{enumerate}

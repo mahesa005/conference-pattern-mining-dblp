@@ -2,7 +2,9 @@
 
 Keluaran: laporan/images/fig-*.tex (isi tikzpicture), diinput oleh bab laporan.
 Jalankan: .venv/bin/python src/build_report_figures.py
+Atau hanya gambar tertentu: .venv/bin/python src/build_report_figures.py fig_t4_itemset_ukuran fig_t5_arah_rules
 """
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -299,13 +301,140 @@ def fig_dumbbells():
              [("dot", BLUE, "author-based (rasio terhadap author-year dalam kurung)"), ("dot", ORANGE, "author-year-based")], label_w=2.9)
 
 
+def arrow(text):
+    return esc(text).replace("→", "$\\Rightarrow$")
+
+
+def fig_t4_itemset_ukuran():
+    df = pd.read_csv(TAB / "t4_fpgrowth_ringkasan.csv")
+    cols = [("k1", BLUE, "1 item"), ("k2", ORANGE, "2 item"), ("k3", BLUE_L, "3 item"), ("k4+", GRAY, "4 sampai 6 item")]
+    height, vmax, bar, group = 4.6, 600, 0.55, 3.0
+    k = height / vmax
+    body = []
+    for g in range(0, vmax + 1, 100):
+        body.append(f"\\draw[grayline] (0,{g * k}) -- ({group * len(df)},{g * k});")
+        body.append(f"\\node[left,inner sep=2pt] at (0,{g * k}) {{{idn(g)}}};")
+    body.append(f"\\node[rotate=90] at (-0.9,{height / 2}) {{Jumlah \\textit{{frequent itemsets}}}};")
+    for i, (_, r) in enumerate(df.iterrows()):
+        x0 = 0.3 + i * group
+        for j, (col, color, _) in enumerate(cols):
+            x, v = x0 + j * bar, int(r[col])
+            body.append(f"\\fill[{color}] ({x},0) rectangle ({x + bar * 0.9},{v * k});")
+            body.append(f"\\node[above,inner sep=1pt,font=\\tiny] at ({x + bar * 0.45},{v * k}) {{{idn(v)}}};")
+        label = pct(r["min_support"] * 100, 1).replace(",0\\%", "\\%")
+        body.append(f"\\node[below,inner sep=2pt] at ({x0 + bar * 2},0) {{\\textit{{min\\_sup}} {label}}};")
+        body.append(f"\\node[below,inner sep=2pt,text=black!60] at ({x0 + bar * 2},-0.4) {{total {idn(int(r['itemsets']))}}};")
+    items, _ = legend([("rect", c, lab) for _, c, lab in cols], 0, -1.4)
+    write("t4-itemset-ukuran", body + items)
+
+
+def fig_t4_pasangan():
+    p = pd.read_csv(TAB / "t4_fpgrowth_pasangan_teratas.csv")
+    rows = [(esc(r["names"]), r["count"], r["bertahan_sampai"] == "1,0%",
+             f"{idn(r['count'])} ({pct(r['support'] * 100, 2)})") for _, r in p.iterrows()]
+    hbar("t4-pasangan", rows, 20000, [0, 5000, 10000, 15000, 20000], lambda t: idn(t / 1000),
+         "Penulis yang menerbitkan di kedua konferensi (ribu)",
+         [("rect", BLUE, "masih frequent pada min\\_sup 1\\%"), ("rect", BLUE_L, "frequent sampai min\\_sup 0,5\\%")], label_w=3.0)
+
+
+def fig_t5_arah_rules():
+    r = pd.read_csv(TAB / "t5_rules_satu_ke_satu_arah.csv")
+    r["rule"] = r["rule"].str.replace("Conference on Designing Interactive Systems", "DIS", regex=False)
+    rows = [(f"{arrow(x['rule'])} (\\textit{{lift}} {idn(x['lift'], 1)})", x["confidence"] * 100, x["confidence_balik"] * 100,
+             pct(x["confidence"] * 100, 0), pct(x["confidence_balik"] * 100, 0)) for _, x in r.iterrows()]
+    dumbbell("t5-arah-rules", rows, 80, [0, 20, 40, 60, 80], 0.1, "\\textit{Confidence} (\\%)",
+             [("dot", BLUE, "$A \\Rightarrow B$ (arah rule)"), ("dot", ORANGE, "$B \\Rightarrow A$ (arah balik, di bawah 50\\%)")],
+             label_w=4.4, row_h=0.42)
+
+
+def fig_t5_lift_konferensi():
+    c = pd.read_csv(TAB / "t5_support_vs_lift_consequent.csv")
+    lo, hi, width, height = 0.5, 3.5, 10.0, 5.6
+
+    def px(s):
+        return (s * 100 - lo) / (hi - lo) * width
+
+    def py(v):
+        return v / 100 * height
+
+    body = []
+    for t in (0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5):
+        body.append(f"\\draw[grayline] ({px(t / 100)},0) -- ({px(t / 100)},{height});")
+        body.append(f"\\node[below,inner sep=2pt] at ({px(t / 100)},0) {{{idn(t, 1)}}};")
+    for t in range(0, 101, 20):
+        body.append(f"\\draw[grayline] (0,{py(t)}) -- ({width},{py(t)});")
+        body.append(f"\\node[left,inner sep=2pt] at (0,{py(t)}) {{{t}}};")
+    body.append(f"\\node[below,inner sep=2pt] at ({width / 2},-0.45) {{\\textit{{Support}} konferensi (\\% penulis)}};")
+    body.append(f"\\node[rotate=90] at (-0.85,{height / 2}) {{Median \\textit{{lift}} rules yang menuju konferensi}};")
+    labelled = {"NeurIPS", "CVPR", "AAAI", "ICASSP", "ACL", "ECCV", "ICCV", "CDC", "OFC", "INTERSPEECH", "WCNC"}
+    for _, r in c.iterrows():
+        x, y = px(r["support_konferensi"]), py(r["lift_median"])
+        dark = r["konferensi"] in labelled
+        body.append(f"\\fill[{BLUE if dark else BLUE_L}] ({x},{y}) circle (0.08);")
+        if dark:
+            body.append(f"\\node[anchor=west,inner sep=2pt] at ({x + 0.08},{y}) {{{esc(r['konferensi'])} ({idn(r['lift_median'], 1)})}};")
+    body.append(f"\\node[anchor=north east,font=\\scriptsize\\bfseries] at ({width},{height}) {{Spearman $\\rho = -0{{,}}933$ (26 konferensi)}};")
+    items, _ = legend([("dot", BLUE, "konferensi yang diberi label"), ("dot", BLUE_L, "konferensi lain")], 0, -1.3)
+    write("t5-lift-konferensi", body + items)
+
+
+def fig_t4_apriori_kandidat():
+    lv = pd.read_csv(TAB / "t4_apriori_level.csv")
+    lv = lv[lv["min_support"] == 0.001]
+    height, decades, group, bar = 4.2, 6, 1.9, 0.75
+    k = height / decades
+    body = []
+    for d in range(decades + 1):
+        body.append(f"\\draw[grayline] (0,{d * k}) -- ({group * len(lv)},{d * k});")
+        body.append(f"\\node[left,inner sep=2pt] at (0,{d * k}) {{{idn(10 ** d)}}};")
+    body.append(f"\\node[rotate=90] at (-1.25,{height / 2}) {{Jumlah \\textit{{itemset}} (skala log)}};")
+    for i, (_, r) in enumerate(lv.iterrows()):
+        x0 = 0.2 + i * group
+        for j, (col, color) in enumerate((("kandidat", GRAY), ("frequent", BLUE))):
+            x, v = x0 + j * bar, int(r[col])
+            y = np.log10(v) * k if v > 0 else 0
+            body.append(f"\\fill[{color}] ({x},0) rectangle ({x + bar * 0.9},{y});")
+            body.append(f"\\node[above,inner sep=1pt,font=\\tiny] at ({x + bar * 0.45},{y}) {{{idn(v)}}};")
+        body.append(f"\\node[below,inner sep=2pt] at ({x0 + bar},0) {{$k = {int(r['k'])}$}};")
+    items, _ = legend([("rect", GRAY, "kandidat $C_k$"), ("rect", BLUE, "\\textit{frequent} $L_k$")], 0, -1.0)
+    write("t4-apriori-kandidat", body + items)
+
+
+def fig_t6_waktu():
+    raw = pd.read_csv(TAB / "t6_waktu_mentah.csv")
+    height, vmax, group, bar = 4.2, 6, 3.0, 0.9
+    k = height / vmax
+    body = []
+    for g in range(0, vmax + 1):
+        body.append(f"\\draw[grayline] (0,{g * k}) -- ({group * 4},{g * k});")
+        body.append(f"\\node[left,inner sep=2pt] at (0,{g * k}) {{{g}}};")
+    body.append(f"\\node[rotate=90] at (-0.7,{height / 2}) {{Waktu (detik)}};")
+    for i, (ms, runs) in enumerate(raw.groupby("min_support", sort=True)):
+        x0 = 0.5 + i * group
+        for j, algo in enumerate(("Apriori", "FP-Growth")):
+            r = runs[runs["algorithm"] == algo].sort_values("seconds").iloc[1]  # run median dari tiga pengulangan
+            x = x0 + j * (bar + 0.15)
+            if algo == "Apriori":
+                body.append(f"\\fill[{ORANGE}] ({x},0) rectangle ({x + bar},{r['seconds'] * k});")
+            else:
+                body.append(f"\\fill[{BLUE}] ({x},0) rectangle ({x + bar},{r['t_build'] * k});")
+                body.append(f"\\fill[{BLUE_L}] ({x},{r['t_build'] * k}) rectangle ({x + bar},{r['seconds'] * k});")
+            body.append(f"\\node[above,inner sep=1pt,font=\\tiny] at ({x + bar / 2},{r['seconds'] * k}) {{{idn(r['seconds'], 2)}}};")
+        label = pct(ms * 100, 1).replace(",0\\%", "\\%")
+        body.append(f"\\node[below,inner sep=2pt] at ({x0 + bar + 0.075},0) {{\\textit{{min\\_sup}} {label}}};")
+    items, _ = legend([("rect", ORANGE, "Apriori (total)"), ("rect", BLUE, "FP-Growth: pembentukan FP-tree"),
+                       ("rect", BLUE_L, "FP-Growth: penambangan")], 0, -1.0)
+    write("t6-waktu", body + items)
+
+
+FIGURES = [fig_jenis_publikasi, fig_publikasi_tahun, fig_top10, fig_cagr, fig_slope, fig_komposisi, fig_waffle,
+           fig_dumbbells, fig_t4_itemset_ukuran, fig_t4_pasangan, fig_t5_arah_rules, fig_t5_lift_konferensi,
+           fig_t4_apriori_kandidat, fig_t6_waktu]
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    fig_jenis_publikasi()
-    fig_publikasi_tahun()
-    fig_top10()
-    fig_cagr()
-    fig_slope()
-    fig_komposisi()
-    fig_waffle()
-    fig_dumbbells()
+    wanted = set(sys.argv[1:])
+    for figure in FIGURES:
+        if not wanted or figure.__name__ in wanted:
+            figure()

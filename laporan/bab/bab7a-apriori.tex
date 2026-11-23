@@ -1,0 +1,81 @@
+% Sisi Apriori dari Task 4 (Harfhan). Diinput pada bab4-task4-7.tex sebelum sisi FP-Growth.
+\section{Implementasi dan validasi Apriori}
+\label{sec:hasil-t4-apriori}
+Apriori \cite{agrawal1994} diimplementasikan sendiri (\texttt{src/apriori.py}) dan dijalankan pada \textit{author-based database} dengan empat \textit{min\_sup} yang sama dengan FP-Growth. Setiap tingkat $k$ membentuk kandidat $C_k$ dari \textit{frequent} $(k-1)$-\textit{itemset} $L_{k-1}$. Langkah \textit{join} menggabungkan dua \textit{itemset} yang memiliki $k-2$ item pertama yang sama, lalu langkah \textit{prune} membuang kandidat yang memiliki subset berukuran $k-1$ tidak \textit{frequent}. \textit{Support} kandidat yang tersisa dihitung dengan satu pemindaian, dan proses berhenti ketika $L_k$ kosong.
+
+Pra-pemrosesan dibuat sama dengan FP-Growth agar perbandingan waktu pada Bab~\ref{sec:hasil-t6} adil. Item yang tidak \textit{frequent} dipangkas setelah pemindaian pertama, transaksi dengan kurang dari dua item \textit{frequent} dilewati tetapi tetap dihitung pada penyebut \textit{support}, dan transaksi yang identik setelah pemangkasan digabung lalu dihitung sekali dengan bobotnya. Pada \textit{min\_sup} 0,1\%, langkah ini memadatkan 1.821.757 transaksi menjadi 315.694 transaksi unik berbobot, berasal dari 536.543 transaksi yang memuat minimal dua item \textit{frequent}. Ambang \textit{min count} dihitung dengan fungsi yang sama dengan FP-Growth.
+
+Penghitungan kandidat memakai satu optimasi. Untuk setiap transaksi, item yang tidak ada pada kandidat mana pun dibuang lebih dulu, lalu dipilih cara yang lebih murah: mengenumerasi seluruh subset berukuran $k$ dari transaksi dan mencocokkannya dengan himpunan kandidat, atau memeriksa setiap kandidat sebagai subset transaksi. Optimasi ini diperlukan karena transaksi terpanjang memuat 187 item \textit{frequent} pada 0,1\%, sehingga enumerasi subset berukuran tiga saja menghasilkan lebih dari satu juta kombinasi untuk satu transaksi.
+
+Implementasi diuji dengan \texttt{pytest} pada tiga lapis. Contoh sembilan transaksi pada buku \textcite{han2012} menghasilkan $|C_1| = 5$, $|C_2| = 10$, dan $|C_3| = 2$ setelah \textit{prune}, beserta 13 \textit{frequent itemsets}, sama dengan buku. Enam \textit{dataset} acak menghasilkan \textit{itemset} dan \textit{count} yang sama dengan \textit{brute force}, dan transaksi kosong terbukti tetap dihitung pada penyebut. Pada data asli, hasil keempat \textit{min\_sup} identik dengan \texttt{mlxtend} dan dengan FP-Growth (Tabel~\ref{tab:t4-apriori-validasi}).
+
+\begin{table}[ht]
+\caption{Validasi Apriori terhadap \texttt{mlxtend} dan FP-Growth pada \textit{author-based}}
+\label{tab:t4-apriori-validasi}
+\small
+\begin{tabular}{@{}lrrrrrc@{}}
+\toprule
+\textbf{\textit{min\_sup}} & \textbf{Apriori} & \textbf{\texttt{mlxtend}} & \textbf{FP-Growth} & \textbf{Hilang} & \textbf{Berlebih} & \textbf{Identik} \\
+\midrule
+0,1\% & 1.514 & 1.514 & 1.514 & 0 & 0 & ya \\
+0,5\% & 88 & 88 & 88 & 0 & 0 & ya \\
+1\% & 30 & 30 & 30 & 0 & 0 & ya \\
+2\% & 6 & 6 & 6 & 0 & 0 & ya \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Karena \textit{itemset} dan \textit{count}-nya identik, Tabel~\ref{tab:t4-ukuran}, \ref{tab:t4-top10}, \ref{tab:t4-pasangan}, dan \ref{tab:t4-triple} pada subbab FP-Growth berlaku juga untuk Apriori dan tidak diulang di sini. Bab ini membahas hal yang khas Apriori, yaitu jumlah kandidat yang harus dihitung.
+
+\section{Kandidat dan \textit{frequent itemsets} per tingkat}
+\label{sec:hasil-t4-apriori-kandidat}
+Tabel~\ref{tab:t4-apriori-level} merinci setiap tingkat Apriori pada keempat \textit{min\_sup}: jumlah kandidat $|C_k|$, jumlah \textit{frequent itemsets} $|L_k|$, dan persentase kandidat yang ternyata \textit{frequent}. Kandidat tingkat 1 adalah seluruh 4.373 \textit{venue}. Waktu per tingkat berasal dari satu kali eksekusi pada \textit{notebook} \texttt{03\_apriori} dan hanya dipakai untuk melihat porsi biaya setiap tingkat. Pengukuran waktu berulang ada pada Bab~\ref{sec:hasil-t6}.
+
+\begin{table}[ht]
+\caption{Kandidat dan \textit{frequent itemsets} per tingkat Apriori}
+\label{tab:t4-apriori-level}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{\textit{min\_sup}} & \textbf{$k$} & \textbf{Kandidat $|C_k|$} & \textbf{\textit{Frequent} $|L_k|$} & \textbf{\textit{Frequent}/kandidat} & \textbf{Waktu (detik)} \\
+\midrule
+0,1\% & 1 & 4.373 & 574 & 13,13\% & 1,60 \\
+ & 2 & 164.451 & 393 & 0,24\% & 2,98 \\
+ & 3 & 1.228 & 348 & 28,34\% & 0,78 \\
+ & 4 & 337 & 159 & 47,18\% & 0,40 \\
+ & 5 & 54 & 37 & 68,52\% & 0,16 \\
+ & 6 & 5 & 3 & 60,00\% & 0,10 \\
+\midrule
+0,5\% & 1 & 4.373 & 66 & 1,51\% & 1,31 \\
+ & 2 & 2.145 & 21 & 0,98\% & 0,37 \\
+ & 3 & 13 & 1 & 7,69\% & 0,05 \\
+\midrule
+1\% & 1 & 4.373 & 29 & 0,66\% & 0,87 \\
+ & 2 & 406 & 1 & 0,25\% & 0,12 \\
+\midrule
+2\% & 1 & 4.373 & 6 & 0,14\% & 0,81 \\
+ & 2 & 15 & 0 & 0,00\% & 0,00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\figtikz{fig-t4-apriori-kandidat}
+\caption{Kandidat dan \textit{frequent itemsets} per tingkat Apriori pada \textit{min\_sup} 0,1\%}
+\label{fig:t4-apriori-kandidat}
+\end{figure}
+
+Gambar~\ref{fig:t4-apriori-kandidat} memperlihatkan bahwa biaya Apriori terkumpul di tingkat 2. Pada 0,1\% terdapat 574 item \textit{frequent}, sehingga $C_2$ berisi seluruh $574 \times 573 / 2 = 164.451$ pasangan. Langkah \textit{prune} tidak dapat membuang satu pun pasangan karena setiap subset berukuran satu sudah \textit{frequent}. Hanya 393 pasangan (0,24\%) yang ternyata \textit{frequent}, dan tingkat 2 memakan sekitar separuh total waktu Apriori. Mulai tingkat 3, langkah \textit{prune} bekerja efektif. Dari 393 pasangan hanya terbentuk 1.228 kandidat, dan persentase kandidat yang \textit{frequent} naik dari 28\% pada tingkat 3 menjadi 69\% pada tingkat 5. Secara keseluruhan, Apriori menghitung 166.075 kandidat berukuran dua ke atas untuk menemukan 940 \textit{itemset}, atau 177 kali jumlah \textit{itemset} yang akhirnya \textit{frequent}.
+
+Pada \textit{min\_sup} yang lebih tinggi, $L_1$ jauh lebih kecil (66, 29, dan 6 item) sehingga $C_2$ ikut mengecil secara kuadratik (2.145, 406, dan 15). Waktu kemudian didominasi tingkat 1, yaitu pemindaian pertama 1,8 juta transaksi beserta pemangkasan dan penggabungannya, yang biayanya hampir tetap untuk semua \textit{min\_sup}. Dari 2\% ke 0,1\%, jumlah item \textit{frequent} naik 96 kali, tetapi kandidat tingkat 2 naik sekitar 11.000 kali. Pola ini sesuai dengan sebaran berekor panjang pada Subbab~\ref{sec:hasil-statistik-tx}: banyak konferensi cukup besar untuk lolos sebagai item tunggal, tetapi sangat sedikit pasangan yang lolos.
+
+\section{Jawaban pertanyaan \textit{Task} 4 (sisi Apriori)}
+\label{sec:jawab-t4-apriori}
+\textbf{\textit{Frequent itemsets}.} Apriori menemukan 1.514, 88, 30, dan 6 \textit{frequent itemsets} pada \textit{min\_sup} 0,1\%, 0,5\%, 1\%, dan 2\%, identik dengan \texttt{mlxtend} dan FP-Growth.
+
+\textbf{1-, 2-, dan 3-\textit{itemset}, sepuluh teratas, dan kombinasi teratas.} Sama dengan FP-Growth (Subbab~\ref{sec:jawab-t4-fp}) karena kedua algoritma menghasilkan \textit{itemset} dan \textit{count} yang sama.
+
+\textbf{Pengaruh \textit{min\_sup}.} Selain mengurangi jumlah \textit{itemset}, menaikkan \textit{min\_sup} mengurangi kandidat Apriori secara tajam, dari 166.075 kandidat berukuran dua ke atas pada 0,1\% menjadi 2.158, 406, dan 15 pada 0,5\%, 1\%, dan 2\%. Pada 0,1\%, hampir seluruh kandidat berada di tingkat 2 dan hanya 0,24\% yang \textit{frequent}.
+
+\textbf{Interpretasi.} Pola konferensinya sama dengan Subbab~\ref{sec:hasil-t4-fp-interpretasi}. Dari sisi algoritma, ekor panjang data DBLP adalah kasus yang berat bagi tingkat 2 Apriori tetapi ringan bagi tingkat berikutnya, karena pasangan \textit{frequent} sedikit dan terkumpul pada beberapa bidang.
