@@ -3,6 +3,8 @@
 
 \section{Jenis Publikasi}
 \label{sec:hasil-jenis}
+Jenis publikasi menentukan data yang layak dianalisis, sehingga \textit{dump} dihitung per jenis sebelum dipilih.
+
 \textit{Dump} memuat sembilan jenis \textit{record} dengan total 13.127.979 (Gambar~\ref{fig:jenis}).
 \begin{enumerate}
 \item \texttt{article} dan \texttt{www} menyumbang sekitar 67\% isi \textit{dump}, sedangkan \texttt{inproceedings} hanya 30,5\% (4.004.309 \textit{record}).
@@ -19,6 +21,8 @@
 
 \section{Hasil Tahap \textit{Preprocessing}}
 \label{sec:hasil-prepro}
+\textit{Preprocessing} bertujuan memastikan setiap makalah memiliki penulis, \textit{venue}, dan tahun yang dapat dipakai sebagai transaksi, serta tidak terhitung dua kali. Lima tahap dijalankan berurutan, dan jumlah makalah dicatat setelah setiap tahap.
+
 Gambar~\ref{fig:ilustrasi-prepro} mengilustrasikan setiap tahap dengan contoh asli dari data, dan Tabel~\ref{tab:dampak} menunjukkan dampaknya. Dari 2.004.202 makalah, tersisa 1.997.244 (99,65\%) dengan 6.958 makalah dibuang.
 
 \begin{figure}[!htb]
@@ -56,6 +60,8 @@ Beberapa temuan pada tahap ini perlu dicatat.
 
 \section{Statistik \textit{Dataset}}
 \label{sec:hasil-statistik}
+Dataset bersih terdiri atas hampir dua juta makalah dengan rata-rata hampir empat penulis per makalah, sehingga pasangan makalah-penulis berjumlah hampir empat kali jumlah makalah. Median penulis hanya menulis satu makalah, sedangkan rata-ratanya 4,32 karena sebagian kecil penulis sangat produktif.
+
 Tabel~\ref{tab:statistik} merangkum statistik \textit{dataset} bersih.
 
 \begin{table}[!htb]
@@ -78,6 +84,8 @@ Makalah per penulis (median dan rata-rata) & 1 dan 4,32 \\
 
 \subsection{Distribusi per tahun}
 \label{sec:hasil-tahun}
+Jumlah publikasi per tahun menunjukkan apakah aktivitas konferensi tumbuh dan tahun mana yang dapat dipercaya untuk menghitung tren.
+
 Gambar~\ref{fig:per-tahun} menunjukkan jumlah publikasi per tahun.
 \begin{enumerate}
 \item Publikasi naik dari 160.800 (2015) menjadi 213.328 (2024), yaitu 32,7\% atau CAGR 3,2\% per tahun.
@@ -94,5 +102,7 @@ Gambar~\ref{fig:per-tahun} menunjukkan jumlah publikasi per tahun.
 
 \subsection{Distribusi per konferensi}
 \label{sec:hasil-konferensi}
+Ukuran konferensi diukur dari jumlah makalah selama 2015--2025, dan konsentrasinya dibandingkan antara konferensi dan antarpenulis.
+
 Ukuran \textit{venue} sangat beragam. Distribusinya sangat condong: 231 dari 4.373 \textit{venue} (5,3\%) menghasilkan separuh publikasi, median \textit{venue} hanya 134 makalah dibanding rata-rata 457, dan 1.358 \textit{venue} (31,1\%) memiliki kurang dari 50 makalah. Sepuluh konferensi teratas dibahas pada Bab~\ref{chap:popularitas}. Konsentrasi serupa terjadi pada penulis: 8,3\% penulis (11 makalah atau lebih) menyumbang 52,6\% pasangan makalah-penulis, sedangkan 51,4\% penulis hanya menulis satu makalah.
 

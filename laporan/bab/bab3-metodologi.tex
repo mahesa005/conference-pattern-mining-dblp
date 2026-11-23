@@ -3,6 +3,8 @@
 
 \section{Kerangka \textit{CRISP-DM}}
 \label{sec:crispdm}
+CRISP-DM dipilih karena proses ini memisahkan pekerjaan \textit{data mining} menjadi tahap yang berurutan dan dapat diulang, sehingga sesuai dengan alur proyek ini yang bergerak dari pemahaman data, penyiapan transaksi, \textit{mining}, sampai evaluasi.
+
 Proyek ini mengikuti \textit{Cross-Industry Standard Process for Data Mining} (CRISP-DM) \cite{chapman2000}, yaitu enam tahap yang dapat berulang (Gambar~\ref{fig:crispdm}). Tabel~\ref{tab:crispdm} memetakan setiap tahap ke penerapannya pada proyek ini, dan Gambar~\ref{fig:alur-kerja} menunjukkan alur data antar-\textit{notebook}.
 
 \begin{figure}[!htb]
@@ -104,6 +106,8 @@ Dipakai pada & \textit{Frequent pattern mining} dan \textit{association rules} &
 
 \subsection{Struktur Data}
 \label{sec:struktur-data}
+Struktur data menentukan seberapa cepat algoritma dapat menghitung \textit{support}. Algoritma Apriori dan FP-Growth membaca transaksi satu per satu, sehingga \textit{list} \textit{frozenset} berkode integer dipakai sebagai masukan keduanya karena operasi himpunan pada \textit{frozenset} cepat dan item berkode integer lebih ringan daripada nama \textit{venue}. Matriks \textit{sparse} hanya menyimpan sel bernilai 1 dan dipakai untuk statistik serta validasi dengan \texttt{mlxtend}, yang menerima masukan berbentuk matriks. Matriks \textit{dense} tidak dibuat karena 1,82 juta transaksi dikali 4.373 \textit{venue} membutuhkan sekitar 8 GB, padahal kepadatannya hanya 0,06\%.
+
 Kedua \textit{database} dibentuk dari satu tabel panjang \texttt{(tid, item)} yang disimpan di disk agar isinya konsisten, lalu diturunkan menjadi dua bentuk di memori (Gambar~\ref{fig:satu-sumber}). Kesetaraan kedua bentuk diperiksa pada jumlah transaksi, jumlah pasangan, ukuran tiap transaksi, dan isi 2.000 transaksi acak. Tabel~\ref{tab:bentuk} membandingkan bentuk yang dipertimbangkan.
 
 \begin{figure}[!htb]
@@ -141,7 +145,7 @@ Empat aturan ditetapkan agar hasil konsisten.
 \end{enumerate}
 
 \section{\textit{Modeling}}
-Apriori dan FP-Growth dijalankan pada \textit{author-based database}, lalu \textit{association rules} dibangkitkan dari \textit{frequent itemsets} yang dihasilkan. Konfigurasi eksperimen dirangkum pada Tabel~\ref{tab:konfigurasi}.
+Apriori dan FP-Growth sama-sama mencari \textit{itemset} yang \textit{support}-nya mencapai \textit{min\_sup}, tetapi dengan cara berbeda. Apriori membentuk kandidat secara bertingkat dan menghitung \textit{support} dengan memindai transaksi pada setiap tingkat, sedangkan FP-Growth memadatkan transaksi menjadi FP-\textit{tree} lalu menambang pola secara rekursif tanpa kandidat. Keduanya dijalankan pada \textit{author-based database}, kemudian \textit{association rules} dibangkitkan dari \textit{frequent itemsets} yang dihasilkan dengan memecah setiap \textit{itemset} menjadi \textit{antecedent} dan \textit{consequent}. Konfigurasi eksperimen dirangkum pada Tabel~\ref{tab:konfigurasi}.
 
 \begin{table}[!htb]
 \caption{Konfigurasi eksperimen}

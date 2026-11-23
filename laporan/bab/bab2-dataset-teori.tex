@@ -3,6 +3,8 @@
 
 \section{Sumber dan Format Dataset}
 \label{sec:dataset}
+DBLP adalah basis data bibliografi ilmu komputer yang mencatat judul, penulis, tahun, dan tempat terbit setiap publikasi. Seluruh isinya dibagikan sebagai satu berkas XML terkompresi beserta berkas DTD yang mendefinisikan struktur dan entitas karakternya, sehingga keduanya harus dibaca bersama.
+
 \textit{Dataset} berupa \textit{dump} XML DBLP \cite{dblpxml} yang diunduh dari \url{https://dblp.org/xml/} pada 19 November 2026. Gambar~\ref{fig:format-berkas} menunjukkan dua berkas yang disediakan dan cara keduanya dibaca. Berkas data berukuran 1,1 GB sehingga dibaca secara \textit{streaming}, dan nilai SHA-256 \textit{dump} tercatat pada \texttt{dump\_info.json}.
 
 \begin{figure}[!htb]
@@ -14,6 +16,8 @@
 
 \section{Struktur Dataset}
 \label{sec:struktur}
+Setiap \textit{record} dalam \textit{dump} diawali \textit{tag} yang menyatakan jenis publikasi, memiliki atribut \texttt{key} sebagai identitas unik, dan memuat elemen anak seperti penulis, judul, dan tahun. Dari sembilan jenis \textit{record}, hanya \texttt{inproceedings} yang dianalisis karena jenis inilah yang memuat makalah konferensi dan \textit{workshop}.
+
 Struktur \textit{dump} berupa daftar datar \textit{record}. Nama \textit{tag} setiap \textit{record} menunjukkan jenis publikasinya, dan makalah konferensi serta \textit{workshop} sama-sama bertag \texttt{inproceedings} (Gambar~\ref{fig:struktur-xml}).
 
 \begin{figure}[!htb]
@@ -25,6 +29,8 @@ Struktur \textit{dump} berupa daftar datar \textit{record}. Nama \textit{tag} se
 
 \section{Atribut}
 \label{sec:anatomi}
+Atribut yang dibutuhkan analisis adalah penulis, judul, tahun, dan \textit{venue}. Atribut \texttt{pages}, \texttt{ee}, \texttt{url}, dan \texttt{mdate} diabaikan karena tidak berpengaruh pada popularitas maupun pembentukan transaksi.
+
 Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XGBoost pada KDD 2016. Tabel~\ref{tab:pemetaan} memetakan atribut yang dipakai pada analisis ke letaknya pada \textit{record}.
 
 \begin{lstlisting}[caption={Satu \textit{record} \texttt{inproceedings} pada \textit{dump} DBLP},label={lst:record},language=XML,basicstyle=\ttfamily\footnotesize,breaklines=true]
@@ -57,6 +63,8 @@ Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XG
 
 \section{Identifikasi \textit{Venue}}
 \label{sec:key}
+Atribut \textit{venue} menentukan item pada seluruh analisis, sehingga cara mengenalinya harus konsisten. DBLP tidak menyediakan atribut ini secara langsung, sehingga \textit{venue} diturunkan dari \textit{key} setiap \textit{record}.
+
 \textit{Venue} pada laporan ini berarti seri konferensi (misalnya NeurIPS), bukan edisi tahunannya, dan diturunkan dari segmen kedua \textit{key} DBLP (Gambar~\ref{fig:anatomi-key}). Asumsi dan alasannya adalah sebagai berikut.
 
 \begin{figure}[!htb]

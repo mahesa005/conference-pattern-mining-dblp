@@ -23,6 +23,8 @@ Apriori \cite{agrawal1994} dan FP-Growth \cite{han2000} dijalankan pada \textit{
 
 \section{\textit{Frequent Itemsets} menurut Ukuran}
 \label{sec:hasil-t4-ukuran}
+\textit{Frequent itemsets} dikelompokkan menurut ukurannya, yaitu satu konferensi (1-\textit{itemset}), pasangan (2-\textit{itemset}), dan \textit{triple} (3-\textit{itemset}), karena pasangan dan \textit{triple} adalah kombinasi konferensi yang menjadi fokus analisis.
+
 Tabel~\ref{tab:t4-ukuran} menunjukkan jumlah \textit{frequent itemsets} menurut ukurannya.
 \begin{enumerate}
 \item Pada \textit{min\_sup} 0,1\% ditemukan 574 1-\textit{itemset}, 393 pasangan, 348 \textit{triple}, dan 199 \textit{itemset} berisi empat sampai enam konferensi.
@@ -47,6 +49,8 @@ Tabel~\ref{tab:t4-ukuran} menunjukkan jumlah \textit{frequent itemsets} menurut 
 
 \section{Sepuluh \textit{Itemset} dengan \textit{Support} Tertinggi}
 \label{sec:hasil-t4-top10}
+\textit{Itemset} diurutkan menurut \textit{support}, yaitu proporsi penulis yang menerbitkan di seluruh konferensi pada \textit{itemset} tersebut.
+
 Pada \textit{min\_sup} 0,1\%, 0,5\%, dan 1\%, sepuluh \textit{itemset} dengan \textit{support} tertinggi sama dan seluruhnya konferensi tunggal (Tabel~\ref{tab:t4-top10}). Pada 2\%, hanya enam konferensi pertama yang lolos karena IGARSS (35.229 penulis) berada di bawah ambang 36.436. Pasangan teratas, ICML dan NeurIPS, hanya didukung 18.503 penulis sehingga tidak masuk sepuluh besar.
 
 \begin{table}[!htb]
@@ -77,6 +81,8 @@ Jumlah \textit{itemset} turun 17,2 kali dari 0,1\% ke 0,5\% (1.514 menjadi 88) d
 
 \section{Kombinasi Konferensi yang Paling Sering Muncul Bersama}
 \label{sec:hasil-t4-kombinasi}
+Kombinasi konferensi yang paling sering muncul bersama dibaca dari pasangan dan \textit{triple} dengan \textit{support} tertinggi, serta dari \textit{itemset} terpanjang yang masih \textit{frequent}.
+
 Kombinasi teratas diambil dari \textit{min\_sup} 0,1\% karena hasilnya memuat seluruh hasil pada ambang yang lebih tinggi (Tabel~\ref{tab:t4-pasangan} dan Tabel~\ref{tab:t4-triple}).
 \begin{enumerate}
 \item Pasangan teratas adalah ICML dan NeurIPS (18.503 penulis, \textit{support} 1,02\%), satu-satunya pasangan yang masih \textit{frequent} pada 1\%, disusul ICLR dan NeurIPS (17.852) serta AAAI dan NeurIPS (15.973).

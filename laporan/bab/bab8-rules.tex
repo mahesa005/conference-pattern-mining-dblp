@@ -58,6 +58,8 @@ Tabel~\ref{tab:t5-top10} menunjukkan sepuluh \textit{rule} dengan \textit{lift} 
 
 \section{Hubungan Antarkonferensi yang Paling Menarik}
 \label{sec:hasil-t5-menarik}
+Hubungan yang menarik dinilai dari \textit{rule} yang melibatkan dua konferensi saja karena paling mudah dibaca dan didukung lebih banyak penulis. Arah hubungan penting karena \textit{confidence} berbeda bergantung pada arah.
+
 \textit{Rule} satu-ke-satu dipakai untuk menilai hubungan antarkonferensi karena paling mudah dibaca dan didukung lebih banyak penulis. Gambar~\ref{fig:t5-arah} menunjukkan 22 \textit{rule} tersebut beserta \textit{confidence} arah baliknya.
 \begin{enumerate}
 \item Tidak ada pasangan yang berlaku dua arah. Seluruhnya mengarah dari konferensi yang lebih kecil ke yang lebih besar (misalnya EACL $\Rightarrow$ ACL, BMVC $\Rightarrow$ CVPR, UAI $\Rightarrow$ NeurIPS), dengan \textit{confidence} arah balik hanya 4,1\% sampai 32,4\%.
@@ -74,6 +76,8 @@ Tabel~\ref{tab:t5-top10} menunjukkan sepuluh \textit{rule} dengan \textit{lift} 
 
 \section{\textit{Support} dan \textit{Lift}}
 \label{sec:hasil-t5-lift}
+Pertanyaan yang diuji adalah apakah konferensi dengan \textit{support} tinggi juga menghasilkan \textit{lift} tinggi. \textit{Lift} dihitung dari \textit{confidence} dibagi \textit{support} konferensi tujuan, sehingga hubungannya dibaca pada tingkat konferensi dan pada tingkat \textit{rule}.
+
 \textit{Support} tinggi tidak menghasilkan \textit{lift} tinggi, justru sebaliknya (Gambar~\ref{fig:t5-lift-konferensi}).
 \begin{enumerate}
 \item Pada tingkat konferensi, korelasi Spearman antara \textit{support} konferensi tujuan dan median \textit{lift} \textit{rules} yang menuju kepadanya adalah $-0{,}933$ (26 konferensi). NeurIPS (\textit{support} 3,17\%) menjadi tujuan 240 \textit{rule}, terbanyak, tetapi median \textit{lift}-nya hanya 23,61, sedangkan CDC (\textit{support} 0,79\%) memiliki median 92,90.

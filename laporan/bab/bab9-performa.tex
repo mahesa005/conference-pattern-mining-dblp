@@ -5,6 +5,8 @@ Apriori dan FP-Growth dibandingkan pada \textit{author-based database} dan keemp
 
 \section{Jumlah \textit{Frequent Itemsets} dan \textit{Association Rules}}
 \label{sec:hasil-t6-jumlah}
+Perbandingan pertama menguji apakah kedua algoritma menghasilkan pola yang sama, karena keduanya seharusnya eksak.
+
 Pada keempat \textit{min\_sup}, \textit{itemset} beserta \textit{count}-nya identik, dan \textit{rules} beserta \textit{support}, \textit{confidence}, dan \textit{lift}-nya juga identik (Tabel~\ref{tab:t6-jumlah}). Hasil ini diharapkan karena keduanya algoritma eksak dengan definisi \textit{support} dan ambang yang sama: perbedaannya hanya pada cara menghitung.
 
 \begin{table}[!htb]
@@ -27,6 +29,8 @@ Pada keempat \textit{min\_sup}, \textit{itemset} beserta \textit{count}-nya iden
 
 \section{Waktu Eksekusi}
 \label{sec:hasil-t6-waktu}
+Perbandingan kedua adalah waktu eksekusi. Waktu Apriori dihitung dari seluruh tingkat, sedangkan waktu FP-Growth dihitung dari pembentukan FP-\textit{tree} ditambah penambangan, dan keduanya tidak mencakup pemuatan data.
+
 Waktu eksekusi diukur sebagai pelengkap untuk menilai algoritma yang lebih sesuai. Tabel~\ref{tab:t6-waktu} dan Gambar~\ref{fig:t6-waktu} menunjukkan bahwa kedua algoritma setara pada keempat \textit{min\_sup}.
 
 \begin{table}[!htb]
