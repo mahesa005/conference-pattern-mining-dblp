@@ -14,6 +14,10 @@ laporan/*.out
 laporan/*.toc
 laporan/*.run.xml
 laporan/*.pdf
+!laporan/Laporan.pdf
+
+# Kelas dokumen LaTeX (template) tidak disertakan
+laporan/kp-sti.cls
 
 # Python dan Jupyter
 __pycache__/

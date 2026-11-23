@@ -36,6 +36,8 @@ Ekstrak zip data ke akar repositori sehingga terbentuk `data/` (berisi `dblp.xml
 
 ## Laporan
 
+PDF final ada di `laporan/Laporan.pdf` (58 halaman). Sumber LaTeX ada di `laporan/`. Kelas dokumen `kp-sti.cls` (template STEI ITB) tidak disertakan, sehingga untuk menyusun ulang PDF letakkan `kp-sti.cls` di folder `laporan/` lalu jalankan:
+
 ```
 cd laporan && ./build.sh
 ```
