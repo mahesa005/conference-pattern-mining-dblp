@@ -78,7 +78,6 @@ cells.append(md(f"""
 **[Part II: Conference Popularity Analysis](#part2)**
 
 6. [**Analisis Popularitas Konferensi**](#6)
-7. [**Ringkasan dan Langkah Berikutnya**](#7)
 """))
 
 # ---------------------------------------------------------------------------
@@ -1630,55 +1629,6 @@ cells.append(md(r"""
 > 3. Perbedaan terjadi di peringkat tengah. AAAI dan EMBC lebih tinggi pada author unik, sedangkan CHI dan ICC lebih tinggi pada jumlah paper, sehingga ICC di peringkat 10 pada publikasi hanya di peringkat 19 pada author unik.
 > 4. Jumlah publikasi keseluruhan tumbuh 32,7% dari 2015 ke 2024 (CAGR 3,2%), dengan penurunan 8,8% pada 2020. Pertumbuhan sangat tidak merata: NeurIPS, EMNLP, CVPR, dan AAAI tumbuh 3,6 sampai 10,2 kali, HCI hampir datar, dan ICC serta EMBC menurun, sehingga porsi 10 konferensi teratas naik dari 7,0% menjadi 11,7% pada 2024.
 > 5. Angka 2025 tidak dipakai untuk menyimpulkan tren karena sebagian konferensi dua tahunan tidak diadakan dan sebagian konferensi tahunan belum terindeks.
-"""))
-
-# ---------------------------------------------------------------------------
-# 7. Ringkasan dan Langkah Berikutnya
-# ---------------------------------------------------------------------------
-cells.append(section("Ringkasan dan Langkah Berikutnya", "7"))
-
-cells.append(md(r"""
-Bagian ini merangkum temuan utama dari eksplorasi data dan analisis popularitas konferensi, asumsi yang dipakai, keterbatasan yang perlu dinyatakan pada laporan, dan langkah berikutnya.
-"""))
-
-cells.append(md(r"""
-## 7.1 Ringkasan Temuan
-
-| Topik | Temuan utama | Bagian |
-|---|---|---|
-| Struktur dan jenis publikasi | DBLP adalah daftar datar 13.127.979 record dari sembilan jenis. `inproceedings` berjumlah 4.004.309, dan 2.004.202 di antaranya terbit pada 2015-2025 | 3.1 dan 3.2 |
-| Preprocessing | Enam tahap membuang 6.958 paper (0,35%), retensi 99,65%. Hasil akhir 1.997.244 paper dan 7.870.902 pasangan paper-author | 4.1 sampai 4.8 |
-| Statistik dataset bersih | 1.997.244 publikasi, 1.821.757 author unik, 4.373 venue unik. Distribusi per tahun dan per konferensi sangat terkonsentrasi | 5.1 sampai 5.4 |
-| 10 konferensi dengan publikasi terbanyak | NeurIPS, CVPR, ICASSP, HCI, IGARSS, AAAI, CHI, EMNLP, EMBC, ICC | 6.1 |
-| 10 konferensi dengan author unik terbanyak | NeurIPS, CVPR, AAAI, ICASSP, EMBC, HCI, IGARSS, EMNLP, ICML, IROS | 6.2 |
-| Tren publikasi per tahun | CAGR 3,2% per tahun, tetapi pertumbuhan terkonsentrasi pada konferensi AI dan NLP | 6.3 |
-| Perbandingan peringkat | 8 dari 10 konferensi sama, korelasi peringkat 0,987 | 6.4 dan 6.5 |
-"""))
-
-cells.append(md(r"""
-## 7.2 Asumsi dan Keterbatasan
-
-1. Venue diidentifikasi dari segmen kedua `key`, sehingga workshop dan acara pendamping ikut terhitung sebagai konferensi induknya. Acara satelit menurut kata kunci `booktitle` berjumlah 7,2% paper, dan dampaknya besar pada CVPR, CHI, dan ICC (subbagian 6.5).
-2. Record bertag `inproceedings` yang `key`-nya bukan `conf/` (3.161 paper, 0,16%) dibuang, termasuk beberapa prosiding workshop kecil yang diarsipkan DBLP pada seri jurnal.
-3. Data 2025 tidak lengkap. Sebagian konferensi dua tahunan tidak diadakan pada 2025 dan sebagian konferensi tahunan belum terindeks, sehingga 2025 tidak dipakai untuk menghitung tren.
-4. Nama author umum tanpa sufiks (misalnya `Yang Liu` pada 332 venue) kemungkinan menggabungkan banyak orang. Sebanyak 7.573 kelompok nama yang hanya berbeda diakritik atau huruf besar-kecil tidak digabung.
-5. Aturan duplikat berdasarkan judul, tahun, dan venue dapat menghapus sebagian paper berbeda yang berjudul generik, dengan dampak paling banyak 421 baris (0,02% data).
-6. ICLR tidak tercatat di DBLP pada 2015 dan 2016, sehingga dikeluarkan dari analisis indeks pertumbuhan.
-7. Popularitas hanya diukur dari aktivitas publikasi, bukan dari sitasi atau kualitas.
-"""))
-
-cells.append(md(r"""
-## 7.3 Langkah Berikutnya
-
-1. Pembentukan dua transactional database dari `paper_author.parquet`, yaitu berbasis author dan berbasis author-tahun, disertai contoh transaksi, jumlah transaksi, dan distribusi item per transaksi.
-2. Frequent pattern mining dengan Apriori dan FP-Growth pada database berbasis author, dengan minimum support 0,1%, 0,5%, 1%, dan 2%, lalu validasi hasilnya dengan `mlxtend`.
-3. Pembangkitan association rules dengan minimum confidence 50%, diikuti perbandingan performa kedua algoritma.
-4. Analisis temporal, yaitu mining per periode 2015-2017, 2018-2020, 2021-2023, dan 2024-2025 pada database berbasis author-tahun, dengan memperhitungkan keterbatasan data 2025.
-
-## Referensi
-
-- DBLP XML dump: https://dblp.org/xml/ (diunduh 19 November 2026).
-- Ley, M. *DBLP XML*, dokumentasi struktur XML dan `key`: https://dblp.org/xml/docu/dblpxml.pdf
 """))
 
 # @@APPEND@@

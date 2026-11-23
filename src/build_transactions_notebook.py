@@ -63,7 +63,6 @@ cells.append(md(f"""
 4. [**Contoh Transaksi**](#4)
 5. [**Statistik Transactional Database**](#5)
 6. [**Perbandingan Dua Representasi**](#6)
-7. [**Ringkasan dan Langkah Berikutnya**](#7)
 """))
 
 # ---------------------------------------------------------------------------
@@ -1056,62 +1055,6 @@ cells.append(md(r"""
 > 2. Untuk mencari kombinasi konferensi yang sering muncul bersama dalam riwayat publikasi author, author-based lebih sesuai karena riwayat mencakup seluruh periode. Author-year-based lebih sesuai untuk analisis temporal pada notebook `07_temporal`, karena tahun menjadi bagian dari transaksi dan periode dapat dipisahkan.
 > 3. Pada kedua representasi, mayoritas transaksi (58,4% dan 71,0%) hanya berisi satu item dan tidak membentuk pasangan.
 > 4. Sebagian kecil transaksi besar menanggung sebagian besar beban kombinasi, sehingga waktu proses akan didominasi oleh transaksi besar. Min support dihitung terhadap seluruh transaksi.
-"""))
-
-# ---------------------------------------------------------------------------
-# 7. Ringkasan dan Langkah Berikutnya
-# ---------------------------------------------------------------------------
-cells.append(section("Ringkasan dan Langkah Berikutnya", "7"))
-
-cells.append(md(r"""
-Bagian ini merangkum temuan utama notebook, berkas yang dihasilkan untuk notebook berikutnya, dan alur seluruh notebook proyek.
-"""))
-
-cells.append(md(r"""
-## 7.1 Ringkasan Temuan
-
-| Topik | Temuan utama | Bagian |
-|---|---|---|
-| Pembentukan database | Author-based dan author-year-based dibentuk dari satu tabel panjang, dan bentuk horizontal serta sparse terbukti identik | 3 |
-| Contoh transaksi | Sepuluh contoh per database, berukuran 1 sampai 25 item (author-based) dan 1 sampai 14 item (author-year-based) | 4.2 dan 4.3 |
-| Jumlah transaksi | 1.821.757 (author-based) dan 4.085.594 (author-year-based) | 5.1 |
-| Item unik dan distribusi | 4.373 item unik pada keduanya. Median 1 item, rata-rata 2,66 dan 1,59, maksimum 332 dan 85. Transaksi satu item 58,4% dan 71,0% | 5.1 dan 5.2 |
-| Jumlah paper per transaksi | Model himpunan tidak menyimpan jumlah paper. Transaksi dari lebih dari satu paper 48,6% dan 35,7%, dan jumlah paper tersimpan pada kolom `n_paper` | 5.5 |
-| Perbedaan kedua representasi | Author-year-based memiliki 2,24 kali lebih banyak transaksi yang lebih kecil, support pasangan median 0,29 kali, kehilangan sekitar 23% pasangan, dan tidak dapat memuat pasangan konferensi berselang tahun | 6.1 dan 6.2 |
-| Kelebihan dan keterbatasan | Author-based sesuai untuk pencarian kombinasi konferensi pada seluruh periode, author-year-based untuk analisis temporal. Data 2025 tidak lengkap | 6.3 |
-"""))
-
-cells.append(md(r"""
-## 7.2 Berkas yang Dihasilkan
-
-Berkas berikut berada di `data/processed/` dan dibaca oleh notebook Apriori, FP-Growth, dan notebook berikutnya. Tabel panjang adalah sumber kebenaran, dan bentuk horizontal serta sparse dibentuk ulang darinya dengan fungsi `to_horizontal` dan `to_sparse` pada bagian 3.3.
-
-| Berkas | Isi |
-|---|---|
-| `tx_items.csv` | Pemetaan `item_id` ke `venue` dan nama tampilan |
-| `tx_author.parquet` | Tabel panjang `(tid, item)` database author-based |
-| `tx_author_index.parquet` | Pemetaan `tid` ke `author` |
-| `tx_author_year.parquet` | Tabel panjang `(tid, item)` database author-year-based |
-| `tx_author_year_index.parquet` | Pemetaan `tid` ke `author` dan `year` |
-"""))
-
-cells.append(md(r"""
-## 7.3 Alur Notebook Proyek
-
-Setiap tahap dikerjakan pada notebook tersendiri agar mudah diperiksa dan diulang. Tabel berikut memuat peran dan masukan setiap notebook.
-
-| Notebook | Peran | Masukan |
-|---|---|---|
-| `00_extract` | Ekstraksi XML | `dblp.xml.gz` |
-| `01_eda` | Eksplorasi data dan preprocessing | `inproceedings_raw.parquet` |
-| `02_transactions` | Pembentukan dan perbandingan transactional database (notebook ini) | `paper_author.parquet` |
-| `03_apriori` | Apriori pada author-based, min support 0,1%, 0,5%, 1%, 2% | `tx_author.parquet` |
-| `04_fpgrowth` | FP-Growth pada database yang sama, validasi dengan `mlxtend` | `tx_author.parquet` |
-| `05_rules` | Association rules dengan min confidence 50% | itemset dari notebook 03 dan 04 |
-| `06_performance` | Perbandingan Apriori dan FP-Growth | hasil notebook 03 dan 04 |
-| `07_temporal` | Analisis temporal pada author-year-based, empat periode | `tx_author_year.parquet` |
-
-Aturan pengukuran waktu pada notebook 03, 04, dan 06: waktu memuat data dan membentuk database horizontal tidak dihitung. Waktu Apriori mencakup seluruh pemindaian dan pembangkitan kandidat. Waktu FP-Growth mencakup pembentukan FP-tree dan penambangan rekursifnya, dan keduanya dilaporkan terpisah.
 """))
 
 # @@APPEND@@
