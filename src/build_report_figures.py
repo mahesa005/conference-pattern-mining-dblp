@@ -347,6 +347,10 @@ def fig_t5_arah_rules():
              label_w=4.4, row_h=0.42)
 
 
+LIFT_LEADER = {"OFC": (3.0, 4.95), "INTERSPEECH": (3.0, 4.5), "WCNC": (3.0, 4.05), "ECCV": (5.0, 3.6), "ICCV": (5.0, 3.2), "ACL": (5.0, 2.8)}
+LIFT_PLACE = {"NeurIPS": ("north", 0, -0.12), "CVPR": ("south west", 0.06, 0.12), "AAAI": ("west", 0.1, 0), "ICASSP": ("north", 0, -0.14)}
+
+
 def fig_t5_lift_konferensi():
     c = pd.read_csv(TAB / "t5_support_vs_lift_consequent.csv")
     lo, hi, width, height = 0.5, 3.5, 10.0, 5.6
@@ -372,7 +376,16 @@ def fig_t5_lift_konferensi():
         dark = r["konferensi"] in labelled
         body.append(f"\\fill[{BLUE if dark else BLUE_L}] ({x},{y}) circle (0.08);")
         if dark:
-            body.append(f"\\node[anchor=west,inner sep=2pt] at ({x + 0.08},{y}) {{{esc(r['konferensi'])} ({idn(r['lift_median'], 1)})}};")
+            name, text = r["konferensi"], f"{esc(r['konferensi'])} ({idn(r['lift_median'], 1)})"
+            if name in LIFT_LEADER:
+                lx, ly = LIFT_LEADER[name]
+                body.append(f"\\draw[graymid,line width=0.4pt] ({x},{y}) -- ({lx - 0.05},{ly});")
+                body.append(f"\\node[anchor=west,inner sep=2pt] at ({lx},{ly}) {{{text}}};")
+            elif name in LIFT_PLACE:
+                a, dx, dy = LIFT_PLACE[name]
+                body.append(f"\\node[anchor={a},inner sep=2pt] at ({x + dx},{y + dy}) {{{text}}};")
+            else:
+                body.append(f"\\node[anchor=west,inner sep=2pt] at ({x + 0.08},{y}) {{{text}}};")
     body.append(f"\\node[anchor=north east,font=\\scriptsize\\bfseries] at ({width},{height}) {{Spearman $\\rho = -0{{,}}933$ (26 konferensi)}};")
     items, _ = legend([("dot", BLUE, "konferensi yang diberi label"), ("dot", BLUE_L, "konferensi lain")], 0, -1.3)
     write("t5-lift-konferensi", body + items)

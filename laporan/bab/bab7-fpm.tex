@@ -5,7 +5,7 @@
 \label{sec:hasil-t4-validasi}
 Apriori \cite{agrawal1994} dan FP-Growth \cite{han2000} dijalankan pada \textit{author-based database} dengan empat \textit{min\_sup}. Ambang \textit{min count} yang setara adalah 1.822, 9.109, 18.218, dan 36.436 penulis. Pada keempat \textit{min\_sup}, himpunan \textit{frequent itemsets} beserta \textit{count}-nya identik antara Apriori, FP-Growth, dan \texttt{mlxtend} (Tabel~\ref{tab:t4-validasi}).
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Jumlah \textit{frequent itemsets} dan validasi terhadap \texttt{mlxtend}}
 \label{tab:t4-validasi}
 \small
@@ -29,7 +29,7 @@ Tabel~\ref{tab:t4-ukuran} menunjukkan jumlah \textit{frequent itemsets} menurut 
 \item Pada 0,5\% tersisa 88 \textit{itemset} dengan satu \textit{triple}, pada 1\% tersisa satu pasangan, dan pada 2\% hanya enam konferensi tunggal. Perkiraan pada Bab~\ref{chap:transaksi} terkonfirmasi: \textit{min\_sup} 2\% tidak menghasilkan pasangan.
 \end{enumerate}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Jumlah \textit{frequent itemsets} menurut ukuran}
 \label{tab:t4-ukuran}
 \small
@@ -49,7 +49,7 @@ Tabel~\ref{tab:t4-ukuran} menunjukkan jumlah \textit{frequent itemsets} menurut 
 \label{sec:hasil-t4-top10}
 Pada \textit{min\_sup} 0,1\%, 0,5\%, dan 1\%, sepuluh \textit{itemset} dengan \textit{support} tertinggi sama dan seluruhnya konferensi tunggal (Tabel~\ref{tab:t4-top10}). Pada 2\%, hanya enam konferensi pertama yang lolos karena IGARSS (35.229 penulis) berada di bawah ambang 36.436. Pasangan teratas, ICML dan NeurIPS, hanya didukung 18.503 penulis sehingga tidak masuk sepuluh besar.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Sepuluh \textit{itemset} dengan \textit{support} tertinggi}
 \label{tab:t4-top10}
 \small
@@ -84,7 +84,7 @@ Kombinasi teratas diambil dari \textit{min\_sup} 0,1\% karena hasilnya memuat se
 \item \textit{Itemset} terpanjang berisi enam konferensi, yaitu AAAI, CVPR, ECCV, ICCV, ICLR, dan NeurIPS (2.005 penulis).
 \end{enumerate}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Sepuluh pasangan konferensi teratas (\textit{min\_sup} 0,1\%)}
 \label{tab:t4-pasangan}
 \small
@@ -106,7 +106,7 @@ Kombinasi teratas diambil dari \textit{min\_sup} 0,1\% karena hasilnya memuat se
 \end{tabular*}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Lima \textit{triple} konferensi teratas (\textit{min\_sup} 0,1\%)}
 \label{tab:t4-triple}
 \small
@@ -127,7 +127,7 @@ Kombinasi teratas diambil dari \textit{min\_sup} 0,1\% karena hasilnya memuat se
 \label{sec:hasil-t4-apriori-kandidat}
 Gambar~\ref{fig:t4-apriori-kandidat} menunjukkan jumlah kandidat dan \textit{frequent itemsets} per tingkat Apriori pada \textit{min\_sup} 0,1\%. Biaya terkumpul di tingkat 2: dari 574 item \textit{frequent}, seluruh $574 \times 573/2 = 164.451$ pasangan menjadi kandidat dan hanya 393 (0,24\%) yang \textit{frequent}. Mulai tingkat 3, langkah \textit{prune} bekerja efektif, sehingga persentase kandidat yang \textit{frequent} naik dari 28\% (tingkat 3) menjadi 69\% (tingkat 5). Pada \textit{min\_sup} yang lebih tinggi, kandidat tingkat 2 mengecil secara kuadratik (2.145, 406, dan 15 pada 0,5\%, 1\%, dan 2\%).
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
 \figtikz{fig-t4-apriori-kandidat}
 \caption{Kandidat dan \textit{frequent itemsets} per tingkat Apriori (\textit{min\_sup} 0,1\%)}
@@ -136,6 +136,7 @@ Gambar~\ref{fig:t4-apriori-kandidat} menunjukkan jumlah kandidat dan \textit{fre
 
 \section{Interpretasi}
 \label{sec:hasil-t4-interpretasi}
+Hasil \textit{frequent pattern mining} dapat ditafsirkan sebagai berikut. Nama bidang pada penjelasan ini adalah pengetahuan umum yang dicocokkan dengan judul prosiding pada data.
 \begin{enumerate}
 \item Kombinasi yang lolos ambang berasal dari bidang yang sama: \textit{machine learning} (ICML, ICLR, NeurIPS), \textit{computer vision} (CVPR, ICCV, ECCV), pemrosesan bahasa alami (ACL, EMNLP), dan robotika (ICRA, IROS). Pengelompokan bidang ini adalah pengetahuan umum yang dicocokkan dengan judul prosiding pada data.
 \item NeurIPS menjadi titik temu: ia ada pada sebagian besar pasangan, \textit{triple}, dan \textit{itemset} panjang teratas.

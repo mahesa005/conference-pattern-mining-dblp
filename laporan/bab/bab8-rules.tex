@@ -14,7 +14,7 @@ dengan $N$ = 1.821.757 penulis. Hasilnya identik dengan \texttt{mlxtend} pada ke
 \item Pada 1\% hanya ada ICML $\Rightarrow$ NeurIPS (\textit{confidence} 58,0\%, arah sebaliknya hanya 32,0\%), dan pada 2\% tidak ada \textit{rule} karena tidak ada \textit{itemset} berukuran dua.
 \end{enumerate}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Jumlah \textit{association rules} (\textit{min\_conf} 50\%)}
 \label{tab:t5-jumlah}
 \small
@@ -34,7 +34,7 @@ dengan $N$ = 1.821.757 penulis. Hasilnya identik dengan \texttt{mlxtend} pada ke
 \label{sec:hasil-t5-top10}
 Tabel~\ref{tab:t5-top10} menunjukkan sepuluh \textit{rule} dengan \textit{lift} tertinggi pada 0,1\%. Seluruhnya berupa \textit{rule} panjang dengan \textit{consequent} dua atau tiga konferensi, dan hanya didukung 1.827 sampai 1.973 penulis, sedikit di atas ambang 1.822. Artinya \textit{rule} ini berlaku untuk kelompok penulis yang kecil dan spesifik, dan 54 sampai 60 penulis pendukung tiap \textit{rule} berasal dari transaksi bernama umum yang menggabungkan banyak orang. Tanpa transaksi tersebut, tujuh dari sepuluh \textit{rule} tidak lagi lolos \textit{min\_sup}.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Sepuluh \textit{rule} dengan \textit{lift} tertinggi (\textit{min\_sup} 0,1\%)}
 \label{tab:t5-top10}
 \footnotesize
@@ -65,9 +65,9 @@ Tabel~\ref{tab:t5-top10} menunjukkan sepuluh \textit{rule} dengan \textit{lift} 
 \item Hubungan yang paling mendekati timbal balik adalah CVPR dengan ICCV dan ECCV, serta NeurIPS dengan ICML dan ICLR (\textit{confidence} arah balik 28,9\% sampai 32,4\%), karena ukuran kedua konferensinya hanya berbeda 1,8 sampai 2,2 kali.
 \end{enumerate}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-t5-arah-rules}
+\figtikz[12.5cm]{fig-t5-arah-rules}
 \caption{\textit{Confidence} 22 \textit{rule} satu-ke-satu dan arah baliknya (DIS = \textit{Conference on Designing Interactive Systems})}
 \label{fig:t5-arah}
 \end{figure}
@@ -82,9 +82,9 @@ Tabel~\ref{tab:t5-top10} menunjukkan sepuluh \textit{rule} dengan \textit{lift} 
 \item Dengan \textit{min\_conf} 50\% dan \textit{support} konferensi di bawah 3,2\%, setiap \textit{rule} otomatis memiliki \textit{lift} minimal sekitar 15,8. \textit{Lift} karena itu dipakai untuk mengurutkan kekuatan hubungan, bukan untuk memisahkan hubungan positif dan negatif.
 \end{enumerate}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-t5-lift-konferensi}
+\figtikz[8.4cm]{fig-t5-lift-konferensi}
 \caption{\textit{Support} konferensi dan median \textit{lift} \textit{rules} yang menuju kepadanya (26 konferensi)}
 \label{fig:t5-lift-konferensi}
 \end{figure}
@@ -99,7 +99,7 @@ Tabel~\ref{tab:t5-contoh} menunjukkan tiga \textit{rule} nyata beserta \textit{c
 \end{enumerate}
 Karena itu ICML $\Rightarrow$ NeurIPS memiliki \textit{support} terbesar tetapi \textit{lift} terkecil, sedangkan \textit{rule} panjang memiliki \textit{support} terkecil tetapi \textit{lift} terbesar.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Tiga contoh \textit{rule} dan \textit{count} di balik ukurannya}
 \label{tab:t5-contoh}
 \footnotesize
@@ -118,7 +118,7 @@ ECCV + ACM Multimedia + NeurIPS $\Rightarrow$ AAAI + CVPR + ICCV & 1.827 & 2.983
 \label{sec:hasil-t5-pola}
 \textit{Rule} satu-ke-satu menghubungkan konferensi, lalu konferensi yang terhubung digabung menjadi satu kelompok. Hasilnya delapan kelompok bidang yang tidak saling terhubung (Tabel~\ref{tab:t5-kelompok}). Nama bidang adalah pengetahuan umum yang dicocokkan dengan judul prosiding pada data. Di dalam kelompok, arah \textit{rule} selalu dari konferensi kecil ke konferensi besar. Dari 1.114 \textit{rule} dengan \textit{consequent} satu konferensi, 21,5\% menuju NeurIPS, 17,0\% menuju AAAI, dan 14,4\% menuju CVPR. AAAI tidak menjadi tujuan \textit{rule} satu-ke-satu mana pun, tetapi menjadi tujuan 189 \textit{rule} dari kombinasi dua konferensi atau lebih. Artinya, menerbitkan di satu konferensi tertentu belum cukup untuk memperkirakan seorang penulis juga menerbitkan di AAAI, tetapi penulis yang menerbitkan di beberapa konferensi \textit{machine learning} dan \textit{computer vision} sekaligus sangat mungkin juga menerbitkan di AAAI.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Kelompok konferensi dari \textit{rules} satu-ke-satu (\textit{min\_sup} 0,1\%)}
 \label{tab:t5-kelompok}
 \small

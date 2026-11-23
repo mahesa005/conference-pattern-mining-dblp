@@ -10,9 +10,9 @@
 \item \texttt{www} adalah halaman profil penulis, dan \texttt{proceedings} adalah buku prosiding induk; keduanya bukan makalah.
 \end{enumerate}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-jenis-publikasi}
+\figtikz[5.2cm]{fig-jenis-publikasi}
 \caption{Jumlah \textit{record} per jenis publikasi, seluruh \textit{dump} dibandingkan dengan periode 2015--2025}
 \label{fig:jenis}
 \end{figure}
@@ -21,14 +21,14 @@
 \label{sec:hasil-prepro}
 Gambar~\ref{fig:ilustrasi-prepro} mengilustrasikan setiap tahap dengan contoh asli dari data, dan Tabel~\ref{tab:dampak} menunjukkan dampaknya. Dari 2.004.202 makalah, tersisa 1.997.244 (99,65\%) dengan 6.958 makalah dibuang.
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-ilustrasi-prepro}
+\figtikz[7.4cm]{fig-ilustrasi-prepro}
 \caption{Ilustrasi setiap tahap \textit{preprocessing} dengan contoh asli}
 \label{fig:ilustrasi-prepro}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Dampak setiap tahap \textit{preprocessing}}
 \label{tab:dampak}
 \small
@@ -58,7 +58,7 @@ Beberapa temuan pada tahap ini perlu dicatat.
 \label{sec:hasil-statistik}
 Tabel~\ref{tab:statistik} merangkum statistik \textit{dataset} bersih.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Statistik \textit{dataset} setelah \textit{preprocessing}}
 \label{tab:statistik}
 \small
@@ -85,20 +85,14 @@ Gambar~\ref{fig:per-tahun} menunjukkan jumlah publikasi per tahun.
 \item Penurunan 6,5\% pada 2025 adalah efek komposisi, bukan penurunan aktivitas. Sebanyak 789 konferensi aktif pada 2024 tetapi kosong pada 2025 (23,1\% makalah 2024), karena konferensi dua tahunan genap (ECCV, ICPR) tidak diadakan pada 2025 dan konferensi tahunan seperti IGARSS dan EMBC belum terindeks. Karena itu 2025 tidak dipakai menghitung tren.
 \end{enumerate}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-publikasi-tahun}
+\figtikz[5.4cm]{fig-publikasi-tahun}
 \caption{Jumlah publikasi per tahun, 2015--2025}
 \label{fig:per-tahun}
 \end{figure}
 
 \subsection{Distribusi per konferensi}
 \label{sec:hasil-konferensi}
-Gambar~\ref{fig:ukuran-venue} menunjukkan ukuran seluruh \textit{venue}. Distribusinya sangat condong: 231 dari 4.373 \textit{venue} (5,3\%) menghasilkan separuh publikasi, median \textit{venue} hanya 134 makalah dibanding rata-rata 457, dan 1.358 \textit{venue} (31,1\%) memiliki kurang dari 50 makalah. Sepuluh konferensi teratas dibahas pada Bab~\ref{chap:popularitas}. Konsentrasi serupa terjadi pada penulis: 8,3\% penulis (11 makalah atau lebih) menyumbang 52,6\% pasangan makalah-penulis, sedangkan 51,4\% penulis hanya menulis satu makalah.
+Ukuran \textit{venue} sangat beragam. Distribusinya sangat condong: 231 dari 4.373 \textit{venue} (5,3\%) menghasilkan separuh publikasi, median \textit{venue} hanya 134 makalah dibanding rata-rata 457, dan 1.358 \textit{venue} (31,1\%) memiliki kurang dari 50 makalah. Sepuluh konferensi teratas dibahas pada Bab~\ref{chap:popularitas}. Konsentrasi serupa terjadi pada penulis: 8,3\% penulis (11 makalah atau lebih) menyumbang 52,6\% pasangan makalah-penulis, sedangkan 51,4\% penulis hanya menulis satu makalah.
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.78\textwidth]{images/hasil/t1_distribusi_ukuran_venue.png}
-\caption{Distribusi ukuran \textit{venue} berdasarkan jumlah makalah}
-\label{fig:ukuran-venue}
-\end{figure}

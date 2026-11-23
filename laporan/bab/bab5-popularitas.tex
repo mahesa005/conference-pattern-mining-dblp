@@ -10,16 +10,16 @@ Gambar~\ref{fig:top-pub} dan Gambar~\ref{fig:top-author} menunjukkan sepuluh kon
 \item Sepuluh konferensi teratas menghasilkan 9,4\% seluruh publikasi dan berasal dari bidang yang beragam, yaitu kecerdasan buatan dan pemrosesan bahasa alami, sinyal dan penginderaan jauh, interaksi manusia-komputer, serta biomedis dan komunikasi.
 \end{enumerate}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-top10-publikasi}
+\figtikz[9.2cm]{fig-top10-publikasi}
 \caption{Sepuluh konferensi dengan publikasi terbanyak}
 \label{fig:top-pub}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-top10-author}
+\figtikz[9.2cm]{fig-top10-author}
 \caption{Sepuluh konferensi dengan penulis unik terbanyak}
 \label{fig:top-author}
 \end{figure}
@@ -33,16 +33,16 @@ Gambar~\ref{fig:tren-top10} menunjukkan tren sepuluh konferensi teratas dan Gamb
 \item Porsi sepuluh konferensi teratas terhadap seluruh publikasi naik dari 7,0\% (2015) menjadi 11,7\% (2024), sehingga aktivitas makin terkonsentrasi.
 \end{enumerate}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{images/hasil/t2_tren_top10.png}
 \caption{Tren publikasi per tahun pada sepuluh konferensi teratas}
 \label{fig:tren-top10}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\figtikz{fig-cagr-top10}
+\figtikz[9cm]{fig-cagr-top10}
 \caption{Laju pertumbuhan tahunan (CAGR) sepuluh konferensi teratas, 2015--2024}
 \label{fig:cagr}
 \end{figure}
@@ -51,7 +51,7 @@ Gambar~\ref{fig:tren-top10} menunjukkan tren sepuluh konferensi teratas dan Gamb
 \label{sec:hasil-banding}
 Tabel~\ref{tab:banding} membandingkan peringkat kedua ukuran, dengan selisih positif berarti naik pada peringkat penulis unik. Kedua peringkat sangat selaras: korelasi Spearman pada 4.373 \textit{venue} mencapai 0,987, dan hampir semua konferensi berada pada sekitar dua penulis unik per makalah (Gambar~\ref{fig:scatter}). Perbedaan terjadi pada peringkat tengah. AAAI dan EMBC naik karena menarik lebih banyak penulis berbeda per makalah, sedangkan CHI dan ICC turun, dengan ICC turun paling jauh (sepuluh ke sembilan belas).
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Perbandingan peringkat publikasi dan penulis unik}
 \label{tab:banding}
 \small
@@ -75,9 +75,9 @@ IROS & 14 & 10 & $+$4 \\
 \end{tabular*}
 \end{table}
 
-\begin{figure}[ht]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.72\textwidth]{images/hasil/t2_scatter_publikasi_author.png}
+\includegraphics[width=0.62\textwidth]{images/hasil/t2_scatter_publikasi_author.png}
 \caption{Publikasi dan penulis unik per konferensi}
 \label{fig:scatter}
 \end{figure}
@@ -86,7 +86,7 @@ IROS & 14 & 10 & $+$4 \\
 \label{sec:hasil-sensitivitas}
 \textit{Workshop} yang memakai \textit{key} konferensi induk ikut terhitung sebagai konferensi induknya (Subbab~\ref{sec:key}). Untuk menguji dampaknya, peringkat dihitung ulang tanpa \textit{workshop} dan acara pendamping, yang dikenali dari kata kunci pada \textit{booktitle} (misalnya \textit{Workshop}, \textit{Extended Abstracts}, \textit{Companion}) dan mencakup 7,2\% makalah. Tabel~\ref{tab:sensitivitas} menunjukkan bahwa peringkat teratas relatif kuat: NeurIPS tetap nomor satu dan delapan dari sepuluh konferensi teratas tetap sama. Konferensi dengan banyak \textit{workshop} paling terpengaruh, yaitu CVPR (\textit{CVPR Workshops}), ICC, dan CHI (\textit{CHI Extended Abstracts}). Karena itu pernyataan bahwa CVPR adalah konferensi terpopuler kedua bergantung pada definisi, dan laporan ini memakai definisi berbasis \textit{key}.
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \caption{Peringkat publikasi dengan dan tanpa \textit{workshop}}
 \label{tab:sensitivitas}
 \small

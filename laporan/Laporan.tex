@@ -25,14 +25,15 @@
 % Tanda kutip judul pada daftar pustaka (glyph kutip bawaan tidak tampil pada font ini)
 \DeclareFieldFormat[article,inproceedings,incollection]{title}{\char"201C #1\char"201D}
 \setlength{\cftfignumwidth}{3.4em}\setlength{\cfttabnumwidth}{3.4em}
+\renewcommand{\topfraction}{0.9}\renewcommand{\bottomfraction}{0.8}\renewcommand{\textfraction}{0.08}\renewcommand{\floatpagefraction}{0.75}
+\makeatletter\setlength{\@fptop}{0pt}\setlength{\@fpsep}{10pt plus 1fil}\setlength{\@fpbot}{0pt plus 2fil}\makeatother
+\titlespacing*{\section}{0pt}{14pt}{6pt}\titlespacing*{\subsection}{0pt}{10pt}{6pt}
 \newsavebox{\kotakfig}
-\newcommand{\figtikz}[1]{%
-  \sbox{\kotakfig}{\input{images/#1}}%
-  \ifdim\wd\kotakfig>\linewidth
-    \resizebox{\linewidth}{!}{\usebox{\kotakfig}}%
-  \else
-    \usebox{\kotakfig}%
-  \fi}
+\newlength{\figmaxh}\setlength{\figmaxh}{8.4cm}
+\newcommand{\figtikz}[2][\figmaxh]{%
+  \sbox{\kotakfig}{\input{images/#2}}%
+  \pgfmathsetmacro{\figscale}{min(1,\linewidth/\wd\kotakfig,#1/\ht\kotakfig)}%
+  \scalebox{\figscale}{\usebox{\kotakfig}}}
 \tikzset{
   proses/.style={kotak,fill=bluelight!35,draw=bluemain},
   berkas/.style={kotak,fill=grayline!60,draw=black!60,rounded corners=4pt},
