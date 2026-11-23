@@ -1,0 +1,16 @@
+\begin{tikzpicture}[font=\scriptsize]
+\node[berkas,text width=3.6cm] (xml) at (0,1.0) {\texttt{dblp.xml.gz}\\data: XML dikompresi gzip\\1,1 GB, 13.127.979 \textit{record}};
+\node[berkas,text width=3.6cm] (dtd) at (0,-1.0) {\texttt{dblp.dtd}\\aturan: \textit{tag} dan entitas karakter\\13 KB};
+\node[proses,text width=3.4cm,minimum height=1.5cm] (par) at (5.6,0) {\textit{parser}\\\texttt{lxml.iterparse}\\dibaca secara \textit{streaming}};
+\node[berkas,text width=3.4cm] (raw) at (10.8,0) {\texttt{inproceedings\_raw}\\\texttt{.parquet}\\2.004.202 \textit{record}};
+\draw[garis] (xml.east) -- ++(0.6,0) |- (par.west);
+\draw[garis] (dtd.east) -- ++(0.6,0) |- (par.west);
+\draw[garis] (par) -- node[above,font=\tiny]{hanya 2015--2025} (raw);
+\node[anchor=west,font=\scriptsize\bfseries] at (-1.8,-2.4) {Legenda:};
+\node[berkas,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (0.1,-2.4) {};
+\node[anchor=west] at (0.45,-2.4) {berkas};
+\node[proses,minimum width=0.5cm,text width=0.5cm,minimum height=0.35cm] at (2.3,-2.4) {};
+\node[anchor=west] at (2.65,-2.4) {proses};
+\draw[garis] (4.6,-2.4) -- (5.3,-2.4);
+\node[anchor=west] at (5.4,-2.4) {aliran data};
+\end{tikzpicture}

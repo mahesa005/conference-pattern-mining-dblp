@@ -1,43 +1,31 @@
 \chapter{DESKRIPSI DATASET DAN DASAR TEORI}
 \label{chap:dataset}
 
-\section{Sumber dan Format \textit{Dataset}}
+\section{Sumber dan Format Dataset}
 \label{sec:dataset}
-DBLP menyediakan seluruh isinya sebagai dua berkas pada \url{https://dblp.org/xml/} \cite{dblpxml}. Tabel~\ref{tab:berkas} merangkum peran kedua berkas tersebut.
+\textit{Dataset} berupa \textit{dump} XML DBLP \cite{dblpxml} yang diunduh dari \url{https://dblp.org/xml/} pada 19 November 2026. Gambar~\ref{fig:format-berkas} menunjukkan dua berkas yang disediakan dan cara keduanya dibaca. Berkas data berukuran 1,1 GB sehingga dibaca secara \textit{streaming}, dan nilai SHA-256 \textit{dump} tercatat pada \texttt{dump\_info.json}.
 
-\begin{table}[ht]
-\caption{Berkas yang disediakan DBLP}
-\label{tab:berkas}
-\begin{tabularx}{\textwidth}{@{}lrX@{}}
-\toprule
-\textbf{Berkas} & \textbf{Ukuran} & \textbf{Peran} \\
-\midrule
-\texttt{dblp.xml.gz} & 1,1 GB & Data: seluruh \textit{record} publikasi dalam XML yang dikompresi dengan gzip \\
-\texttt{dblp.dtd} & 13 KB & Aturan: nama \textit{tag} yang sah, isi tiap \textit{tag}, dan arti entitas karakter \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\begin{figure}[ht]
+\centering
+\figtikz{fig-format-berkas}
+\caption{Berkas \textit{dump} DBLP dan proses pembacaannya}
+\label{fig:format-berkas}
+\end{figure}
 
-XML (\textit{eXtensible Markup Language}) adalah format teks untuk data terstruktur dengan \textit{tag} bersarang, misalnya \texttt{<author>Carlos Guestrin</author>}. Berbeda dengan HTML, nama \textit{tag} pada XML ditentukan oleh pembuat data dan tujuannya menyimpan data, bukan menampilkan halaman. DTD (\textit{Document Type Definition}) mendefinisikan \textit{tag} apa saja yang sah. DTD juga mendefinisikan entitas karakter, misalnya \texttt{\&ccedil;} untuk huruf \textit{c} bercedilla. Tanpa DTD pada folder yang sama, \textit{parser} gagal membaca berkas.
-
-Data yang dipakai diunduh pada 19 November 2026 dengan ukuran \texttt{dblp.xml.gz} sebesar 1.121.912.347 \textit{byte} dan SHA-256 \texttt{7f2805bd\ldots c5fad1}. Nilai lengkap SHA-256 tercatat pada berkas \texttt{dump\_info.json} sehingga pembaca dapat memastikan bahwa ia memakai \textit{dump} yang sama. Berkas berukuran terlalu besar untuk dimuat sekaligus ke memori sehingga dibaca secara \textit{streaming} (Subbab~\ref{sec:ekstraksi}).
-
-\section{Struktur \textit{Dataset} dan Jenis Publikasi}
+\section{Struktur Dataset}
 \label{sec:struktur}
-Struktur berkas berupa daftar datar. Satu elemen akar \texttt{<dblp>} memuat 13.127.979 \textit{record} yang berjejer, dan nama \textit{tag} tiap \textit{record} menunjukkan jenis publikasinya. Gambar~\ref{fig:struktur-xml} memperlihatkan struktur ini beserta isi satu \textit{record} \texttt{inproceedings}.
+Struktur \textit{dump} berupa daftar datar \textit{record}. Nama \textit{tag} setiap \textit{record} menunjukkan jenis publikasinya, dan makalah konferensi serta \textit{workshop} sama-sama bertag \texttt{inproceedings} (Gambar~\ref{fig:struktur-xml}).
 
 \begin{figure}[ht]
 \centering
 \figtikz{fig-struktur-xml}
-\caption{Struktur \texttt{dblp.xml}: elemen akar, jenis \textit{record}, dan isi satu \textit{record} \texttt{inproceedings}}
+\caption{Struktur \texttt{dblp.xml} dan isi satu \textit{record} \texttt{inproceedings}}
 \label{fig:struktur-xml}
 \end{figure}
 
-Hasil penghitungan jumlah \textit{record} per jenis ditampilkan pada Subbab~\ref{sec:hasil-jenis}. Spesifikasi tugas menyebut konferensi dan \textit{workshop} sebagai \texttt{inproceedings}. DBLP tidak menyediakan \textit{tag} terpisah untuk keduanya. Keduanya dibedakan oleh \textit{booktitle} dan akhiran huruf pada \texttt{crossref}, misalnya \texttt{conf/cvpr/2011w} untuk \textit{workshop} CVPR (Subbab~\ref{sec:satelit}).
-
-\section{Anatomi Satu \textit{Record}}
+\section{Atribut}
 \label{sec:anatomi}
-Listing~\ref{lst:record} menampilkan satu \textit{record} \texttt{inproceedings} asli dari \textit{dump}, yaitu makalah XGBoost pada KDD 2016.
+Listing~\ref{lst:record} menampilkan satu \textit{record} asli, yaitu makalah XGBoost pada KDD 2016. Tabel~\ref{tab:pemetaan} memetakan atribut yang diminta spesifikasi ke letaknya pada \textit{record}.
 
 \begin{lstlisting}[caption={Satu \textit{record} \texttt{inproceedings} pada \textit{dump} DBLP},label={lst:record},language=XML,basicstyle=\ttfamily\footnotesize,breaklines=true]
 <inproceedings mdate="2022-12-17" key="conf/kdd/ChenG16">
@@ -47,59 +35,43 @@ Listing~\ref{lst:record} menampilkan satu \textit{record} \texttt{inproceedings}
   <pages>785-794</pages>
   <year>2016</year>
   <booktitle>KDD</booktitle>
-  <ee>https://doi.org/10.1145/2939672.2939785</ee>
   <crossref>conf/kdd/2016</crossref>
-  <url>db/conf/kdd/kdd2016.html#ChenG16</url>
 </inproceedings>
 \end{lstlisting}
 
-\textit{Key} dan \texttt{mdate} adalah atribut XML pada \textit{tag} pembuka, sedangkan \texttt{author}, \texttt{title}, \texttt{year}, \texttt{booktitle}, dan \texttt{crossref} adalah elemen anak. Elemen \texttt{author} berulang, satu \textit{tag} untuk setiap penulis. Angka di belakang nama (\textit{Tianqi Chen 0001}) adalah sufiks yang diberikan DBLP untuk membedakan dua orang yang bernama sama. Tabel~\ref{tab:pemetaan} memetakan atribut yang diminta spesifikasi ke letaknya pada \textit{record}.
-
 \begin{table}[ht]
-\caption{Letak atribut spesifikasi tugas pada \textit{record} \texttt{inproceedings}}
+\caption{Letak atribut pada \textit{record} \texttt{inproceedings}}
 \label{tab:pemetaan}
 \small
 \begin{tabularx}{\textwidth}{@{}lX@{}}
 \toprule
 \textbf{Atribut} & \textbf{Letak dan catatan} \\
 \midrule
-\textit{author} & Elemen anak \texttt{<author>} yang berulang. Satu makalah memiliki satu sampai puluhan penulis \\
+\textit{author} & Elemen anak \texttt{<author>} yang berulang, satu per penulis \\
 \textit{title} & Elemen anak \texttt{<title>} \\
-\textit{year} & Elemen anak \texttt{<year>} bertipe teks sehingga perlu dikonversi ke bilangan bulat \\
-\textit{venue} & \textbf{Tidak ada \textit{tag} \texttt{<venue>}}. Nilainya diturunkan dari segmen kedua \textit{key} (\texttt{kdd}), dan \texttt{<booktitle>} dipakai sebagai pembanding \\
+\textit{year} & Elemen anak \texttt{<year>} bertipe teks, sehingga dikonversi ke bilangan bulat \\
+\textit{venue} & Tidak ada \textit{tag} \texttt{<venue>}; diturunkan dari \textit{key} (Subbab~\ref{sec:key}) \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Atribut yang disimpan adalah \textit{key}, \textit{title}, \textit{year}, \textit{booktitle}, \textit{crossref}, dan \textit{author} yang digabung dengan pemisah \texttt{|}. Atribut \texttt{pages}, \texttt{ee}, \texttt{url}, \texttt{mdate}, \texttt{stream}, dan atribut \texttt{orcid} pada penulis diabaikan karena tidak dipakai analisis.
-
-Dari 2.004.202 \textit{record} mentah pada periode pengamatan, kolom \textit{booktitle} kosong pada 190 \textit{record} (0,009\%), \textit{crossref} pada 2.471 (0,123\%), dan \textit{author} pada 2.255 (0,113\%). Kolom \textit{title} dan \textit{year} tidak pernah kosong. \textit{Record} tanpa penulis bukan makalah. Judul yang paling sering muncul adalah \textit{Front Matter, Table of Contents, Preface, Conference Organization} (349 \textit{record}), \textit{Preface} (143), dan \textit{Frontmatter} (128).
-
-\textit{Record} \texttt{proceedings} perlu dibedakan dari \texttt{inproceedings}. Elemen \texttt{crossref} pada contoh di atas menunjuk ke \texttt{<proceedings key="conf/kdd/2016">}, yaitu buku prosiding utuh yang memuat editor, judul lengkap, dan penerbit. Elemen tersebut bukan makalah dan tidak dianalisis.
-
-\section{\textit{Key} DBLP dan Definisi \textit{Venue}}
+\section{Identifikasi \textit{Venue}}
 \label{sec:key}
-\subsection{Struktur \textit{key}}
-Dokumentasi DBLP \cite{ley2009} menjelaskan makna \textit{key} sebagai berikut.
-
-\begin{quote}
-``DBLP keys look like slash separated Unix file names. The most important sub-trees in the key namespace are \texttt{conf/*} for conference or workshop papers and \texttt{journals/*} for articles which are published in journals, transactions, magazines, or newsletters. The second part of a DBLP key typically designates the conference series or periodical the papers appeared in.''
-\end{quote}
-
-Dokumentasi yang sama memberi peringatan bahwa \textit{namespace} \textit{key} ``coarse and sometimes fuzzy'', dan bahwa pembagian \textit{workshop} satelit sebagai acara mandiri atau bagian konferensi induk merupakan keputusan yang tidak selalu seragam. Berkas \texttt{dblp.dtd} sendiri hanya menyatakan bahwa \textit{key} wajib ada dan tidak menjelaskan maknanya. Gambar~\ref{fig:anatomi-key} menguraikan tiga segmen \textit{key}.
+\textit{Venue} pada laporan ini berarti seri konferensi (misalnya NeurIPS), bukan edisi tahunannya, dan diturunkan dari segmen kedua \textit{key} DBLP (Gambar~\ref{fig:anatomi-key}). Asumsi dan alasannya adalah sebagai berikut.
 
 \begin{figure}[ht]
 \centering
 \figtikz{fig-anatomi-key}
-\caption{Tiga segmen \textit{key} DBLP dan segmen yang dipakai sebagai \textit{venue}}
+\caption{Segmen \textit{key} DBLP dan segmen yang dipakai sebagai \textit{venue}}
 \label{fig:anatomi-key}
 \end{figure}
 
-Pada 2.004.202 \textit{record} periode pengamatan, segmen pertama bernilai \texttt{conf} pada 2.001.039 \textit{record}, \texttt{journals} pada 3.123, dan \texttt{books} pada 40. Segmen kedua memiliki 4.373 nilai berbeda. \textit{Key} unik pada seluruh data. \textit{Tag} dan awalan \textit{key} tidak selalu sejalan. Sebagai contoh, ada \textit{record} bertag \texttt{article} dengan \textit{key} \texttt{conf/rlc/IshfaqT0LLMP024}. \textit{Tag} mengikuti jenis publikasi, sedangkan \textit{key} mengikuti seri \textit{venue}. Perbedaan ini tidak berpengaruh karena hanya \textit{tag} \texttt{inproceedings} yang diambil.
-
-\subsection{\textit{Venue}, seri, edisi, dan prosiding}
-\label{sec:venue}
-Pada laporan ini, \textit{conference} dan \textit{venue} dipakai bergantian dan keduanya berarti \textbf{seri} konferensi, bukan edisi tahunannya. Tabel~\ref{tab:istilah} membedakan empat tingkat yang berkaitan.
+\begin{enumerate}
+\item \textit{Record} tidak memiliki \textit{tag} \textit{venue}. Dokumentasi DBLP \cite{ley2009} menyatakan bahwa \texttt{conf/*} adalah makalah konferensi atau \textit{workshop} dan bahwa segmen kedua \textit{key} \textit{typically} menunjukkan seri konferensinya. Pada data, segmen kedua memiliki 4.373 nilai berbeda.
+\item \textit{Booktitle} tidak dipakai karena tidak konsisten. NeurIPS berganti nama dari \textit{NIPS} (2015--2017) menjadi \textit{NeurIPS} (2018--2025) padahal \textit{key}-nya tetap \texttt{nips}, sehingga \textit{booktitle} memecahnya menjadi dua \textit{venue}. Sebaliknya, 456 nama \textit{booktitle} dipakai oleh konferensi berbeda, misalnya \textit{ITC} pada \texttt{itc}, \texttt{teletraffic}, \texttt{citc}, dan \texttt{icits}. Secara keseluruhan terdapat 8.784 nama \textit{booktitle} untuk 4.373 \textit{venue}.
+\item Item transaksi adalah seri, bukan edisi, agar asosiasi antarkonferensi tidak tertutup oleh tahun: penulis di NeurIPS 2019 dan 2023 menghasilkan satu item \texttt{nips}. Tabel~\ref{tab:istilah} merangkum istilah yang dibedakan.
+\item \textit{Workshop} yang memakai \textit{key} konferensi induk (misalnya \textit{CVPR Workshops} pada \texttt{conf/cvpr}) ikut terhitung sebagai konferensi induknya, sesuai pengelompokan DBLP. Dokumentasi DBLP menyebut batas ini tidak selalu seragam, sehingga dampaknya terhadap peringkat diuji pada Subbab~\ref{sec:hasil-sensitivitas}.
+\end{enumerate}
 
 \begin{table}[ht]
 \caption{Tingkatan istilah konferensi pada DBLP}
@@ -110,63 +82,15 @@ Pada laporan ini, \textit{conference} dan \textit{venue} dipakai bergantian dan 
 \textbf{Tingkat} & \textbf{Contoh} & \textbf{Letak pada DBLP} & \textbf{Item?} \\
 \midrule
 Seri (\textit{venue}) & NeurIPS & Segmen kedua \textit{key}: \texttt{nips} & Ya \\
+\midrule
 Edisi & NeurIPS 2018 & Tersirat dari \texttt{crossref} dan \texttt{year} & Tidak \\
+\midrule
 Prosiding & Buku prosiding NeurIPS 2018 & \textit{Record} \texttt{<proceedings>} & Tidak \\
+\midrule
 Makalah & Satu makalah & \textit{Record} \texttt{<inproceedings>} & Isi transaksi \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-Item dipilih pada tingkat seri agar pola antarkonferensi dapat muncul. Penulis yang menerbitkan makalah di NeurIPS pada 2019 dan 2023 menghasilkan satu item \texttt{nips}. Jika item berupa edisi, kedua edisi dianggap \textit{venue} berbeda sehingga asosiasi antarkonferensi tertutup oleh tahun.
-
-\subsection{Alasan \textit{venue} diambil dari \textit{key}, bukan \textit{booktitle}}
-\label{sec:key-booktitle}
-Setiap makalah memiliki tepat satu \textit{booktitle}, tetapi \textit{booktitle} makalah dari konferensi yang sama dapat berbeda. Sebelum pembersihan terdapat 8.784 nama \textit{booktitle} berbeda untuk 4.373 \textit{venue}. Ada dua masalah yang ditunjukkan data.
-
-Masalah pertama, \textit{booktitle} memecah satu konferensi menjadi banyak nama. Contoh paling jelas adalah NeurIPS yang berganti nama. \textit{Key} \texttt{nips} sama sepanjang periode, tetapi \textit{booktitle} berubah dari \textit{NIPS} (1.651 makalah pada 2015--2017) menjadi \textit{NeurIPS} (23.360 makalah pada 2018--2025). Jika \textit{booktitle} dipakai, NeurIPS terhitung dua \textit{venue} yang tidak pernah muncul pada tahun yang sama. Tabel~\ref{tab:variasi} menunjukkan variasi \textit{booktitle} pada beberapa konferensi besar.
-
-\begin{table}[ht]
-\caption{Variasi \textit{booktitle} pada satu \textit{key} (data mentah)}
-\label{tab:variasi}
-\small
-\begin{tabularx}{\textwidth}{@{}llrX@{}}
-\toprule
-\textbf{Konferensi} & \textbf{Key} & \textbf{Variasi} & \textbf{Contoh \textit{booktitle}} \\
-\midrule
-NeurIPS & \texttt{nips} & 13 & \textit{NIPS}, \textit{NeurIPS}, \textit{NeurIPS Datasets and Benchmarks}, \textit{ML4H@NeurIPS} \\
-CVPR & \texttt{cvpr} & 4 & \textit{CVPR}, \textit{CVPR Workshops}, \textit{MedSAM@CVPR} \\
-ICML & \texttt{icml} & 9 & \textit{ICML}, \textit{ICML (Position Papers)}, \textit{MUD@ICML} \\
-ACL & \texttt{acl} & 26 & \textit{ACL (1)}, \textit{ACL (2)}, \textit{ACL (Findings)}, \textit{ACL/IJCNLP (1)} \\
-AAAI & \texttt{aaai} & 36 & \textit{AAAI}, \textit{AAAI Workshops}, \textit{SafeAI@AAAI} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Masalah kedua, \textit{booktitle} yang sama dipakai oleh konferensi berbeda. Sebanyak 456 nama \textit{booktitle} muncul pada lebih dari satu \textit{key}. Singkatan \textit{ITC}, misalnya, tersebar pada \texttt{itc} (705 makalah), \texttt{teletraffic} (172), \texttt{citc} (89), dan \texttt{icits} (17). Kemungkinan besar ini konferensi berbeda yang berbagi singkatan, tetapi hal tersebut belum diverifikasi satu per satu. Jika \textit{booktitle} dipakai, konferensi-konferensi ini tergabung secara salah, sedangkan \textit{key} membedakannya.
-
-\textit{Key} lebih stabil terhadap pergantian nama, variasi \textit{track}, dan singkatan yang bentrok. Meskipun demikian, \textit{key} bukan jaminan mutlak karena dokumentasi DBLP memakai kata \textit{typically}. Akibatnya, \textit{workshop} dan \textit{track} tambahan ikut terhitung sebagai konferensi induk. Keputusan ini dibahas pada Subbab~\ref{sec:satelit}.
-
-\subsection{Konferensi dan \textit{workshop}}
-\label{sec:satelit}
-\textit{Workshop} menempel pada \textit{key} konferensi induk dan dibedakan oleh \textit{booktitle}. Tabel~\ref{tab:workshop} memberi contoh perbedaannya.
-
-\begin{table}[ht]
-\caption{Contoh \textit{record} konferensi dan \textit{workshop}}
-\label{tab:workshop}
-\small
-\begin{tabularx}{\textwidth}{@{}lXX@{}}
-\toprule
- & \textbf{Makalah konferensi} & \textbf{Makalah \textit{workshop}} \\
-\midrule
-\textit{Tag} & \texttt{inproceedings} & \texttt{inproceedings} \\
-\textit{Key} & \texttt{conf/kdd/ChenG16} & \texttt{conf/cvpr/SunTNP11} \\
-\textit{Booktitle} & \textit{KDD} & \textit{CVPR Workshops} \\
-\textit{Crossref} & \texttt{conf/kdd/2016} & \texttt{conf/cvpr/2011w} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Banyaknya acara satelit dapat diukur dengan dua cara. Cara pertama memakai kata kunci pada \textit{booktitle}, yaitu \textit{Workshop}, \texttt{@}, \textit{Extended Abstracts}, \textit{Companion}, \textit{Doctoral}, \textit{Tutorial}, \textit{Demo}, \textit{Poster}, \textit{Student}, \textit{Competition}, dan \textit{Challenge}. Cara ini mengidentifikasi 144.549 makalah (7,2\%) sebagai acara satelit. Cara kedua memakai akhiran huruf pada \textit{crossref} dan menghasilkan 179.393 makalah (9,0\%), tetapi cara ini ditolak. Akhiran tersebut juga menandai volume \textit{Findings} (EMNLP dan ACL), VTC \textit{Fall} dan \textit{Spring}, serta \textit{working notes} yang sebenarnya bagian dari konferensi utama. Sebagai bukti, EMNLP dinilai 39,9\% satelit menurut \textit{crossref} tetapi hanya 5,0\% menurut \textit{booktitle}. Angka 7,2\% dipakai sebagai ukuran, dan dampaknya terhadap peringkat diuji pada Subbab~\ref{sec:hasil-sensitivitas}.
 
 \section{\textit{Frequent Pattern Mining}}
 Misalkan $I$ adalah himpunan item dan $D$ adalah kumpulan transaksi, dengan setiap transaksi $T \subseteq I$. \textit{Support} sebuah \textit{itemset} $X$ adalah proporsi transaksi yang memuat $X$ \cite{han2012}.
@@ -176,15 +100,15 @@ Misalkan $I$ adalah himpunan item dan $D$ adalah kumpulan transaksi, dengan seti
 Himpunan $X$ disebut \textit{frequent} apabila $\mathrm{support}(X) \geq \textit{min\_sup}$.
 
 \subsection{Apriori}
-Apriori \cite{agrawal1994} membangun \textit{frequent} $k$-\textit{itemset} secara bertingkat. Kandidat $(k+1)$-\textit{itemset} dibentuk dari gabungan \textit{frequent} $k$-\textit{itemset}, lalu dipangkas dengan sifat Apriori, yaitu setiap subset dari \textit{itemset} yang \textit{frequent} juga pasti \textit{frequent}. Setiap tingkat memerlukan satu kali pemindaian basis data.
+Apriori \cite{agrawal1994} membentuk \textit{frequent} $k$-\textit{itemset} secara bertingkat. Kandidat tingkat berikutnya dibentuk dari gabungan \textit{frequent itemset} tingkat sebelumnya, lalu dipangkas dengan sifat Apriori: setiap subset dari \textit{itemset} yang \textit{frequent} juga \textit{frequent}.
 
 \subsection{FP-Growth}
-FP-Growth \cite{han2000} memadatkan basis data menjadi struktur pohon (FP-\textit{tree}) dengan dua kali pemindaian, lalu menambang pola secara rekursif dari \textit{conditional pattern base} tanpa membangkitkan kandidat.
+FP-Growth \cite{han2000} memadatkan basis data menjadi FP-\textit{tree} dengan dua kali pemindaian, lalu menambang pola secara rekursif tanpa membangkitkan kandidat.
 
 \section{\textit{Association Rule Mining}}
-\textit{Association rule} berbentuk $A \Rightarrow B$ dengan $A \cap B = \emptyset$. Dua ukuran yang melengkapi \textit{support} adalah sebagai berikut \cite{han2012}.
+\textit{Association rule} berbentuk $A \Rightarrow B$ dengan $A \cap B = \emptyset$. Dua ukuran yang melengkapi \textit{support} adalah \cite{han2012}:
 \begin{align}
 \mathrm{confidence}(A \Rightarrow B) &= \frac{\mathrm{support}(A \cup B)}{\mathrm{support}(A)} \\
 \mathrm{lift}(A \Rightarrow B) &= \frac{\mathrm{confidence}(A \Rightarrow B)}{\mathrm{support}(B)}
 \end{align}
-\textit{Support} menunjukkan seberapa umum sebuah pola. \textit{Confidence} menunjukkan seberapa sering $B$ muncul ketika $A$ muncul. \textit{Lift} menunjukkan seberapa jauh kemunculan bersama itu melebihi kemunculan acak, dan nilai di atas 1 berarti asosiasi positif.
+\textit{Confidence} menunjukkan seberapa sering $B$ muncul ketika $A$ muncul, dan \textit{lift} di atas 1 menunjukkan asosiasi positif karena kemunculan bersama melebihi kemunculan acak.
