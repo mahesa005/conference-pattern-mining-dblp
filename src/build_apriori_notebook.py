@@ -39,7 +39,7 @@ cells.append(md(f"""
 
 # Conference Popularity and Association Pattern Mining pada Dataset DBLP
 
-*Notebook 03: Task 4, Frequent Pattern Mining dengan Apriori.*
+*Notebook 03: Frequent Pattern Mining dengan Apriori.*
 """))
 
 cells.append(md(f"""
@@ -60,11 +60,10 @@ cells.append(md(f"""
 1. [**Introduction**](#1)
 2. [**Initialization**](#2)
 3. [**Implementasi Apriori**](#3)
-4. [**Eksperimen Empat Min Support (Task 4.1)**](#4)
+4. [**Eksperimen Empat Min Support**](#4)
 5. [**Validasi dengan mlxtend dan FP-Growth**](#5)
-6. [**Analisis Frequent Itemsets (Task 4.2 sampai 4.5)**](#6)
-7. [**Interpretasi (Task 4.6)**](#7)
-8. [**Ringkasan dan Langkah Berikutnya**](#8)
+6. [**Analisis Frequent Itemsets**](#6)
+7. [**Interpretasi Pola**](#7)
 """))
 
 # ---------------------------------------------------------------------------
@@ -75,19 +74,18 @@ cells.append(section("Introduction", "1"))
 cells.append(md("""
 ## Overview
 
-*Task 4 mencari kombinasi konferensi yang sering muncul bersama dalam riwayat publikasi author. Notebook ini mengerjakan sisi Apriori pada author-based transactional database dari notebook `02_transactions`. Sisi FP-Growth dikerjakan pada notebook `04_fpgrowth`, dan perbandingan performa keduanya pada notebook `06_performance`.*
+*Notebook ini mencari kombinasi venue yang sering muncul bersama dalam riwayat publikasi author, memakai algoritma Apriori pada author-based transactional database dari notebook `02_transactions`. Algoritma FP-Growth dikerjakan pada notebook `04_fpgrowth`, dan perbandingan performa keduanya pada notebook `06_performance`.*
 """))
 
 cells.append(md("""
 ## Aim
 
-*Task 4.1: menemukan frequent itemsets pada min support 0,1%, 0,5%, 1%, dan 2%.*
+*Notebook ini bertujuan untuk:*
 
-*Task 4.2 dan 4.3: memisahkan 1-, 2-, dan 3-itemsets, lalu menampilkan 10 itemsets dengan support tertinggi.*
-
-*Task 4.4 dan 4.5: menganalisis pengaruh min support terhadap jumlah itemsets dan kandidat, serta mengidentifikasi kombinasi konferensi yang paling sering muncul bersama.*
-
-*Task 4.6: menginterpretasikan pola yang ditemukan.*
+1. *menemukan frequent itemsets pada min support 0,1%, 0,5%, 1%, dan 2%, lalu memvalidasinya dengan `mlxtend` dan FP-Growth.*
+2. *memisahkan 1-, 2-, dan 3-itemsets, lalu menampilkan 10 itemsets dengan support tertinggi.*
+3. *menganalisis pengaruh min support terhadap jumlah itemsets dan kandidat, serta mengidentifikasi kombinasi venue yang paling sering muncul bersama.*
+4. *menginterpretasikan pola yang ditemukan.*
 """))
 
 cells.append(md(r"""
@@ -105,9 +103,9 @@ cells.append(md("""
 
 *Apriori bekerja per level. Level $k$ membangkitkan kandidat $C_k$ dari frequent $(k-1)$-itemsets $L_{k-1}$ (langkah join), membuang kandidat yang memiliki subset $(k-1)$ tidak frequent (langkah prune, sifat Apriori), lalu memindai database untuk menghitung support kandidat yang tersisa. Proses berhenti ketika $L_k$ kosong.*
 
-*Pra-pemrosesan dibuat sama dengan FP-Growth agar perbandingan waktu di notebook 06 adil: item yang tidak frequent dipangkas, transaksi dengan kurang dari dua item frequent dilewati (tetap dihitung di penyebut), dan transaksi yang identik setelah dipangkas digabung lalu dihitung sekali dengan bobotnya. Saat menghitung kandidat, setiap transaksi memakai cara yang lebih murah: mengenumerasi $k$-subset transaksi, atau memeriksa setiap kandidat sebagai subset transaksi.*
+*Pra-pemrosesan dibuat sama dengan FP-Growth agar perbandingan waktu di `06_performance` adil: item yang tidak frequent dipangkas, transaksi dengan kurang dari dua item frequent dilewati (tetap dihitung di penyebut), dan transaksi yang identik setelah dipangkas digabung lalu dihitung sekali dengan bobotnya. Saat menghitung kandidat, setiap transaksi memakai cara yang lebih murah: mengenumerasi $k$-subset transaksi, atau memeriksa setiap kandidat sebagai subset transaksi.*
 
-*Kode algoritma berada di `src/apriori.py` dan sudah diuji dengan `pytest` (`tests/test_apriori_contract.py`: contoh buku teks, transaksi kosong di penyebut, dan brute force). Isi modul ditampilkan pada bagian 3.*
+*Kode algoritma berada pada modul `apriori` dan ditampilkan lengkap pada bagian 3. Modul ini sudah diuji dengan contoh buku teks, transaksi kosong di penyebut, dan perbandingan terhadap brute force.*
 """))
 
 # ---------------------------------------------------------------------------
@@ -256,7 +254,7 @@ def tag(ms):
 cells.append(md("""
 ## Load Dataset
 
-Tabel panjang author-based diubah ke bentuk horizontal, yaitu list frozenset kode item per transaksi. Bentuk ini sama dengan masukan FP-Growth pada notebook 04. Waktu pemuatan tidak termasuk pengukuran.
+Tabel panjang author-based diubah ke bentuk horizontal, yaitu list frozenset kode item per transaksi. Bentuk ini sama dengan masukan FP-Growth pada `04_fpgrowth`. Waktu pemuatan tidak termasuk pengukuran.
 """))
 
 cells.append(code("""
@@ -274,7 +272,7 @@ cells.append(section("Implementasi Apriori", "3"))
 cells.append(md("""
 ## 3.1 Kode
 
-Seluruh isi `src/apriori.py` ditampilkan di bawah. `generate_candidates` menjalankan langkah join dan prune, `count_candidates` memindai database berbobot, dan `apriori` mengulang keduanya per level. Hasilnya mencatat jumlah kandidat $|C_k|$ dan waktu setiap level.
+Seluruh kode modul `apriori` ditampilkan di bawah. `generate_candidates` menjalankan langkah join dan prune, `count_candidates` memindai database berbobot, dan `apriori` mengulang keduanya per level. Hasilnya mencatat jumlah kandidat $|C_k|$ dan waktu setiap level.
 """))
 
 cells.append(code("""
@@ -300,10 +298,10 @@ toy_frame[["names", "length", "count", "support"]]
 # ---------------------------------------------------------------------------
 # 4. Eksperimen
 # ---------------------------------------------------------------------------
-cells.append(section("Eksperimen Empat Min Support (Task 4.1)", "4"))
+cells.append(section("Eksperimen Empat Min Support", "4"))
 
 cells.append(md("""
-Apriori dijalankan sekali untuk setiap min support. Jumlah kandidat, jumlah frequent itemsets, dan waktu setiap level dicatat. Waktu level 1 sudah termasuk pra-pemrosesan (pemindaian pertama, pemangkasan, dan penggabungan transaksi). Pengukuran berulang untuk perbandingan performa dilakukan pada notebook 06.
+Apriori dijalankan sekali untuk setiap min support, dengan jumlah kandidat, jumlah frequent itemsets, dan waktu setiap level dicatat. Waktu level 1 sudah termasuk pra-pemrosesan (pemindaian pertama, pemangkasan, dan penggabungan transaksi). Pengukuran berulang untuk perbandingan performa dilakukan pada `06_performance`.
 """))
 
 cells.append(code("""
@@ -341,7 +339,7 @@ levels
 cells.append(section("Validasi dengan mlxtend dan FP-Growth", "5"))
 
 cells.append(md("""
-Setiap hasil dibandingkan dengan `mlxtend.frequent_patterns.fpgrowth` dan dengan FP-Growth proyek (`src/fpgrowth.py`) pada database yang sama. Itemset dan count harus identik dengan keduanya.
+Setiap hasil dibandingkan dengan `mlxtend.frequent_patterns.fpgrowth` dan dengan modul `fpgrowth` proyek pada database yang sama. Itemset dan count harus identik dengan keduanya.
 """))
 
 cells.append(code("""
@@ -359,10 +357,10 @@ checks
 # ---------------------------------------------------------------------------
 # 6. Analisis
 # ---------------------------------------------------------------------------
-cells.append(section("Analisis Frequent Itemsets (Task 4.2 sampai 4.5)", "6"))
+cells.append(section("Analisis Frequent Itemsets", "6"))
 
 cells.append(md("""
-## 6.1 Jumlah Itemset per Ukuran (Task 4.2)
+## 6.1 Jumlah Itemset per Ukuran
 
 Itemset dikelompokkan menurut ukurannya. Kolom `k4+` menampung itemset berisi empat item atau lebih.
 """))
@@ -383,13 +381,17 @@ summary
 """))
 
 cells.append(md("""
-> Jumlah dan ukuran itemset sama persis dengan FP-Growth pada notebook 04: 1.514 itemset pada 0,1% (574 1-itemset, 393 pasangan, 348 triple, dan 199 itemset berukuran empat sampai enam), 88 pada 0,5%, 30 pada 1%, dan 6 pada 2%. Yang khas Apriori adalah kolom `kandidat_total`, yaitu jumlah kandidat level 2 ke atas yang support-nya harus dihitung: 166.075 pada 0,1%, 2.158 pada 0,5%, 406 pada 1%, dan 15 pada 2%. Untuk menemukan 940 itemset berukuran dua atau lebih pada 0,1%, Apriori menghitung 166.075 kandidat, 177 kali jumlah itemset yang akhirnya frequent.
+#### Insights
+
+> 1. Jumlah dan ukuran itemset sama persis dengan FP-Growth pada `04_fpgrowth`. Terdapat 1.514 itemset pada 0,1% (574 1-itemset, 393 pasangan, 348 triple, dan 199 itemset berukuran empat sampai enam), 88 pada 0,5%, 30 pada 1%, dan 6 pada 2%.
+> 2. Yang khas Apriori adalah kolom `kandidat_total`, yaitu jumlah kandidat level 2 ke atas yang support-nya harus dihitung. Nilainya 166.075 pada 0,1%, 2.158 pada 0,5%, 406 pada 1%, dan 15 pada 2%.
+> 3. Untuk menemukan 940 itemset berukuran dua atau lebih pada 0,1%, Apriori menghitung 166.075 kandidat, 177 kali jumlah itemset yang akhirnya frequent.
 """))
 
 cells.append(md("""
-## 6.2 Sepuluh Itemset dengan Support Tertinggi (Task 4.3)
+## 6.2 Sepuluh Itemset dengan Support Tertinggi
 
-Seperti pada notebook 04, ditampilkan sepuluh teratas untuk semua ukuran dan untuk itemset berukuran dua atau lebih.
+Sepuluh itemset teratas ditampilkan untuk semua ukuran dan untuk itemset berukuran dua atau lebih, seperti pada `04_fpgrowth`.
 """))
 
 cells.append(code("""
@@ -406,13 +408,17 @@ for ms, df in frames.items():
 """))
 
 cells.append(md("""
-> Sepuluh itemset teratas pada setiap min support selalu berupa konferensi tunggal, dipimpin NeurIPS (57.800 author, support 3,17%), CVPR (47.664), dan AAAI (46.437). Pasangan teratas, ICML + NeurIPS (18.503 author, support 1,02%), masih lebih kecil dari konferensi ke-10, IROS (31.249 author). Hasil ini sama dengan notebook 04 karena kedua algoritma menghasilkan itemset dan count yang identik.
+#### Insights
+
+> 1. Sepuluh itemset teratas pada setiap min support selalu berupa venue tunggal, dipimpin NeurIPS (57.800 author, support 3,17%), CVPR (47.664), dan AAAI (46.437).
+> 2. Pasangan teratas, ICML + NeurIPS (18.503 author, support 1,02%), masih lebih kecil dari venue ke-10, IROS (31.249 author).
+> 3. Hasil ini sama dengan `04_fpgrowth` karena kedua algoritma menghasilkan itemset dan count yang identik.
 """))
 
 cells.append(md("""
-## 6.3 Kandidat dan Frequent Itemsets per Level (Task 4.4)
+## 6.3 Kandidat dan Frequent Itemsets per Level
 
-Ciri khas Apriori adalah jumlah kandidat yang harus dihitung. Grafik berikut membandingkan $|C_k|$ dan $|L_k|$ per level untuk setiap min support. Sumbu y memakai skala log.
+Ciri khas Apriori adalah jumlah kandidat yang harus dihitung. Grafik batang berikut membandingkan $|C_k|$ dan $|L_k|$ per level untuk setiap min support, dengan sumbu y berskala log.
 """))
 
 cells.append(code("""
@@ -435,14 +441,18 @@ fig.suptitle("Kandidat dan frequent itemsets per level Apriori", x=0.01, y=1.03,
 save_fig(fig, "t4_apriori_kandidat_level.png")
 """))
 
-cells.append(md("""
-> Pada 0,1% terdapat 574 item frequent, sehingga $C_2$ berisi seluruh $574 \times 573 / 2 = 164.451$ pasangan. Langkah prune tidak dapat membuang apa pun di level 2 karena setiap subset berukuran satu sudah frequent. Hanya 393 pasangan (0,24%) yang ternyata frequent, dan level 2 menjadi level termahal, hampir separuh total waktu. Mulai level 3 prune bekerja efektif: dari 393 pasangan hanya terbentuk 1.228 kandidat, dan persentase kandidat yang frequent naik dari 28% di level 3 menjadi 69% di level 5.
->
-> Pada min support yang lebih tinggi, $L_1$ jauh lebih kecil (66, 29, dan 6 item), sehingga $C_2$ ikut mengecil secara kuadratik (2.145, 406, dan 15). Waktu kemudian didominasi level 1, yaitu pemindaian pertama 1,8 juta transaksi beserta pemangkasan dan penggabungannya, yang biayanya hampir tetap untuk semua min support. Penurunan min support dari 2% ke 0,1% menaikkan $|L_1|$ sekitar 96 kali, tetapi $|C_2|$ naik sekitar 11.000 kali. Inilah sumber biaya utama Apriori yang dibandingkan dengan FP-Growth pada notebook 06.
+cells.append(md(r"""
+#### Insights
+
+> 1. Pada 0,1% terdapat 574 item frequent, sehingga $C_2$ berisi seluruh $574 \times 573 / 2 = 164.451$ pasangan. Prune tidak dapat membuang apa pun di level 2 karena setiap subset berukuran satu sudah frequent.
+> 2. Hanya 393 pasangan (0,24%) yang ternyata frequent, dan level 2 menjadi level termahal, hampir separuh total waktu.
+> 3. Mulai level 3 prune bekerja efektif. Dari 393 pasangan hanya terbentuk 1.228 kandidat, dan persentase kandidat yang frequent naik dari 28% di level 3 menjadi 69% di level 5.
+> 4. Pada min support yang lebih tinggi, $L_1$ jauh lebih kecil (66, 29, dan 6 item), sehingga $C_2$ ikut mengecil secara kuadratik (2.145, 406, dan 15). Waktu kemudian didominasi level 1, yaitu pemindaian pertama 1,8 juta transaksi beserta pemangkasan dan penggabungannya, yang biayanya hampir tetap untuk semua min support.
+> 5. Penurunan min support dari 2% ke 0,1% menaikkan $|L_1|$ sekitar 96 kali, tetapi $|C_2|$ naik sekitar 11.000 kali. Inilah sumber biaya utama Apriori yang dibandingkan dengan FP-Growth pada `06_performance`.
 """))
 
 cells.append(md("""
-## 6.4 Kombinasi Konferensi yang Paling Sering Muncul Bersama (Task 4.5)
+## 6.4 Kombinasi Venue yang Paling Sering Muncul Bersama
 
 Pasangan dan triple teratas diambil dari hasil min support 0,1%. Kolom `bertahan_sampai` menunjukkan min support tertinggi tempat kombinasi tersebut masih frequent.
 """))
@@ -465,40 +475,27 @@ display(triples[["names", "count", "support", "bertahan_sampai"]].style.format({
 """))
 
 cells.append(md("""
-> Pasangan dan triple teratas sama dengan notebook 04. Pasangan teratas membentuk kelompok bidang: machine learning (ICML + NeurIPS, ICLR + NeurIPS, ICLR + ICML), computer vision (CVPR + ICCV, CVPR + ECCV), NLP (ACL + EMNLP), dan robotika (ICRA + IROS). ICML + NeurIPS adalah satu-satunya pasangan yang masih frequent pada 1%, dan ICLR + ICML + NeurIPS (10.413 author) satu-satunya triple yang masih frequent pada 0,5%. Analisis keterhubungan konferensi dan itemset terpanjang ada pada notebook 04 bagian 6.5 dan tidak diulang di sini karena hasilnya identik.
+#### Insights
+
+> 1. Pasangan dan triple teratas sama dengan `04_fpgrowth`.
+> 2. Pasangan teratas membentuk kelompok bidang, yaitu machine learning (ICML + NeurIPS, ICLR + NeurIPS, ICLR + ICML), computer vision (CVPR + ICCV, CVPR + ECCV), NLP (ACL + EMNLP), dan robotika (ICRA + IROS).
+> 3. ICML + NeurIPS adalah satu-satunya pasangan yang masih frequent pada 1%, dan ICLR + ICML + NeurIPS (10.413 author) satu-satunya triple yang masih frequent pada 0,5%.
+> 4. Analisis keterhubungan venue dan itemset terpanjang ada pada `04_fpgrowth` dan tidak diulang di sini karena hasilnya identik.
 """))
 
 # ---------------------------------------------------------------------------
 # 7. Interpretasi
 # ---------------------------------------------------------------------------
-cells.append(section("Interpretasi (Task 4.6)", "7"))
+cells.append(section("Interpretasi Pola", "7"))
 
 cells.append(md("""
-**Pola publikasi.** Karena frequent itemsets Apriori identik dengan FP-Growth, interpretasi polanya sama dengan notebook 04 bagian 7. Kombinasi konferensi yang frequent hampir seluruhnya terjadi di dalam satu bidang atau di antara bidang yang bertetangga dekat. NeurIPS menjadi penghubung inti AI, machine learning, dan computer vision, dan konferensi populer seperti EMBC, IGARSS, dan HCI hampir tidak membentuk pasangan frequent.
+#### Insights
 
-**Perilaku Apriori pada data ini.** Ekor panjang data DBLP membuat banyak konferensi lolos sebagai 1-itemset pada 0,1%, tetapi sangat sedikit pasangan yang lolos. Kombinasi ini adalah kasus terburuk bagi Apriori: kandidat level 2 tumbuh kuadratik terhadap $|L_1|$, sementara 99,76% di antaranya tidak frequent. Sebaliknya, karena pasangan frequent sedikit dan terkumpul di beberapa bidang, prune pada level 3 ke atas membuang hampir semua kombinasi sehingga level berikutnya murah.
-
-**Pengaruh optimasi.** Waktu yang tercatat di sini sudah memakai pra-pemrosesan yang sama dengan FP-Growth (pemangkasan item, pelewatan transaksi pendek, dan penggabungan transaksi identik, yang memadatkan 536.543 transaksi berisi minimal dua item frequent menjadi 315.694 transaksi unik pada 0,1%), serta pemilihan cara penghitungan kandidat per transaksi. Tanpa pemilihan cara tersebut, transaksi terpanjang (187 item frequent pada 0,1%) membuat enumerasi subset meledak. Perbandingan waktu dengan FP-Growth secara berulang dilakukan pada notebook 06.
-
-**Keterbatasan.** Keterbatasan data sama dengan notebook 04 bagian 7: item adalah seri konferensi berdasarkan key DBLP, identitas author mengikuti disambiguasi DBLP, support menghitung author bukan paper, dan transaksi author-based menggabungkan seluruh 2015-2025.
-"""))
-
-# ---------------------------------------------------------------------------
-# 8. Ringkasan
-# ---------------------------------------------------------------------------
-cells.append(section("Ringkasan dan Langkah Berikutnya", "8"))
-
-cells.append(md("""
-| Task | Hasil | Bagian |
-|---|---|---|
-| 4.1 | Apriori pada empat min support menghasilkan 1.514, 88, 30, dan 6 frequent itemsets, identik dengan `mlxtend` dan FP-Growth notebook 04 | 4, 5 |
-| 4.2 | 1-, 2-, dan 3-itemset: 574, 393, 348 (0,1%); 66, 21, 1 (0,5%); 29, 1, 0 (1%); 6, 0, 0 (2%) | 6.1 |
-| 4.3 | Sepuluh teratas selalu konferensi tunggal (NeurIPS, CVPR, AAAI); pasangan teratas ICML + NeurIPS dengan support 1,02% | 6.2 |
-| 4.4 | Kandidat level 2 ke atas: 166.075, 2.158, 406, dan 15; $C_2$ pada 0,1% berisi 164.451 pasangan dengan hanya 0,24% yang frequent | 6.3 |
-| 4.5 | Pasangan teratas ICML + NeurIPS, ICLR + NeurIPS, AAAI + NeurIPS; triple teratas ICLR + ICML + NeurIPS | 6.4 |
-| 4.6 | Pola sama dengan FP-Growth; biaya Apriori terkonsentrasi di level 2 karena ekor panjang data | 7 |
-
-Frequent itemsets setiap min support disimpan di `outputs/apriori/itemsets_<tag>.parquet` dengan kolom yang sama dengan `outputs/fpgrowth/`. Rincian kandidat per level ada di `outputs/tables/t4_apriori_level.csv`. Notebook `06_performance` memanggil `src/apriori.py` untuk membandingkan waktu Apriori dan FP-Growth secara berulang.
+> 1. Frequent itemsets Apriori identik dengan FP-Growth, sehingga interpretasi polanya sama dengan `04_fpgrowth`. Kombinasi venue yang frequent hampir seluruhnya terjadi di dalam satu bidang atau di antara bidang yang bertetangga dekat.
+> 2. NeurIPS menjadi penghubung inti AI, machine learning, dan computer vision, sedangkan venue populer seperti EMBC, IGARSS, dan HCI hampir tidak membentuk pasangan frequent.
+> 3. Ekor panjang data DBLP membuat banyak venue lolos sebagai 1-itemset pada 0,1%, tetapi sangat sedikit pasangan yang lolos. Ini kasus terburuk bagi Apriori karena kandidat level 2 tumbuh kuadratik terhadap $|L_1|$, sementara 99,76% di antaranya tidak frequent. Sebaliknya, karena pasangan frequent sedikit dan terkumpul di beberapa bidang, prune pada level 3 ke atas membuang hampir semua kombinasi sehingga level berikutnya murah.
+> 4. Waktu yang tercatat sudah memakai pra-pemrosesan yang sama dengan FP-Growth, yaitu pemangkasan item, pelewatan transaksi pendek, dan penggabungan transaksi identik yang memadatkan 536.543 transaksi berisi minimal dua item frequent menjadi 315.694 transaksi unik pada 0,1%. Pemilihan cara penghitungan kandidat per transaksi juga diperlukan, karena transaksi terpanjang (187 item frequent pada 0,1%) membuat enumerasi subset meledak. Perbandingan waktu dengan FP-Growth secara berulang dilakukan pada `06_performance`.
+> 5. Keterbatasan data sama dengan `04_fpgrowth`. Item adalah seri venue berdasarkan key DBLP, identitas author mengikuti disambiguasi DBLP, support menghitung author bukan paper, dan transaksi author-based menggabungkan seluruh 2015-2025.
 """))
 
 # ---------------------------------------------------------------------------
